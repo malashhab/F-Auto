@@ -13,7 +13,7 @@ name: Release
 
 on:
   push:
-    tags: ["v*"]
+    tags: ["v*", "!v*-alpha*", "!v*-beta*"]   # alpha/beta pre-releases are published by hand
 
 jobs:
   release:
