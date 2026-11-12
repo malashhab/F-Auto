@@ -69,9 +69,10 @@ banners, calls, Bluetooth), so Android may warn or block the install. The APK is
 can read or build the source yourself. Try these in order:
 
 1. Tap **More details** → **Install anyway**.
-2. **Samsung:** Settings → Security and privacy → **Auto Blocker** → turn it off, install, turn it back on.
-3. **Play Protect:** Play Store → profile → Play Protect → Settings → turn off *Scan apps with Play
-   Protect*, install, turn it back on.
+2. **Play Protect** (the usual cause): Play Store → profile → Play Protect → Settings → turn off
+   *Scan apps with Play Protect*, install, then turn it back on.
+3. **Samsung only, if it still blocks:** Settings → Security and privacy → **Auto Blocker** → off,
+   install, turn it back on.
 4. **Install over USB** (skips the prompt): `adb install -r F-Auto-1.5.0-alpha.1.apk`
 
 ## Building
