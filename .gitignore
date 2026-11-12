@@ -50,3 +50,6 @@ google-services.json
 
 # Claude Code agent worktrees
 .claude/
+
+# local build output
+build-log.txt
