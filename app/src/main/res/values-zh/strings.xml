@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">让你在车机上操作手机屏幕：AARE 会将车机屏幕上的点击重放到手机上，并检测当前最前台的应用，因此行驶时手机屏幕会保持暂停，除非显示的是导航应用。AARE 不会读取其他任何内容。</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">让你在车机上操作手机屏幕：F-Auto 会将车机屏幕上的点击重放到手机上，并检测当前最前台的应用，因此行驶时手机屏幕会保持暂停，除非显示的是导航应用。F-Auto 不会读取其他任何内容。</string>
     <string name="mirror_locked_placeholder">手机锁屏时屏幕镜像会暂停。解锁手机即可显示。</string>
-    <string name="mirror_driving_no_accessibility">行驶中手机屏幕会暂停。若要在行驶中显示导航应用，请在手机的无障碍设置中开启 AARE：它会告诉 AARE 当前打开的是哪个应用。</string>
+    <string name="mirror_driving_no_accessibility">行驶中手机屏幕会暂停。若要在行驶中显示导航应用，请在手机的无障碍设置中开启 F-Auto：它会告诉 F-Auto 当前打开的是哪个应用。</string>
     <string name="mirror_driving_nav_only">行驶中手机屏幕会暂停，仅显示导航应用。</string>
-    <string name="mirror_need_car_audio">在手机上的 AARE 中开启车载音频，Android 询问时选择“整个屏幕”：手机屏幕镜像使用同一权限。</string>
-    <string name="mirror_need_accessibility">要在车机上操作手机，请在手机的无障碍设置中开启 AARE。</string>
+    <string name="mirror_need_car_audio">在手机上的 F-Auto 中开启车载音频，Android 询问时选择“整个屏幕”：手机屏幕镜像使用同一权限。</string>
+    <string name="mirror_need_accessibility">要在车机上操作手机，请在手机的无障碍设置中开启 F-Auto。</string>
 
     <string name="common_back">返回</string>
     <string name="common_up">向上</string>
@@ -53,8 +53,8 @@
     <string name="setup_section_location">位置</string>
     <string name="setup_toggle_car_gps_title">使用车辆的 GPS</string>
     <string name="setup_toggle_car_gps_subtitle">连接期间，手机上的应用会获取车辆的位置而非手机自身的位置，避免导航应用混淆两者</string>
-    <string name="setup_check_mock_location_title">允许 AARE 设置位置</string>
-    <string name="setup_check_mock_location_subtitle">开发者选项 &gt; 选择模拟位置信息应用 &gt; AARE</string>
+    <string name="setup_check_mock_location_title">允许 F-Auto 设置位置</string>
+    <string name="setup_check_mock_location_subtitle">开发者选项 &gt; 选择模拟位置信息应用 &gt; F-Auto</string>
     <string name="setup_section_video">视频</string>
     <string name="setup_toggle_60fps_title">优先使用 60 fps</string>
     <string name="setup_toggle_60fps_subtitle">车机支持时画面更流畅</string>
@@ -102,15 +102,15 @@
     <string name="setup_app_kind_media">音乐、播客、广播</string>
     <string name="setup_app_group_messaging">消息</string>
     <string name="setup_app_kind_messaging">来自其通知的消息</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">AARE 无法显示的 Android Auto 应用</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">F-Auto 无法显示的 Android Auto 应用</string>
     <string name="setup_hint_allowlist">使用较新版本 Google 车载库构建的应用，仅接受其允许列表中的宿主；详见 README。</string>
     <string name="setup_app_entry_phone">电话</string>
     <string name="setup_app_entry_settings">设置</string>
     <string name="setup_app_entry_notifications">通知</string>
     <string name="setup_section_app_order">车机中的排列顺序</string>
     <string name="setup_section_connection_log">连接日志</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · 与 Google 无关联。Android Auto 是 Google LLC 的商标。</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · 与 Google 无关联。Android Auto 是 Google LLC 的商标。</string>
     <string name="setup_choice_style">样式</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -120,7 +120,7 @@
     <string name="setup_switch_audio_next_connection">车内手机音频（下次连接生效）</string>
 
     <string name="cert_section_title">手机证书</string>
-    <string name="cert_hint">车机会校验手机的证书。开源车机接受自动生成的证书；使用 Google 车机软件的车辆只接受 Google 签发的证书，AARE 无法内置该证书。你可以导入自己有权使用的证书（PEM 证书 + PKCS#8 密钥，或 PKCS#12）。你也可以下载从最新版 Android Auto 应用中提取的证书（github.com/iscle/android-auto-certificates）。</string>
+    <string name="cert_hint">车机会校验手机的证书。开源车机接受自动生成的证书；使用 Google 车机软件的车辆只接受 Google 签发的证书，F-Auto 无法内置该证书。你可以导入自己有权使用的证书（PEM 证书 + PKCS#8 密钥，或 PKCS#12）。你也可以下载从最新版 Android Auto 应用中提取的证书（github.com/iscle/android-auto-certificates）。</string>
     <string name="cert_entry_subtitle">%1$s · 有效期至 %2$s</string>
     <string name="cert_action_remove">移除</string>
     <string name="cert_action_import">导入证书…</string>
@@ -155,7 +155,7 @@
     <string name="msg_section_while_driving">行驶时</string>
     <string name="msg_toggle_dnd_title">请勿打扰</string>
     <string name="msg_toggle_dnd_subtitle">连接期间手机静音；来电和重要对话仍会提醒</string>
-    <string name="msg_check_dnd_access_title">允许 AARE 开启请勿打扰</string>
+    <string name="msg_check_dnd_access_title">允许 F-Auto 开启请勿打扰</string>
     <string name="msg_check_dnd_access_subtitle">Android 仅会询问一次</string>
     <string name="msg_toggle_autoreply_title">自动回复</string>
     <string name="msg_toggle_autoreply_subtitle">自动回复发来消息的人，每次行程中每个对话仅回复一次（不包括群组）</string>
@@ -169,22 +169,22 @@
     <string name="audio_no_method">尚未设置任何方式：请从下方选择一种。</string>
     <string name="audio_section_methods">可用方式（按推荐程度排序）</string>
     <string name="audio_policy_ready">已就绪。音乐与导航语音会分别传到车机，手机保持静音。</string>
-    <string name="audio_policy_not_ready">效果类似 Android Auto：音乐与导航语音分开，手机扬声器关闭。需要已获取 root 权限的手机：通过 Magisk 模块将 AARE 安装为系统应用（详见 README）。</string>
+    <string name="audio_policy_not_ready">效果类似 Android Auto：音乐与导航语音分开，手机扬声器关闭。需要已获取 root 权限的手机：通过 Magisk 模块将 F-Auto 安装为系统应用（详见 README）。</string>
     <string name="audio_shizuku_ready">已就绪。手机播放的所有声音（包括导航语音）都会传到车机，手机保持静音。</string>
     <string name="audio_shizuku_needs_android12">需要 Android 12 或更高版本。</string>
-    <string name="audio_shizuku_tap_allow">Shizuku 正在运行：点按以允许 AARE。</string>
+    <string name="audio_shizuku_tap_allow">Shizuku 正在运行：点按以允许 F-Auto。</string>
     <string name="audio_shizuku_install_hint">无需 root。安装并启动 Shizuku（通过无线调试，每次重启后需重新启动一次），然后返回此处。</string>
     <string name="audio_playback_ready">已就绪。仅支持媒体音频：没有导航语音，部分应用可能不支持，且手机本身也会继续播放。</string>
     <string name="audio_playback_not_ready">适用于所有设备，但有限制：仅支持媒体音频，没有导航语音。Android 会请求屏幕录制权限：请选择“整个屏幕”（手机屏幕镜像也会使用此权限）。</string>
-    <string name="audio_notice_setup_hint">在手机上打开 AARE 并设置车载音频，以便在车机中听到手机声音</string>
+    <string name="audio_notice_setup_hint">在手机上打开 F-Auto 并设置车载音频，以便在车机中听到手机声音</string>
 
     <string name="phone_section_title">手机屏幕</string>
     <string name="phone_toggle_enable_title">车内手机屏幕镜像</string>
-    <string name="phone_toggle_enable_subtitle">手机自身的屏幕，用于 AARE 无法承载的应用（如 Google Maps、Waze）。手机锁屏时会暂停，行驶中除非有导航应用正在引导也会暂停。除非在车机服务器中启用，否则该服务器不提供此功能</string>
+    <string name="phone_toggle_enable_subtitle">手机自身的屏幕，用于 F-Auto 无法承载的应用（如 Google Maps、Waze）。手机锁屏时会暂停，行驶中除非有导航应用正在引导也会暂停。除非在车机服务器中启用，否则该服务器不提供此功能</string>
     <string name="phone_check_touch_title">手机屏幕触控</string>
-    <string name="phone_check_touch_subtitle">在无障碍设置中开启 AARE。通过非官方渠道安装的应用可能需要先在 AARE 的应用信息中开启“允许限制设置”</string>
+    <string name="phone_check_touch_subtitle">在无障碍设置中开启 F-Auto。通过非官方渠道安装的应用可能需要先在 F-Auto 的应用信息中开启“允许限制设置”</string>
     <string name="phone_hint_touch_capture">画面使用屏幕录制权限（在车载音频页面选择“整个屏幕”）。</string>
-    <string name="phone_app_row_subtitle">手机自身的屏幕，用于 AARE 无法承载的应用</string>
+    <string name="phone_app_row_subtitle">手机自身的屏幕，用于 F-Auto 无法承载的应用</string>
 
     <string name="assistant_settings_title">语音助手</string>
     <string name="assistant_page_subtitle">语音按钮打开的内容</string>
@@ -205,8 +205,8 @@
     <string name="notif_trust_warning">请只信任当前正在连接的车机</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s，然后重新连接。</string>
     <string name="notif_trust_reconnect_suffix">%1$s，然后重新连接。</string>
-    <string name="notif_cert_changed_message">车机证书已更改：仅在其软件已更新的情况下，在通知或 AARE 中点按“信任”，然后重新连接</string>
-    <string name="notif_cert_untrusted_message">车机证书尚未被信任：在通知或 AARE 中点按“信任”，然后重新连接</string>
+    <string name="notif_cert_changed_message">车机证书已更改：仅在其软件已更新的情况下，在通知或 F-Auto 中点按“信任”，然后重新连接</string>
+    <string name="notif_cert_untrusted_message">车机证书尚未被信任：在通知或 F-Auto 中点按“信任”，然后重新连接</string>
     <string name="notif_car_nearby_title">附近有车辆</string>
     <string name="notif_car_nearby_text">点按以无线连接</string>
     <string name="notif_status_connecting_to">正在连接到 %1$s</string>
@@ -223,9 +223,9 @@
     <string name="notif_navigation_title">导航</string>
     <string name="notif_navigation_no_app_text">车机中没有导航应用</string>
     <string name="notif_assistant_title">语音助手</string>
-    <string name="notif_assistant_choose_text">在手机上的 AARE 设置中选择语音助手</string>
+    <string name="notif_assistant_choose_text">在手机上的 F-Auto 设置中选择语音助手</string>
     <string name="notif_assistant_no_car_screen">%1$s 没有车机界面：已在手机上打开</string>
-    <string name="notif_assistant_cant_open">无法打开 %1$s。请在 AARE 设置中选择其他语音助手</string>
+    <string name="notif_assistant_cant_open">无法打开 %1$s。请在 F-Auto 设置中选择其他语音助手</string>
     <string name="notif_parked_only_title">行驶中不可用</string>
     <string name="notif_parked_only_text">请停车后使用</string>
     <string name="notif_empty">没有通知</string>
@@ -263,7 +263,7 @@
     <string name="media_action_play">播放</string>
     <string name="media_queue_empty">队列为空</string>
 
-    <string name="msg_no_access">请在手机上为 AARE 授予通知访问权限，以便在此处查看消息</string>
+    <string name="msg_no_access">请在手机上为 F-Auto 授予通知访问权限，以便在此处查看消息</string>
     <string name="msg_listener_not_ready">这里暂时还没有内容</string>
     <string name="msg_reply_sent">回复已发送</string>
     <string name="msg_reply_rejected">%1$s 未接受此回复</string>
@@ -282,7 +282,7 @@
     <string name="phone_tab_recents">最近通话</string>
     <string name="phone_tab_contacts">联系人</string>
     <string name="phone_tab_keypad">拨号键盘</string>
-    <string name="phone_permissions_placeholder">请在手机上的 AARE 中允许通话、通话记录和联系人权限（完成设置）。</string>
+    <string name="phone_permissions_placeholder">请在手机上的 F-Auto 中允许通话、通话记录和联系人权限（完成设置）。</string>
     <string name="phone_notice_calling_title">正在通话</string>
     <string name="phone_no_recent_calls">没有最近通话记录</string>
     <string name="phone_no_contacts">没有带电话号码的联系人</string>
@@ -306,7 +306,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">车载屏幕上的应用（高级）</string>
-    <string name="standalone_section_warning">这些不是 Android Auto 应用：AARE 显示的是它们在手机上的普通界面，仅在停车时可用，且需要 root 或 Shizuku。使用风险自负。</string>
+    <string name="standalone_section_warning">这些不是 Android Auto 应用：F-Auto 显示的是它们在手机上的普通界面，仅在停车时可用，且需要 root 或 Shizuku。使用风险自负。</string>
     <string name="standalone_toggle_title">在车载屏幕上启动手机应用</string>
     <string name="standalone_toggle_subtitle">在下方选择应用。仅在停车时显示。</string>
     <string name="standalone_need_root">需要 root 或 Shizuku。请在车载音频设置中配置其中之一，然后返回。</string>
@@ -370,7 +370,7 @@
     <string name="car_data_gyroscope">陀螺仪</string>
     <string name="car_data_dtc">故障码</string>
     <string name="setup_toggle_force_h264_title">强制使用 H.264 视频</string>
-    <string name="setup_toggle_force_h264_subtitle">AARE 默认使用车机和手机都支持的最佳编解码器（H.265…）。如果车机画面出现花屏，请开启此选项。</string>
+    <string name="setup_toggle_force_h264_subtitle">F-Auto 默认使用车机和手机都支持的最佳编解码器（H.265…）。如果车机画面出现花屏，请开启此选项。</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">重试</string>
     <string name="common_something_went_wrong">出现错误</string>
@@ -408,7 +408,7 @@
     <string name="media_error_skip_limit">已达到跳过次数上限</string>
     <string name="media_error_setup">请在手机上完成 %1$s 的设置</string>
     <string name="media_error_end_of_playlist">播放列表已结束</string>
-    <string name="media_error_permission">%1$s 不允许 AARE 浏览</string>
+    <string name="media_error_permission">%1$s 不允许 F-Auto 浏览</string>
     <string name="media_error_io">网络或存储出现问题</string>
     <string name="media_error_not_supported">%1$s 不支持</string>
     <string name="media_error_disconnected">%1$s 已断开连接</string>
@@ -422,6 +422,6 @@
     <string name="carapp_error_refused">%1$s 拒绝了连接</string>
     <string name="carapp_error_api_level">%1$s 需要车载 API 级别 %2$d；此宿主支持 %3$d</string>
     <string name="carapp_error_stopped">%1$s 已停止</string>
-    <string name="carapp_error_google_only">%1$s 只接受 Google 的 Android Auto。需要允许 AARE（参见手机上的应用列表）。</string>
+    <string name="carapp_error_google_only">%1$s 只接受 Google 的 Android Auto。需要允许 F-Auto（参见手机上的应用列表）。</string>
     <string name="carapp_error_cant_start">%1$s 无法启动：%2$s</string>
 </resources>

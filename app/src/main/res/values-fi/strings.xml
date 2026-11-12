@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Antaa käyttää puhelimen näyttöä autosta: AARE toistaa puhelimessa auton näytöllä tehdyt kosketukset ja tarkistaa, mikä sovellus on edessä, jotta puhelimen näyttö pysyy keskeytettynä ajon aikana, ellei se näytä navigointisovellusta. AARE ei lue mitään muuta.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Antaa käyttää puhelimen näyttöä autosta: F-Auto toistaa puhelimessa auton näytöllä tehdyt kosketukset ja tarkistaa, mikä sovellus on edessä, jotta puhelimen näyttö pysyy keskeytettynä ajon aikana, ellei se näytä navigointisovellusta. F-Auto ei lue mitään muuta.</string>
     <string name="mirror_locked_placeholder">Puhelimen näyttö on keskeytetty, kun puhelin on lukittu. Avaa puhelimen lukitus näyttääksesi sen.</string>
-    <string name="mirror_driving_no_accessibility">Puhelimen näyttö on keskeytetty ajon aikana. Jos haluat näyttää navigointisovelluksia ajon aikana, ota AARE käyttöön puhelimen esteettömyysasetuksissa: se kertoo AARElle, mikä sovellus on avoinna.</string>
+    <string name="mirror_driving_no_accessibility">Puhelimen näyttö on keskeytetty ajon aikana. Jos haluat näyttää navigointisovelluksia ajon aikana, ota F-Auto käyttöön puhelimen esteettömyysasetuksissa: se kertoo F-Autolle, mikä sovellus on avoinna.</string>
     <string name="mirror_driving_nav_only">Puhelimen näyttö on keskeytetty ajon aikana. Se näyttää vain navigointisovelluksia.</string>
-    <string name="mirror_need_car_audio">Ota Auton äänet käyttöön AARE-sovelluksessa puhelimella ja valitse Koko näyttö, kun Android kysyy: puhelimen näyttö käyttää samaa lupaa.</string>
-    <string name="mirror_need_accessibility">Jos haluat käyttää puhelinta autosta, ota AARE käyttöön puhelimen esteettömyysasetuksissa.</string>
+    <string name="mirror_need_car_audio">Ota Auton äänet käyttöön F-Auto-sovelluksessa puhelimella ja valitse Koko näyttö, kun Android kysyy: puhelimen näyttö käyttää samaa lupaa.</string>
+    <string name="mirror_need_accessibility">Jos haluat käyttää puhelinta autosta, ota F-Auto käyttöön puhelimen esteettömyysasetuksissa.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Takaisin</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Sijainti</string>
     <string name="setup_toggle_car_gps_title">Käytä auton GPS:ää</string>
     <string name="setup_toggle_car_gps_subtitle">Yhteyden aikana puhelimen sovellukset näkevät auton sijainnin puhelimen oman sijainnin sijaan, jotta navigointisovellukset eivät sekoita niitä</string>
-    <string name="setup_check_mock_location_title">Anna AARElle lupa asettaa sijainti</string>
-    <string name="setup_check_mock_location_subtitle">Kehittäjäasetukset &gt; Valitse simuloitu sijaintisovellus &gt; AARE</string>
+    <string name="setup_check_mock_location_title">Anna F-Autolle lupa asettaa sijainti</string>
+    <string name="setup_check_mock_location_subtitle">Kehittäjäasetukset &gt; Valitse simuloitu sijaintisovellus &gt; F-Auto</string>
     <string name="setup_section_video">Video</string>
     <string name="setup_toggle_60fps_title">Suosi 60 kuvaa/s</string>
     <string name="setup_toggle_60fps_subtitle">Sujuvampaa, jos auto tukee sitä</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Musiikki, podcastit, radio</string>
     <string name="setup_app_group_messaging">Viestit</string>
     <string name="setup_app_kind_messaging">Viestit sen ilmoituksista</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Android Auto -sovellukset, joita AARE ei voi näyttää</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Android Auto -sovellukset, joita F-Auto ei voi näyttää</string>
     <string name="setup_hint_allowlist">Googlen auto-kirjaston uusimmilla versioilla rakennetut sovellukset hyväksyvät vain sallittujen isäntien luettelossa olevia; katso README.</string>
     <string name="setup_app_entry_phone">Puhelin</string>
     <string name="setup_app_entry_settings">Asetukset</string>
     <string name="setup_app_entry_notifications">Ilmoitukset</string>
     <string name="setup_section_app_order">Järjestys autossa</string>
     <string name="setup_section_connection_log">Yhteysloki</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Ei liity Googleen. Android Auto on Google LLC:n tavaramerkki.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Ei liity Googleen. Android Auto on Google LLC:n tavaramerkki.</string>
     <string name="setup_choice_style">Tyyli</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Puhelimen varmenteet</string>
-    <string name="cert_hint">Soittolaitteet tarkistavat puhelimen varmenteen. Avoimen lähdekoodin soittolaitteet hyväksyvät luodun varmenteen; Googlen soittolaiteohjelmistoa käyttävät autot hyväksyvät vain Googlen myöntämän varmenteen, jota AARE ei voi sisällyttää. Voit tuoda sellaisen, jonka käyttöön sinulla on oikeus (PEM-varmenne + PKCS#8-avain, tai PKCS#12). Voit myös ladata uusimman Android Auto -sovelluksen varmenteen (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Soittolaitteet tarkistavat puhelimen varmenteen. Avoimen lähdekoodin soittolaitteet hyväksyvät luodun varmenteen; Googlen soittolaiteohjelmistoa käyttävät autot hyväksyvät vain Googlen myöntämän varmenteen, jota F-Auto ei voi sisällyttää. Voit tuoda sellaisen, jonka käyttöön sinulla on oikeus (PEM-varmenne + PKCS#8-avain, tai PKCS#12). Voit myös ladata uusimman Android Auto -sovelluksen varmenteen (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · asti %2$s</string>
     <string name="cert_action_remove">Poista</string>
     <string name="cert_action_import">Tuo varmenne…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">Ajon aikana</string>
     <string name="msg_toggle_dnd_title">Älä häiritse</string>
     <string name="msg_toggle_dnd_subtitle">Mykistä puhelin yhteyden aikana; puhelut ja tärkeät keskustelut kuuluvat silti läpi</string>
-    <string name="msg_check_dnd_access_title">Salli AARElle Älä häiritse -tilan käyttöönotto</string>
+    <string name="msg_check_dnd_access_title">Salli F-Autolle Älä häiritse -tilan käyttöönotto</string>
     <string name="msg_check_dnd_access_subtitle">Android kysyy kerran</string>
     <string name="msg_toggle_autoreply_title">Automaattinen vastaus</string>
     <string name="msg_toggle_autoreply_subtitle">Vastaa kirjoittaville kerran keskustelua kohden ajomatkalla (ei ryhmille)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Mitään menetelmää ei ole vielä otettu käyttöön: valitse jokin alla.</string>
     <string name="audio_section_methods">Menetelmät, parhaat ensin</string>
     <string name="audio_policy_ready">Valmis. Musiikki ja navigoinnin ääniohjaus kulkevat autoon erikseen, puhelin pysyy hiljaisena.</string>
-    <string name="audio_policy_not_ready">Kuten Android Auto: musiikki ja navigoinnin ääniohjaus erikseen, puhelimen kaiutin pois päältä. Vaatii juuritetun puhelimen: asenna AARE järjestelmäsovelluksena Magisk-moduulilla (katso README).</string>
+    <string name="audio_policy_not_ready">Kuten Android Auto: musiikki ja navigoinnin ääniohjaus erikseen, puhelimen kaiutin pois päältä. Vaatii juuritetun puhelimen: asenna F-Auto järjestelmäsovelluksena Magisk-moduulilla (katso README).</string>
     <string name="audio_shizuku_ready">Valmis. Kaikki, mitä puhelin toistaa, kulkee autoon, navigoinnin ääniohjaus mukaan lukien; puhelin pysyy hiljaisena.</string>
     <string name="audio_shizuku_needs_android12">Vaatii Android 12:n tai uudemman.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku on käynnissä: napauta sallimaan AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku on käynnissä: napauta sallimaan F-Auto.</string>
     <string name="audio_shizuku_install_hint">Juurioikeuksia ei tarvita. Asenna Shizuku, käynnistä se (langaton virheenkorjaus, kerran uudelleenkäynnistyksen jälkeen), ja palaa tähän.</string>
     <string name="audio_playback_ready">Valmis. Vain media: ei navigoinnin ääniohjausta, jotkin sovellukset kieltäytyvät, ja puhelin jatkaa toistoa myös itse.</string>
     <string name="audio_playback_not_ready">Toimii kaikkialla, rajoituksin: vain media, ei navigoinnin ääniohjausta. Android pyytää näytön kaappausta: valitse Koko näyttö (sama kuin puhelimen näytössä).</string>
-    <string name="audio_notice_setup_hint">Avaa AARE puhelimella ja ota auton äänet käyttöön kuullaksesi puhelimen autossa</string>
+    <string name="audio_notice_setup_hint">Avaa F-Auto puhelimella ja ota auton äänet käyttöön kuullaksesi puhelimen autossa</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Puhelimen näyttö</string>
     <string name="phone_toggle_enable_title">Puhelimen näyttö autossa</string>
-    <string name="phone_toggle_enable_subtitle">Puhelimen oma näyttö, sovelluksille, joita AARE ei voi isännöidä (Google Maps, Waze). Keskeytetty, kun puhelin on lukittu, ja ajon aikana, ellei navigointisovellus ohjaa. Ei tarjolla soittolaitteen palvelimella, ellei sitä ole otettu käyttöön siellä</string>
+    <string name="phone_toggle_enable_subtitle">Puhelimen oma näyttö, sovelluksille, joita F-Auto ei voi isännöidä (Google Maps, Waze). Keskeytetty, kun puhelin on lukittu, ja ajon aikana, ellei navigointisovellus ohjaa. Ei tarjolla soittolaitteen palvelimella, ellei sitä ole otettu käyttöön siellä</string>
     <string name="phone_check_touch_title">Kosketus puhelimen näytöllä</string>
-    <string name="phone_check_touch_subtitle">Ota AARE käyttöön Esteettömyydessä. Sovelluksille, joita ei ole asennettu kaupasta, voidaan ensin tarvita "Salli rajoitetut asetukset" AARE:n sovellustiedoissa</string>
+    <string name="phone_check_touch_subtitle">Ota F-Auto käyttöön Esteettömyydessä. Sovelluksille, joita ei ole asennettu kaupasta, voidaan ensin tarvita "Salli rajoitetut asetukset" F-Auto:n sovellustiedoissa</string>
     <string name="phone_hint_touch_capture">Kuva käyttää näytön kaappauslupaa (Auton äänet -sivu, valitse Koko näyttö).</string>
-    <string name="phone_app_row_subtitle">Puhelimen oma näyttö, sovelluksille, joita AARE ei voi isännöidä</string>
+    <string name="phone_app_row_subtitle">Puhelimen oma näyttö, sovelluksille, joita F-Auto ei voi isännöidä</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Ääniavustaja</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Luota vain soittolaitteeseen, johon olet yhteydessä juuri nyt</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, yhdistä sitten uudelleen.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, yhdistä sitten uudelleen.</string>
-    <string name="notif_cert_changed_message">soittolaitteen varmenne vaihtui: napauta Luota ilmoituksessa tai AARE:ssa vain, jos sen ohjelmisto on päivitetty, yhdistä sitten uudelleen</string>
-    <string name="notif_cert_untrusted_message">soittolaitteen varmenteeseen ei vielä luoteta: napauta Luota ilmoituksessa tai AARE:ssa, yhdistä sitten uudelleen</string>
+    <string name="notif_cert_changed_message">soittolaitteen varmenne vaihtui: napauta Luota ilmoituksessa tai F-Auto:ssa vain, jos sen ohjelmisto on päivitetty, yhdistä sitten uudelleen</string>
+    <string name="notif_cert_untrusted_message">soittolaitteen varmenteeseen ei vielä luoteta: napauta Luota ilmoituksessa tai F-Auto:ssa, yhdistä sitten uudelleen</string>
     <string name="notif_car_nearby_title">Auto lähellä</string>
     <string name="notif_car_nearby_text">Napauta yhdistääksesi langattomasti</string>
     <string name="notif_status_connecting_to">Yhdistetään %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Navigointi</string>
     <string name="notif_navigation_no_app_text">Autossa ei ole navigointisovellusta</string>
     <string name="notif_assistant_title">Avustaja</string>
-    <string name="notif_assistant_choose_text">Valitse ääniavustaja AARE:n asetuksista puhelimessa</string>
+    <string name="notif_assistant_choose_text">Valitse ääniavustaja F-Auto:n asetuksista puhelimessa</string>
     <string name="notif_assistant_no_car_screen">%1$s ei ole auton näyttöä: se avautui puhelimessa</string>
-    <string name="notif_assistant_cant_open">%1$s ei voi avata. Valitse toinen avustaja AARE:n asetuksista</string>
+    <string name="notif_assistant_cant_open">%1$s ei voi avata. Valitse toinen avustaja F-Auto:n asetuksista</string>
     <string name="notif_parked_only_title">Ei käytettävissä ajon aikana</string>
     <string name="notif_parked_only_text">Pysäköi käyttääksesi tätä</string>
     <string name="notif_empty">Ei ilmoituksia</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">Jono on tyhjä</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Anna AARElle ilmoitusten käyttöoikeus puhelimessa, jotta näet viestit tässä</string>
+    <string name="msg_no_access">Anna F-Autolle ilmoitusten käyttöoikeus puhelimessa, jotta näet viestit tässä</string>
     <string name="msg_listener_not_ready">Ei vielä mitään näytettävää</string>
     <string name="msg_reply_sent">Vastaus lähetetty</string>
     <string name="msg_reply_rejected">%1$s ei hyväksynyt vastausta</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Viimeisimmät</string>
     <string name="phone_tab_contacts">Yhteystiedot</string>
     <string name="phone_tab_keypad">Näppäimistö</string>
-    <string name="phone_permissions_placeholder">Salli puhelut, puheluhistoria ja yhteystiedot AARE:ssa puhelimella (Viimeistele käyttöönotto).</string>
+    <string name="phone_permissions_placeholder">Salli puhelut, puheluhistoria ja yhteystiedot F-Auto:ssa puhelimella (Viimeistele käyttöönotto).</string>
     <string name="phone_notice_calling_title">Soitetaan</string>
     <string name="phone_no_recent_calls">Ei viimeaikaisia puheluita</string>
     <string name="phone_no_contacts">Ei yhteystietoja, joilla on puhelinnumero</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Sovellukset auton näytöllä (lisäasetukset)</string>
-    <string name="standalone_section_warning">Nämä eivät ole Android Auto -sovelluksia: AARE näyttää niiden tavallisen puhelinnäytön, vain pysäköitynä, ja vaatii root- tai Shizuku-oikeudet. Käytä omalla vastuullasi.</string>
+    <string name="standalone_section_warning">Nämä eivät ole Android Auto -sovelluksia: F-Auto näyttää niiden tavallisen puhelinnäytön, vain pysäköitynä, ja vaatii root- tai Shizuku-oikeudet. Käytä omalla vastuullasi.</string>
     <string name="standalone_toggle_title">Käynnistä puhelinsovelluksia auton näytöllä</string>
     <string name="standalone_toggle_subtitle">Valitse sovellukset alta. Näkyy vain pysäköitynä.</string>
     <string name="standalone_need_root">Vaatii root- tai Shizuku-oikeudet. Ota jompikumpi käyttöön Auton äänet -sivulla ja palaa sitten takaisin.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Gyroskooppi</string>
     <string name="car_data_dtc">Vikakoodit</string>
     <string name="setup_toggle_force_h264_title">Pakota H.264-video</string>
-    <string name="setup_toggle_force_h264_subtitle">AARE käyttää oletusarvoisesti parasta koodekkia, jonka auto ja puhelin jakavat (H.265…). Ota käyttöön, jos auton kuva on häiriöinen.</string>
+    <string name="setup_toggle_force_h264_subtitle">F-Auto käyttää oletusarvoisesti parasta koodekkia, jonka auto ja puhelin jakavat (H.265…). Ota käyttöön, jos auton kuva on häiriöinen.</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">Yritä uudelleen</string>
     <string name="common_something_went_wrong">Jokin meni pieleen</string>
@@ -424,7 +424,7 @@
     <string name="media_error_skip_limit">Ohitusraja saavutettu</string>
     <string name="media_error_setup">Viimeistele %1$s:n käyttöönotto puhelimessasi</string>
     <string name="media_error_end_of_playlist">Soittolistan loppu</string>
-    <string name="media_error_permission">%1$s ei salli AAREn selata sitä</string>
+    <string name="media_error_permission">%1$s ei salli F-Auton selata sitä</string>
     <string name="media_error_io">Verkko- tai tallennustilaongelma</string>
     <string name="media_error_not_supported">%1$s ei tue tätä</string>
     <string name="media_error_disconnected">%1$s katkaisi yhteyden</string>
@@ -438,6 +438,6 @@
     <string name="carapp_error_refused">%1$s kielsi yhteyden</string>
     <string name="carapp_error_api_level">%1$s vaatii auton API-tason %2$d; tämä laite tukee tasoa %3$d</string>
     <string name="carapp_error_stopped">%1$s pysähtyi</string>
-    <string name="carapp_error_google_only">%1$s hyväksyy vain Googlen Android Auton. Sen täytyy sallia AARE (katso sovellusluettelo puhelimesta).</string>
+    <string name="carapp_error_google_only">%1$s hyväksyy vain Googlen Android Auton. Sen täytyy sallia F-Auto (katso sovellusluettelo puhelimesta).</string>
     <string name="carapp_error_cant_start">%1$s ei voinut käynnistyä: %2$s</string>
 </resources>

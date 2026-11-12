@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Låter dig använda telefonskärmen från bilen: AARE återger beröringarna som görs på bilskärmen på telefonen och kontrollerar vilken app som är i förgrunden, så att telefonskärmen förblir pausad under körning om den inte visar en navigeringsapp. AARE läser inget annat.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Låter dig använda telefonskärmen från bilen: F-Auto återger beröringarna som görs på bilskärmen på telefonen och kontrollerar vilken app som är i förgrunden, så att telefonskärmen förblir pausad under körning om den inte visar en navigeringsapp. F-Auto läser inget annat.</string>
     <string name="mirror_locked_placeholder">Telefonskärmen är pausad medan telefonen är låst. Lås upp telefonen för att visa den.</string>
-    <string name="mirror_driving_no_accessibility">Telefonskärmen är pausad under körning. För att visa navigeringsappar under körning, aktivera AARE i telefonens tillgänglighetsinställningar: det talar om för AARE vilken app som är öppen.</string>
+    <string name="mirror_driving_no_accessibility">Telefonskärmen är pausad under körning. För att visa navigeringsappar under körning, aktivera F-Auto i telefonens tillgänglighetsinställningar: det talar om för F-Auto vilken app som är öppen.</string>
     <string name="mirror_driving_nav_only">Telefonskärmen är pausad under körning. Den visar endast navigeringsappar.</string>
-    <string name="mirror_need_car_audio">Aktivera Billjud i AARE på telefonen och välj Hela skärmen när Android frågar: telefonskärmen använder samma behörighet.</string>
-    <string name="mirror_need_accessibility">För att använda telefonen från bilen, aktivera AARE i telefonens tillgänglighetsinställningar.</string>
+    <string name="mirror_need_car_audio">Aktivera Billjud i F-Auto på telefonen och välj Hela skärmen när Android frågar: telefonskärmen använder samma behörighet.</string>
+    <string name="mirror_need_accessibility">För att använda telefonen från bilen, aktivera F-Auto i telefonens tillgänglighetsinställningar.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Tillbaka</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Plats</string>
     <string name="setup_toggle_car_gps_title">Använd bilens GPS</string>
     <string name="setup_toggle_car_gps_subtitle">Medan ansluten ser appar på telefonen bilens position istället för telefonens egen, så att navigeringsappar inte blandar ihop de två</string>
-    <string name="setup_check_mock_location_title">Tillåt AARE att ställa in platsen</string>
-    <string name="setup_check_mock_location_subtitle">Utvecklaralternativ &gt; Välj app för falsk plats &gt; AARE</string>
+    <string name="setup_check_mock_location_title">Tillåt F-Auto att ställa in platsen</string>
+    <string name="setup_check_mock_location_subtitle">Utvecklaralternativ &gt; Välj app för falsk plats &gt; F-Auto</string>
     <string name="setup_section_video">Video</string>
     <string name="setup_toggle_60fps_title">Föredra 60 fps</string>
     <string name="setup_toggle_60fps_subtitle">Smidigare när bilen stöder det</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Musik, poddar, radio</string>
     <string name="setup_app_group_messaging">Meddelanden</string>
     <string name="setup_app_kind_messaging">Meddelanden från dess aviseringar</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Android Auto-appar AARE inte kan visa</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Android Auto-appar F-Auto inte kan visa</string>
     <string name="setup_hint_allowlist">Appar byggda med senare versioner av Googles bilbibliotek accepterar bara värdar på sin tillåtelselista; se README.</string>
     <string name="setup_app_entry_phone">Telefon</string>
     <string name="setup_app_entry_settings">Inställningar</string>
     <string name="setup_app_entry_notifications">Aviseringar</string>
     <string name="setup_section_app_order">Ordning i bilen</string>
     <string name="setup_section_connection_log">Anslutningslogg</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Inte anknuten till Google. Android Auto är ett varumärke som tillhör Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Inte anknuten till Google. Android Auto är ett varumärke som tillhör Google LLC.</string>
     <string name="setup_choice_style">Stil</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Telefoncertifikat</string>
-    <string name="cert_hint">Head units kontrollerar telefonens certifikat. Head units med öppen källkod accepterar det genererade; bilar som använder Googles head unit-programvara accepterar bara ett certifikat utfärdat av Google, som AARE inte kan inkludera. Du kan importera ett som du har rätt att använda (PEM-certifikat + PKCS#8-nyckel, eller PKCS#12). Du kan också ladda ner det från den senaste Android Auto-appen (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Head units kontrollerar telefonens certifikat. Head units med öppen källkod accepterar det genererade; bilar som använder Googles head unit-programvara accepterar bara ett certifikat utfärdat av Google, som F-Auto inte kan inkludera. Du kan importera ett som du har rätt att använda (PEM-certifikat + PKCS#8-nyckel, eller PKCS#12). Du kan också ladda ner det från den senaste Android Auto-appen (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · till %2$s</string>
     <string name="cert_action_remove">Ta bort</string>
     <string name="cert_action_import">Importera certifikat…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">Under körning</string>
     <string name="msg_toggle_dnd_title">Stör ej</string>
     <string name="msg_toggle_dnd_subtitle">Tystar telefonen medan ansluten; samtal och prioriterade konversationer kommer fortfarande igenom</string>
-    <string name="msg_check_dnd_access_title">Tillåt AARE att aktivera Stör ej</string>
+    <string name="msg_check_dnd_access_title">Tillåt F-Auto att aktivera Stör ej</string>
     <string name="msg_check_dnd_access_subtitle">Android frågar en gång</string>
     <string name="msg_toggle_autoreply_title">Automatiskt svar</string>
     <string name="msg_toggle_autoreply_subtitle">Svarar personer som skriver, en gång per konversation och körning (inte grupper)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Ingen metod är konfigurerad än: välj en nedan.</string>
     <string name="audio_section_methods">Metoder, bästa först</string>
     <string name="audio_policy_ready">Klart. Musik och navigeringsröst går separat till bilen, telefonen förblir tyst.</string>
-    <string name="audio_policy_not_ready">Som Android Auto: musik och navigeringsröst separat, telefonhögtalare av. Kräver en rootad telefon: installera AARE som systemapp med Magisk-modulen (se README).</string>
+    <string name="audio_policy_not_ready">Som Android Auto: musik och navigeringsröst separat, telefonhögtalare av. Kräver en rootad telefon: installera F-Auto som systemapp med Magisk-modulen (se README).</string>
     <string name="audio_shizuku_ready">Klart. Allt telefonen spelar går till bilen, inklusive navigeringsröst; telefonen förblir tyst.</string>
     <string name="audio_shizuku_needs_android12">Kräver Android 12 eller nyare.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku körs: tryck för att tillåta AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku körs: tryck för att tillåta F-Auto.</string>
     <string name="audio_shizuku_install_hint">Ingen root behövs. Installera Shizuku, starta det (trådlös felsökning, en gång per omstart), och kom sedan tillbaka hit.</string>
     <string name="audio_playback_ready">Klart. Endast media: ingen navigeringsröst, vissa appar avstår, och telefonen fortsätter också att spela.</string>
     <string name="audio_playback_not_ready">Fungerar överallt, med begränsningar: endast media, ingen navigeringsröst. Android frågar om att spela in skärmen: välj Hela skärmen (används också av telefonskärmen).</string>
-    <string name="audio_notice_setup_hint">Öppna AARE på telefonen och konfigurera Billjud för att höra telefonen i bilen</string>
+    <string name="audio_notice_setup_hint">Öppna F-Auto på telefonen och konfigurera Billjud för att höra telefonen i bilen</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Telefonskärm</string>
     <string name="phone_toggle_enable_title">Telefonskärm i bilen</string>
-    <string name="phone_toggle_enable_subtitle">Telefonens egen skärm, för appar AARE inte kan hosta (Google Maps, Waze). Pausad medan telefonen är låst, och under körning om inte en navigeringsapp guidar. Erbjuds inte på head unit-servern om det inte är aktiverat där</string>
+    <string name="phone_toggle_enable_subtitle">Telefonens egen skärm, för appar F-Auto inte kan hosta (Google Maps, Waze). Pausad medan telefonen är låst, och under körning om inte en navigeringsapp guidar. Erbjuds inte på head unit-servern om det inte är aktiverat där</string>
     <string name="phone_check_touch_title">Beröring på telefonskärmen</string>
-    <string name="phone_check_touch_subtitle">Aktivera AARE i Tillgänglighet. Sidoladdade appar kan först behöva "Tillåt begränsade inställningar" i AAREs appinfo</string>
+    <string name="phone_check_touch_subtitle">Aktivera F-Auto i Tillgänglighet. Sidoladdade appar kan först behöva "Tillåt begränsade inställningar" i F-Autos appinfo</string>
     <string name="phone_hint_touch_capture">Bilden använder skärminspelningsbehörigheten (sidan Billjud, välj Hela skärmen).</string>
-    <string name="phone_app_row_subtitle">Telefonens egen skärm, för appar AARE inte kan hosta</string>
+    <string name="phone_app_row_subtitle">Telefonens egen skärm, för appar F-Auto inte kan hosta</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Röstassistent</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Lita bara på en head unit som du är ansluten till just nu</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, anslut sedan igen.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, anslut sedan igen.</string>
-    <string name="notif_cert_changed_message">head units certifikat ändrat: tryck på Lita på i aviseringen eller i AARE bara om dess programvara har uppdaterats, anslut sedan igen</string>
-    <string name="notif_cert_untrusted_message">head units certifikat inte betrott än: tryck på Lita på i aviseringen eller i AARE, anslut sedan igen</string>
+    <string name="notif_cert_changed_message">head units certifikat ändrat: tryck på Lita på i aviseringen eller i F-Auto bara om dess programvara har uppdaterats, anslut sedan igen</string>
+    <string name="notif_cert_untrusted_message">head units certifikat inte betrott än: tryck på Lita på i aviseringen eller i F-Auto, anslut sedan igen</string>
     <string name="notif_car_nearby_title">Bil i närheten</string>
     <string name="notif_car_nearby_text">Tryck för att ansluta trådlöst</string>
     <string name="notif_status_connecting_to">Ansluter till %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Navigering</string>
     <string name="notif_navigation_no_app_text">Ingen navigeringsapp i bilen</string>
     <string name="notif_assistant_title">Assistent</string>
-    <string name="notif_assistant_choose_text">Välj en röstassistent i AAREs inställningar på telefonen</string>
+    <string name="notif_assistant_choose_text">Välj en röstassistent i F-Autos inställningar på telefonen</string>
     <string name="notif_assistant_no_car_screen">%1$s har ingen bilskärm: den öppnades på telefonen</string>
-    <string name="notif_assistant_cant_open">%1$s kan inte öppnas. Välj en annan assistent i AAREs inställningar</string>
+    <string name="notif_assistant_cant_open">%1$s kan inte öppnas. Välj en annan assistent i F-Autos inställningar</string>
     <string name="notif_parked_only_title">Inte tillgängligt under körning</string>
     <string name="notif_parked_only_text">Parkera för att använda detta</string>
     <string name="notif_empty">Inga aviseringar</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">Kön är tom</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Ge AARE aviseringsåtkomst på telefonen för att se meddelanden här</string>
+    <string name="msg_no_access">Ge F-Auto aviseringsåtkomst på telefonen för att se meddelanden här</string>
     <string name="msg_listener_not_ready">Inget att se här än</string>
     <string name="msg_reply_sent">Svar skickat</string>
     <string name="msg_reply_rejected">%1$s accepterade inte svaret</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Senaste</string>
     <string name="phone_tab_contacts">Kontakter</string>
     <string name="phone_tab_keypad">Knappsats</string>
-    <string name="phone_permissions_placeholder">Tillåt samtal, samtalshistorik och kontakter i AARE på telefonen (Slutför installationen).</string>
+    <string name="phone_permissions_placeholder">Tillåt samtal, samtalshistorik och kontakter i F-Auto på telefonen (Slutför installationen).</string>
     <string name="phone_notice_calling_title">Ringer</string>
     <string name="phone_no_recent_calls">Inga senaste samtal</string>
     <string name="phone_no_contacts">Inga kontakter med ett telefonnummer</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Appar på bilskärmen (avancerat)</string>
-    <string name="standalone_section_warning">Det här är inte Android Auto-appar: AARE visar deras vanliga telefonskärm, bara när bilen är parkerad, och kräver root eller Shizuku. Använd på egen risk.</string>
+    <string name="standalone_section_warning">Det här är inte Android Auto-appar: F-Auto visar deras vanliga telefonskärm, bara när bilen är parkerad, och kräver root eller Shizuku. Använd på egen risk.</string>
     <string name="standalone_toggle_title">Starta telefonappar på bilskärmen</string>
     <string name="standalone_toggle_subtitle">Välj apparna nedan. Visas bara när parkerad.</string>
     <string name="standalone_need_root">Kräver root eller Shizuku. Ställ in en av dem på sidan Billjud och kom sedan tillbaka.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Gyroskop</string>
     <string name="car_data_dtc">Felkoder</string>
     <string name="setup_toggle_force_h264_title">Tvinga H.264-video</string>
-    <string name="setup_toggle_force_h264_subtitle">Som standard använder AARE den bästa kodeken som bilen och telefonen har gemensamt (H.265…). Slå på om bilens bild är förvrängd.</string>
+    <string name="setup_toggle_force_h264_subtitle">Som standard använder F-Auto den bästa kodeken som bilen och telefonen har gemensamt (H.265…). Slå på om bilens bild är förvrängd.</string>
     <!-- i18n/new-strings: added 2026-11-09 -->
     <string name="common_ok">OK</string>
     <string name="common_try_again">Försök igen</string>
@@ -425,7 +425,7 @@
     <string name="media_error_skip_limit">Gränsen för att hoppa över nådd</string>
     <string name="media_error_setup">Slutför konfigurationen av %1$s på telefonen</string>
     <string name="media_error_end_of_playlist">Slutet på spellistan</string>
-    <string name="media_error_permission">%1$s tillåter inte att AARE bläddrar i den</string>
+    <string name="media_error_permission">%1$s tillåter inte att F-Auto bläddrar i den</string>
     <string name="media_error_io">Problem med nätverk eller lagring</string>
     <string name="media_error_not_supported">Stöds inte av %1$s</string>
     <string name="media_error_disconnected">%1$s kopplades från</string>
@@ -439,6 +439,6 @@
     <string name="carapp_error_refused">%1$s avvisade anslutningen</string>
     <string name="carapp_error_api_level">%1$s kräver bil-API-nivå %2$d; denna värd stöder %3$d</string>
     <string name="carapp_error_stopped">%1$s stoppades</string>
-    <string name="carapp_error_google_only">%1$s accepterar endast Googles Android Auto. Den måste tillåta AARE (se applistan på telefonen).</string>
+    <string name="carapp_error_google_only">%1$s accepterar endast Googles Android Auto. Den måste tillåta F-Auto (se applistan på telefonen).</string>
     <string name="carapp_error_cant_start">%1$s kunde inte starta: %2$s</string>
 </resources>

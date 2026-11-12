@@ -84,7 +84,8 @@ import net.prototux.aare.ui.theme.CarTheme
 import net.prototux.aare.ui.theme.LocalCarDimens
 
 /**
- * Root of the car screen: a rail on the driver's side and the content area.
+ * Root of the car screen: AARE's one shell (a fixed rail, a persistent bottom bar, a dashboard
+ * that toggles map+widgets/map+music), in the color theme from `Settings.carStyle`.
  *
  * [appContent] renders an app full screen (templates or the media browser); [navMap] renders a
  * navigation app's map surface, both on the dashboard card and behind its templates.
@@ -99,182 +100,10 @@ fun CarShell(
     overlay: @Composable (Modifier) -> Unit = {},
     /** Insets the UI into the head unit's visible area (the codec frame minus its margins). */
     modifier: Modifier = Modifier,
-) {
-    if (state.carPlayStyle) {
-        CarPlayShell(state, actions, appContent, navMap, overlay, modifier)
-        return
-    }
-    Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
-        BoxWithConstraints(Modifier.fillMaxSize().then(modifier)) {
-            val portrait = maxHeight > maxWidth
-            // The visible area, not LocalConfiguration: that is the whole codec frame, margins included.
-            val area = DpSize(maxWidth, maxHeight)
-            if (portrait || state.railBottom) {
-                Column(Modifier.fillMaxSize()) {
-                    ContentArea(state, actions, appContent, navMap, Modifier.weight(1f))
-                    Rail(state, actions, horizontal = true, area)
-                }
-            } else {
-                Row(Modifier.fillMaxSize()) {
-                    if (!state.railOnRight) Rail(state, actions, horizontal = false, area)
-                    ContentArea(state, actions, appContent, navMap, Modifier.weight(1f))
-                    if (state.railOnRight) Rail(state, actions, horizontal = false, area)
-                }
-            }
-            overlay(Modifier.align(Alignment.BottomCenter))
-            NoticeOverlay(state, actions, Modifier.align(Alignment.TopCenter))
-            CallOverlay(state, actions, Modifier.align(Alignment.TopCenter))
-        }
-    }
-}
-
-@Composable
-private fun ContentArea(
-    state: CarUiState,
-    actions: CarActions,
-    appContent: @Composable (CarAppEntry, Modifier) -> Unit,
-    navMap: @Composable (CarAppEntry, Modifier) -> Unit,
-    modifier: Modifier,
-) {
-    val gutter = LocalCarDimens.current.gutter
-    // Give rotary / D-pad head units a starting point: focus lands on the first focusable of each
-    // screen when it opens, so the highlight is visible without a touch. Harmless on touch units.
-    // Asked again on an input mode change: in touch mode the request fails, so the first knob
-    // detent (which leaves touch mode) asks again. Not when the content still holds focus (a tap
-    // between two knob turns), or focus would jump back to the first item.
-    val focusEntry = remember { FocusRequester() }
-    var contentFocused by remember { mutableStateOf(false) }
-    val inputMode = LocalInputModeManager.current.inputMode
-    LaunchedEffect(state.screen) { runCatching { focusEntry.requestFocus() } }
-    LaunchedEffect(inputMode) { if (!contentFocused) runCatching { focusEntry.requestFocus() } }
-    AnimatedContent(
-        targetState = state.screen,
-        transitionSpec = { fadeIn(tween(160)) togetherWith fadeOut(tween(120)) },
-        modifier = modifier.fillMaxHeight().onFocusChanged { contentFocused = it.hasFocus }
-            .focusRequester(focusEntry).focusGroup(),
-        label = "screen",
-    ) { screen ->
-        when (screen) {
-            CarScreen.Dashboard -> Box(Modifier.fillMaxSize()) {
-                Wallpaper(state, Modifier.fillMaxSize())
-                Dashboard(state, actions, navMap, Modifier.fillMaxSize().padding(gutter))
-            }
-            CarScreen.Launcher -> Launcher(state, actions, Modifier.fillMaxSize())
-            is CarScreen.App -> {
-                val app = state.app(screen.appId)
-                if (app != null) appContent(app, Modifier.fillMaxSize()) else Dashboard(state, actions, navMap, Modifier.fillMaxSize().padding(gutter))
-            }
-        }
-    }
-}
-
-// ---------------------------------------------------------------- rail
-
-/**
- * The rail, laid out like Android Auto's taskbar: the voice button at the driver's end with the
- * menu button (the app grid on the home screen, home anywhere else) next to it, the apps in the
- * middle (navigation, media, phone, settings), the clock and the phone's status at the far end.
- */
-@Composable
-private fun Rail(state: CarUiState, actions: CarActions, horizontal: Boolean, area: DpSize) {
-    // The "dark bar" setting: night colors for the rail even when the rest is in day colors.
-    if (state.darkBar && !state.night) {
-        CarTheme(night = true) { RailContent(state, actions, horizontal, area) }
-    } else {
-        RailContent(state, actions, horizontal, area)
-    }
-}
-
-/** What a side rail has room for besides the clock, bell, menu and mic, from [sideRailFit]. */
-internal data class SideRailFit(val recentSlots: Int, val status: Boolean, val settings: Boolean)
-
-/**
- * Fits the side rail to its [height] inside the padding. Everything takes about 614 dp (clock and
- * bell 72, phone status and weather 54, the four apps 328, menu and mic 160), so on shorter screens
- * the phone status and weather go first, then Settings (the launcher has it); below that the apps
- * scroll. Dropping items rather than shrinking them keeps every button a full touch target.
- */
-internal fun sideRailFit(height: Dp) = SideRailFit(
-    // A recent app only on tall screens: what an 800 dp screen leaves inside the padding.
-    recentSlots = if (height >= 768.dp) 1 else 0,
-    status = height >= 614.dp,
-    settings = height >= 560.dp,
-)
-
-@Composable
-private fun RailContent(state: CarUiState, actions: CarActions, horizontal: Boolean, area: DpSize) {
-    val d = LocalCarDimens.current
-    val nav = state.app(state.activeNavAppId)
-    val media = state.app(state.activeMediaAppId)
-    val phone = state.apps.firstOrNull { it.kind == CarAppKind.PHONE }
-    val settings = state.apps.firstOrNull { it.kind == CarAppKind.SETTINGS }
-    fun on(app: CarAppEntry?) = app != null && state.screen == CarScreen.App(app.id)
-    // Like Android Auto's taskbar: the apps used last, besides the fixed ones (one on a side rail, for height).
-    val fixed = setOfNotNull(nav?.id, media?.id, phone?.id, settings?.id)
-    val recent = state.recentAppIds.filter { it !in fixed }.mapNotNull(state::app)
-    // A bottom bar on a portrait screen is short of width (76 dp per button): fewer apps and no
-    // weather there, the launcher has them all. Landscape bars keep everything.
-    val tightBar = horizontal && area.height > area.width && area.width < 800.dp
-    val tighterBar = tightBar && area.width < 640.dp
-    val apps: @Composable (Int, Boolean) -> Unit = { recentSlots, withSettings ->
-        RailApp(nav, Icons.Rounded.Map, on(nav)) { nav?.let(actions::openApp) ?: actions.openLauncher() }
-        RailApp(media, Icons.Rounded.MusicNote, on(media)) { media?.let(actions::openApp) ?: actions.openLauncher() }
-        recent.take(recentSlots).forEach { app -> RailApp(app, Icons.Rounded.Apps, on(app)) { actions.openApp(app) } }
-        phone?.let { RailApp(it, Icons.Rounded.Call, on(it)) { actions.openApp(it) } }
-        settings?.takeIf { withSettings }?.let { RailApp(it, Icons.Rounded.Settings, on(it)) { actions.openApp(it) } }
-    }
-    val menu: @Composable () -> Unit = {
-        if (state.screen == CarScreen.Dashboard) RailButton(Icons.Rounded.Apps, stringResource(R.string.dash_menu_apps), selected = false) { actions.openLauncher() }
-        else RailButton(Icons.Rounded.Home, stringResource(R.string.dash_menu_home), selected = false) { actions.goHome() }
-    }
-    val mic: @Composable () -> Unit = { MicButton(state.listening) { actions.assistant() } }
-    val bell = { state.apps.firstOrNull { it.kind == CarAppKind.NOTIFICATIONS }?.let(actions::openApp) }
-    val container = MaterialTheme.colorScheme.surfaceContainerLowest
-    if (horizontal) {
-        Row(
-            Modifier.fillMaxWidth().height(d.railWidth).background(container).padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val driverEnd: @Composable () -> Unit = { Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (state.driverOnRight) { menu(); mic() } else { mic(); menu() }
-            } }
-            val status: @Composable () -> Unit = { Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                Clock(); if (!tightBar) WeatherChip(state.weather); PhoneStatusIcons(); NotificationBell(state) { bell() }
-            } }
-            if (state.driverOnRight) status() else driverEnd()
-            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) { apps(if (tightBar) 0 else 2, !tighterBar) }
-            }
-            if (state.driverOnRight) driverEnd() else status()
-        }
-    } else {
-        val fit = sideRailFit(area.height - 32.dp)
-        Column(
-            Modifier.fillMaxHeight().width(d.railWidth).background(container).padding(vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Clock()
-            if (fit.status) {
-                Spacer(Modifier.height(6.dp))
-                PhoneStatusIcons()
-                Spacer(Modifier.height(4.dp))
-                WeatherChip(state.weather)
-            }
-            NotificationBell(state) { bell() }
-            // The apps are the only weighted child, so they are measured last and are the part that
-            // gives up space: menu and mic (the only way home on touch-only units) keep their size.
-            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Column(
-                    Modifier.verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) { apps(fit.recentSlots, fit.settings) }
-            }
-            menu()
-            Spacer(Modifier.height(8.dp))
-            mic()
-        }
-    }
+) = if (state.shellLayout == net.prototux.aare.Settings.LAYOUT_DUSK) {
+    DuskUIShell(state, actions, appContent, navMap, overlay, modifier)
+} else {
+    HybridShell(state, actions, appContent, navMap, overlay, modifier)
 }
 
 @Composable
@@ -294,123 +123,22 @@ internal fun Clock() {
 }
 
 @Composable
-private fun RailButton(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit) {
-    val d = LocalCarDimens.current
-    val bg = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-    val fg = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-    Box(
-        Modifier.size(d.touchTarget).clip(RoundedCornerShape(24.dp)).background(bg).carFocusHighlight(RoundedCornerShape(24.dp)).clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(icon, contentDescription = label, tint = fg, modifier = Modifier.size(d.iconSize))
-    }
-}
-
-@Composable
-private fun RailApp(app: CarAppEntry?, fallback: ImageVector, selected: Boolean, onClick: () -> Unit) {
-    val d = LocalCarDimens.current
-    if (app?.icon == null) {
-        RailButton(fallback, app?.label ?: "", selected, onClick)
-        return
-    }
-    val ring = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-    Box(
-        Modifier.size(d.touchTarget).clip(RoundedCornerShape(24.dp)).background(ring).carFocusHighlight(RoundedCornerShape(24.dp)).clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(app.icon.asImageBitmap(), app.label, Modifier.size(48.dp).clip(CircleShape))
-    }
-}
-
-@Composable
-private fun MicButton(listening: Boolean, onClick: () -> Unit) {
-    val d = LocalCarDimens.current
-    val bg = if (listening) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh
-    val fg = if (listening) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
-    Box(
-        Modifier.size(d.touchTarget).clip(CircleShape).background(bg).carFocusHighlight(CircleShape).clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(Icons.Rounded.Mic, contentDescription = stringResource(R.string.assistant_mic_label), tint = fg, modifier = Modifier.size(d.iconSize))
-    }
-}
-
-// ---------------------------------------------------------------- dashboard
-
-@Composable
-internal fun Dashboard(
-    state: CarUiState,
-    actions: CarActions,
-    navMap: @Composable (CarAppEntry, Modifier) -> Unit,
-    modifier: Modifier,
-) {
-    val gutter = LocalCarDimens.current.gutter
-    BoxWithConstraints(modifier) {
-        val narrow = maxWidth < 560.dp
-        if (maxHeight > maxWidth * 1.2f && maxHeight >= 700.dp) {
-            // portrait screens (720x1280, 1080x1920…): the cards stacked, the map on top
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(gutter)) {
-                NavCard(state, actions, navMap, Modifier.weight(1.6f).fillMaxWidth())
-                MediaCard(state, actions, compact = false, modifier = Modifier.weight(1f).fillMaxWidth())
-                val event = state.nextEvent
-                val latest = state.history.firstOrNull()
-                when {
-                    event != null -> Card(Modifier.fillMaxWidth().height(180.dp)) { CalendarCard(event, actions::navigateTo, Modifier.fillMaxSize()) }
-                    latest != null -> Card(Modifier.fillMaxWidth().height(180.dp), onClick = {
-                        state.apps.firstOrNull { it.kind == CarAppKind.NOTIFICATIONS }?.let(actions::openApp)
-                    }) { LatestNotification(latest, state.drivingRestricted) }
-                }
-            }
-        } else if (narrow) {
-            // small screens: one big card, media as a strip under it
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(gutter)) {
-                NavCard(state, actions, navMap, Modifier.weight(1f).fillMaxWidth())
-                MediaCard(state, actions, compact = true, modifier = Modifier.fillMaxWidth().height(112.dp))
-            }
-        } else if (maxWidth > maxHeight * 2.1f) {
-            // very wide screens (1920x720, 2560x720…): three cards side by side, like Android Auto's
-            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(gutter)) {
-                NavCard(state, actions, navMap, Modifier.weight(1.6f).fillMaxHeight())
-                MediaCard(state, actions, compact = false, modifier = Modifier.weight(1f).fillMaxHeight())
-                val event = state.nextEvent
-                val latest = state.history.firstOrNull()
-                when {
-                    event != null -> Card(Modifier.weight(0.9f).fillMaxHeight()) { CalendarCard(event, actions::navigateTo, Modifier.fillMaxSize()) }
-                    latest != null -> Card(Modifier.weight(0.9f).fillMaxHeight(), onClick = {
-                        state.apps.firstOrNull { it.kind == CarAppKind.NOTIFICATIONS }?.let(actions::openApp)
-                    }) { LatestNotification(latest, state.drivingRestricted) }
-                }
-            }
-        } else {
-            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(gutter)) {
-                NavCard(state, actions, navMap, Modifier.weight(1.65f).fillMaxHeight())
-                val event = state.nextEvent
-                if (event == null) {
-                    MediaCard(state, actions, compact = false, modifier = Modifier.weight(1f).fillMaxHeight())
-                } else {
-                    Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(gutter)) {
-                        MediaCard(state, actions, compact = false, modifier = Modifier.weight(1.3f).fillMaxWidth())
-                        Card(Modifier.weight(1f).fillMaxWidth()) { CalendarCard(event, actions::navigateTo, Modifier.fillMaxSize()) }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun Card(modifier: Modifier, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
+internal fun Card(modifier: Modifier, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
     val r = LocalCarDimens.current.cardRadius
+    val shape = RoundedCornerShape(r)
     Box(
         modifier
-            .clip(RoundedCornerShape(r))
+            .clip(shape)
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .let { if (onClick != null) it.carFocusHighlight(RoundedCornerShape(r)).clickable(onClick = onClick) else it },
+            // A hairline edge, not just a flat color change from the page behind it: without it a
+            // dark card on a near-black background (most of these themes) reads as barely there.
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+            .let { if (onClick != null) it.carFocusHighlight(shape).clickable(onClick = onClick) else it },
     ) { content() }
 }
 
 @Composable
-private fun NavCard(state: CarUiState, actions: CarActions, navMap: @Composable (CarAppEntry, Modifier) -> Unit, modifier: Modifier) {
+internal fun NavCard(state: CarUiState, actions: CarActions, navMap: @Composable (CarAppEntry, Modifier) -> Unit, modifier: Modifier) {
     val nav = state.app(state.activeNavAppId)
     val guidance = state.phoneGuidance
     Card(modifier) {
@@ -419,7 +147,7 @@ private fun NavCard(state: CarUiState, actions: CarActions, navMap: @Composable 
         } else if (nav != null) {
             navMap(nav, Modifier.fillMaxSize())
         } else {
-            val navApps = state.apps.filter { it.kind == CarAppKind.NAVIGATION }
+            val navApps = state.apps.filter { it.isNav }
             Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.Center) {
                 Icon(Icons.Rounded.Map, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp))
                 Spacer(Modifier.height(16.dp))
@@ -436,6 +164,27 @@ private fun NavCard(state: CarUiState, actions: CarActions, navMap: @Composable 
                 }
             }
         }
+    }
+}
+
+/**
+ * The dashboard's map card for a navigation phone app launched on the car screen (Google Maps
+ * through Shizuku): the app draws on its own virtual display, so the card can't show its map
+ * alongside the full screen. It shows the app and opens it full screen on tap.
+ */
+@Composable
+internal fun StandaloneNavCard(app: CarAppEntry, modifier: Modifier, onOpen: () -> Unit) {
+    Column(
+        modifier.fillMaxSize().clickable(onClick = onOpen).padding(28.dp),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        val icon = app.icon
+        if (icon != null) Image(icon.asImageBitmap(), null, Modifier.size(56.dp).clip(RoundedCornerShape(14.dp)))
+        else Icon(Icons.Rounded.Map, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp))
+        Spacer(Modifier.height(16.dp))
+        Text(app.label, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.standalone_nav_open), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -506,13 +255,19 @@ fun AppIcon(app: CarAppEntry, sizeDp: Int) {
 }
 
 @Composable
-private fun MediaCard(state: CarUiState, actions: CarActions, compact: Boolean, modifier: Modifier) {
+internal fun MediaCard(state: CarUiState, actions: CarActions, compact: Boolean, modifier: Modifier) {
     val np = state.nowPlaying
     val media = state.app(np?.appId ?: state.activeMediaAppId)
     Card(modifier, onClick = { media?.let(actions::openApp) ?: actions.openLauncher() }) {
         if (np?.art != null && !compact) {
-            Image(np.art.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alpha = 0.35f)
-            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, MaterialTheme.colorScheme.surfaceContainer))))
+            Image(np.art.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alpha = 0.25f)
+            // Ramps to fully opaque well before the title/subtitle (which sit in the card's lower
+            // half): a plain top-to-bottom fade still shows busy album art straight through text.
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(
+                0f to Color.Transparent,
+                0.4f to MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.85f),
+                0.65f to MaterialTheme.colorScheme.surfaceContainer,
+            )))
         }
         val content: @Composable () -> Unit = {
             if (np != null) {
@@ -586,7 +341,7 @@ fun RoundIcon(icon: ImageVector, label: String, filled: Boolean, onClick: () -> 
 // ---------------------------------------------------------------- launcher
 
 @Composable
-private fun Launcher(state: CarUiState, actions: CarActions, modifier: Modifier) {
+internal fun Launcher(state: CarUiState, actions: CarActions, modifier: Modifier) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(150.dp),
         modifier = modifier,

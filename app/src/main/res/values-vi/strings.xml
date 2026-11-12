@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Cho phép bạn dùng màn hình điện thoại từ xe: AARE lặp lại các lần chạm trên màn hình xe sang điện thoại, và kiểm tra ứng dụng nào đang hiển thị để màn hình điện thoại tạm dừng khi lái xe, trừ khi đó là ứng dụng điều hướng. AARE không đọc gì khác.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Cho phép bạn dùng màn hình điện thoại từ xe: F-Auto lặp lại các lần chạm trên màn hình xe sang điện thoại, và kiểm tra ứng dụng nào đang hiển thị để màn hình điện thoại tạm dừng khi lái xe, trừ khi đó là ứng dụng điều hướng. F-Auto không đọc gì khác.</string>
     <string name="mirror_locked_placeholder">Màn hình điện thoại tạm dừng khi điện thoại đang khóa. Mở khóa điện thoại để hiển thị.</string>
-    <string name="mirror_driving_no_accessibility">Màn hình điện thoại tạm dừng khi đang lái xe. Để hiển thị ứng dụng điều hướng khi lái xe, hãy bật AARE trong cài đặt trợ năng của điện thoại: điều này giúp AARE biết ứng dụng nào đang mở.</string>
+    <string name="mirror_driving_no_accessibility">Màn hình điện thoại tạm dừng khi đang lái xe. Để hiển thị ứng dụng điều hướng khi lái xe, hãy bật F-Auto trong cài đặt trợ năng của điện thoại: điều này giúp F-Auto biết ứng dụng nào đang mở.</string>
     <string name="mirror_driving_nav_only">Màn hình điện thoại tạm dừng khi đang lái xe. Nó chỉ hiển thị ứng dụng điều hướng.</string>
-    <string name="mirror_need_car_audio">Bật Âm thanh xe hơi trong AARE trên điện thoại, và chọn Toàn bộ màn hình khi Android hỏi: màn hình điện thoại dùng chung quyền này.</string>
-    <string name="mirror_need_accessibility">Để dùng điện thoại từ xe, hãy bật AARE trong cài đặt trợ năng của điện thoại.</string>
+    <string name="mirror_need_car_audio">Bật Âm thanh xe hơi trong F-Auto trên điện thoại, và chọn Toàn bộ màn hình khi Android hỏi: màn hình điện thoại dùng chung quyền này.</string>
+    <string name="mirror_need_accessibility">Để dùng điện thoại từ xe, hãy bật F-Auto trong cài đặt trợ năng của điện thoại.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Quay lại</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Vị trí</string>
     <string name="setup_toggle_car_gps_title">Dùng GPS của xe</string>
     <string name="setup_toggle_car_gps_subtitle">Khi đang kết nối, các ứng dụng trên điện thoại sẽ thấy vị trí của xe thay vì vị trí của điện thoại, để ứng dụng điều hướng không lẫn hai vị trí này</string>
-    <string name="setup_check_mock_location_title">Cho phép AARE đặt vị trí</string>
-    <string name="setup_check_mock_location_subtitle">Tùy chọn nhà phát triển &gt; Chọn ứng dụng vị trí giả &gt; AARE</string>
+    <string name="setup_check_mock_location_title">Cho phép F-Auto đặt vị trí</string>
+    <string name="setup_check_mock_location_subtitle">Tùy chọn nhà phát triển &gt; Chọn ứng dụng vị trí giả &gt; F-Auto</string>
     <string name="setup_section_video">Video</string>
     <string name="setup_toggle_60fps_title">Ưu tiên 60 fps</string>
     <string name="setup_toggle_60fps_subtitle">Mượt hơn khi xe hỗ trợ</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Nhạc, podcast, radio</string>
     <string name="setup_app_group_messaging">Tin nhắn</string>
     <string name="setup_app_kind_messaging">Tin nhắn từ thông báo của ứng dụng</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Ứng dụng Android Auto mà AARE không thể hiển thị</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Ứng dụng Android Auto mà F-Auto không thể hiển thị</string>
     <string name="setup_hint_allowlist">Các ứng dụng được xây dựng với phiên bản mới của thư viện xe hơi của Google chỉ chấp nhận các host trong danh sách cho phép của họ; xem README.</string>
     <string name="setup_app_entry_phone">Điện thoại</string>
     <string name="setup_app_entry_settings">Cài đặt</string>
     <string name="setup_app_entry_notifications">Thông báo</string>
     <string name="setup_section_app_order">Thứ tự trên xe</string>
     <string name="setup_section_connection_log">Nhật ký kết nối</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Không liên kết với Google. Android Auto là thương hiệu của Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Không liên kết với Google. Android Auto là thương hiệu của Google LLC.</string>
     <string name="setup_choice_style">Kiểu</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Chứng chỉ điện thoại</string>
-    <string name="cert_hint">Đầu đĩa kiểm tra chứng chỉ của điện thoại. Đầu đĩa mã nguồn mở chấp nhận chứng chỉ được tạo tự động; xe dùng phần mềm đầu đĩa của Google chỉ chấp nhận chứng chỉ do Google cấp, mà AARE không thể kèm theo. Bạn có thể nhập chứng chỉ mà bạn có quyền sử dụng (chứng chỉ PEM + khóa PKCS#8, hoặc PKCS#12). Bạn cũng có thể tải xuống chứng chỉ từ ứng dụng Android Auto mới nhất (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Đầu đĩa kiểm tra chứng chỉ của điện thoại. Đầu đĩa mã nguồn mở chấp nhận chứng chỉ được tạo tự động; xe dùng phần mềm đầu đĩa của Google chỉ chấp nhận chứng chỉ do Google cấp, mà F-Auto không thể kèm theo. Bạn có thể nhập chứng chỉ mà bạn có quyền sử dụng (chứng chỉ PEM + khóa PKCS#8, hoặc PKCS#12). Bạn cũng có thể tải xuống chứng chỉ từ ứng dụng Android Auto mới nhất (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · đến %2$s</string>
     <string name="cert_action_remove">Xóa</string>
     <string name="cert_action_import">Nhập chứng chỉ…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">Khi đang lái xe</string>
     <string name="msg_toggle_dnd_title">Không làm phiền</string>
     <string name="msg_toggle_dnd_subtitle">Im lặng điện thoại khi đang kết nối; cuộc gọi và cuộc trò chuyện ưu tiên vẫn được thông báo</string>
-    <string name="msg_check_dnd_access_title">Cho phép AARE bật Không làm phiền</string>
+    <string name="msg_check_dnd_access_title">Cho phép F-Auto bật Không làm phiền</string>
     <string name="msg_check_dnd_access_subtitle">Android chỉ hỏi một lần</string>
     <string name="msg_toggle_autoreply_title">Tự động trả lời</string>
     <string name="msg_toggle_autoreply_subtitle">Tự động trả lời người gửi tin, một lần cho mỗi cuộc trò chuyện trong mỗi chuyến đi (không áp dụng cho nhóm)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Chưa thiết lập phương thức nào: hãy chọn một phương thức dưới đây.</string>
     <string name="audio_section_methods">Các phương thức, tốt nhất trước</string>
     <string name="audio_policy_ready">Đã sẵn sàng. Nhạc và giọng điều hướng truyền riêng đến xe, điện thoại vẫn im lặng.</string>
-    <string name="audio_policy_not_ready">Giống Android Auto: nhạc và giọng điều hướng tách riêng, loa điện thoại tắt. Cần điện thoại đã root: cài AARE như ứng dụng hệ thống bằng module Magisk (xem README).</string>
+    <string name="audio_policy_not_ready">Giống Android Auto: nhạc và giọng điều hướng tách riêng, loa điện thoại tắt. Cần điện thoại đã root: cài F-Auto như ứng dụng hệ thống bằng module Magisk (xem README).</string>
     <string name="audio_shizuku_ready">Đã sẵn sàng. Mọi âm thanh điện thoại phát ra đều truyền đến xe, kể cả giọng điều hướng; điện thoại vẫn im lặng.</string>
     <string name="audio_shizuku_needs_android12">Cần Android 12 hoặc mới hơn.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku đang chạy: nhấn để cho phép AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku đang chạy: nhấn để cho phép F-Auto.</string>
     <string name="audio_shizuku_install_hint">Không cần root. Cài Shizuku, khởi động nó (gỡ lỗi không dây, một lần mỗi khi khởi động lại máy), rồi trở lại đây.</string>
     <string name="audio_playback_ready">Đã sẵn sàng. Chỉ phương tiện: không có giọng điều hướng, một số ứng dụng không hỗ trợ, và điện thoại vẫn tiếp tục phát.</string>
     <string name="audio_playback_not_ready">Hoạt động ở mọi nơi, nhưng có hạn chế: chỉ phương tiện, không có giọng điều hướng. Android sẽ hỏi quyền ghi màn hình: chọn Toàn bộ màn hình (cũng được dùng cho màn hình điện thoại).</string>
-    <string name="audio_notice_setup_hint">Mở AARE trên điện thoại và thiết lập âm thanh xe hơi để nghe điện thoại trên xe</string>
+    <string name="audio_notice_setup_hint">Mở F-Auto trên điện thoại và thiết lập âm thanh xe hơi để nghe điện thoại trên xe</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Màn hình điện thoại</string>
     <string name="phone_toggle_enable_title">Màn hình điện thoại trên xe</string>
-    <string name="phone_toggle_enable_subtitle">Màn hình riêng của điện thoại, dùng cho các ứng dụng mà AARE không thể hiển thị (Google Maps, Waze). Tạm dừng khi điện thoại đang khóa, và khi đang lái xe trừ khi có ứng dụng điều hướng đang dẫn đường. Không khả dụng trên máy chủ đầu đĩa trừ khi được bật ở đó</string>
+    <string name="phone_toggle_enable_subtitle">Màn hình riêng của điện thoại, dùng cho các ứng dụng mà F-Auto không thể hiển thị (Google Maps, Waze). Tạm dừng khi điện thoại đang khóa, và khi đang lái xe trừ khi có ứng dụng điều hướng đang dẫn đường. Không khả dụng trên máy chủ đầu đĩa trừ khi được bật ở đó</string>
     <string name="phone_check_touch_title">Chạm trên màn hình điện thoại</string>
-    <string name="phone_check_touch_subtitle">Bật AARE trong Trợ năng. Ứng dụng cài từ bên ngoài có thể cần bật "Cho phép cài đặt bị hạn chế" trong thông tin ứng dụng AARE trước</string>
+    <string name="phone_check_touch_subtitle">Bật F-Auto trong Trợ năng. Ứng dụng cài từ bên ngoài có thể cần bật "Cho phép cài đặt bị hạn chế" trong thông tin ứng dụng F-Auto trước</string>
     <string name="phone_hint_touch_capture">Hình ảnh sử dụng quyền ghi màn hình (trang Âm thanh xe hơi, chọn Toàn bộ màn hình).</string>
-    <string name="phone_app_row_subtitle">Màn hình riêng của điện thoại, dùng cho các ứng dụng mà AARE không thể hiển thị</string>
+    <string name="phone_app_row_subtitle">Màn hình riêng của điện thoại, dùng cho các ứng dụng mà F-Auto không thể hiển thị</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Trợ lý giọng nói</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Chỉ tin tưởng đầu đĩa mà bạn đang kết nối ngay lúc này</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, rồi kết nối lại.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, rồi kết nối lại.</string>
-    <string name="notif_cert_changed_message">chứng chỉ đầu đĩa đã thay đổi: chỉ nhấn Tin tưởng trong thông báo hoặc trong AARE nếu phần mềm của nó đã được cập nhật, rồi kết nối lại</string>
-    <string name="notif_cert_untrusted_message">chứng chỉ đầu đĩa chưa được tin tưởng: nhấn Tin tưởng trong thông báo hoặc trong AARE, rồi kết nối lại</string>
+    <string name="notif_cert_changed_message">chứng chỉ đầu đĩa đã thay đổi: chỉ nhấn Tin tưởng trong thông báo hoặc trong F-Auto nếu phần mềm của nó đã được cập nhật, rồi kết nối lại</string>
+    <string name="notif_cert_untrusted_message">chứng chỉ đầu đĩa chưa được tin tưởng: nhấn Tin tưởng trong thông báo hoặc trong F-Auto, rồi kết nối lại</string>
     <string name="notif_car_nearby_title">Xe ở gần</string>
     <string name="notif_car_nearby_text">Nhấn để kết nối không dây</string>
     <string name="notif_status_connecting_to">Đang kết nối đến %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Điều hướng</string>
     <string name="notif_navigation_no_app_text">Không có ứng dụng điều hướng trên xe</string>
     <string name="notif_assistant_title">Trợ lý</string>
-    <string name="notif_assistant_choose_text">Chọn một trợ lý giọng nói trong cài đặt AARE trên điện thoại</string>
+    <string name="notif_assistant_choose_text">Chọn một trợ lý giọng nói trong cài đặt F-Auto trên điện thoại</string>
     <string name="notif_assistant_no_car_screen">%1$s không có màn hình dành cho xe: đã mở trên điện thoại</string>
-    <string name="notif_assistant_cant_open">Không thể mở %1$s. Hãy chọn trợ lý khác trong cài đặt AARE</string>
+    <string name="notif_assistant_cant_open">Không thể mở %1$s. Hãy chọn trợ lý khác trong cài đặt F-Auto</string>
     <string name="notif_parked_only_title">Không khả dụng khi đang lái xe</string>
     <string name="notif_parked_only_text">Đỗ xe để dùng tính năng này</string>
     <string name="notif_empty">Không có thông báo</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">Hàng chờ đang trống</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Cấp quyền truy cập thông báo cho AARE trên điện thoại để xem tin nhắn ở đây</string>
+    <string name="msg_no_access">Cấp quyền truy cập thông báo cho F-Auto trên điện thoại để xem tin nhắn ở đây</string>
     <string name="msg_listener_not_ready">Chưa có gì để xem ở đây</string>
     <string name="msg_reply_sent">Đã gửi trả lời</string>
     <string name="msg_reply_rejected">%1$s không chấp nhận trả lời</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Gần đây</string>
     <string name="phone_tab_contacts">Danh bạ</string>
     <string name="phone_tab_keypad">Bàn phím số</string>
-    <string name="phone_permissions_placeholder">Cho phép quyền gọi điện, lịch sử gọi và danh bạ trong AARE trên điện thoại (Hoàn tất thiết lập).</string>
+    <string name="phone_permissions_placeholder">Cho phép quyền gọi điện, lịch sử gọi và danh bạ trong F-Auto trên điện thoại (Hoàn tất thiết lập).</string>
     <string name="phone_notice_calling_title">Đang gọi</string>
     <string name="phone_no_recent_calls">Không có cuộc gọi gần đây</string>
     <string name="phone_no_contacts">Không có danh bạ có số điện thoại</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Ứng dụng trên màn hình xe (nâng cao)</string>
-    <string name="standalone_section_warning">Đây không phải là ứng dụng Android Auto: AARE hiển thị màn hình điện thoại bình thường của chúng, chỉ khi đã đỗ xe, và cần root hoặc Shizuku. Sử dụng với rủi ro của riêng bạn.</string>
+    <string name="standalone_section_warning">Đây không phải là ứng dụng Android Auto: F-Auto hiển thị màn hình điện thoại bình thường của chúng, chỉ khi đã đỗ xe, và cần root hoặc Shizuku. Sử dụng với rủi ro của riêng bạn.</string>
     <string name="standalone_toggle_title">Khởi chạy ứng dụng điện thoại trên màn hình xe</string>
     <string name="standalone_toggle_subtitle">Chọn ứng dụng bên dưới. Chỉ hiển thị khi đã đỗ xe.</string>
     <string name="standalone_need_root">Cần root hoặc Shizuku. Thiết lập một trong hai ở Âm thanh xe hơi, rồi quay lại.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Con quay hồi chuyển</string>
     <string name="car_data_dtc">Mã lỗi</string>
     <string name="setup_toggle_force_h264_title">Buộc dùng video H.264</string>
-    <string name="setup_toggle_force_h264_subtitle">Theo mặc định, AARE sử dụng codec tốt nhất mà xe và điện thoại đều hỗ trợ (H.265…). Bật tùy chọn này nếu hình ảnh trên xe bị lỗi.</string>
+    <string name="setup_toggle_force_h264_subtitle">Theo mặc định, F-Auto sử dụng codec tốt nhất mà xe và điện thoại đều hỗ trợ (H.265…). Bật tùy chọn này nếu hình ảnh trên xe bị lỗi.</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">Thử lại</string>
     <string name="common_something_went_wrong">Đã xảy ra lỗi</string>
@@ -424,7 +424,7 @@
     <string name="media_error_skip_limit">Đã đạt giới hạn chuyển bài</string>
     <string name="media_error_setup">Hoàn tất thiết lập %1$s trên điện thoại của bạn</string>
     <string name="media_error_end_of_playlist">Đã hết danh sách phát</string>
-    <string name="media_error_permission">%1$s không cho phép AARE duyệt nội dung</string>
+    <string name="media_error_permission">%1$s không cho phép F-Auto duyệt nội dung</string>
     <string name="media_error_io">Lỗi mạng hoặc bộ nhớ</string>
     <string name="media_error_not_supported">Không được %1$s hỗ trợ</string>
     <string name="media_error_disconnected">%1$s đã ngắt kết nối</string>
@@ -438,6 +438,6 @@
     <string name="carapp_error_refused">%1$s đã từ chối kết nối</string>
     <string name="carapp_error_api_level">%1$s cần API xe cấp %2$d; thiết bị này hỗ trợ %3$d</string>
     <string name="carapp_error_stopped">%1$s đã dừng</string>
-    <string name="carapp_error_google_only">%1$s chỉ chấp nhận Android Auto của Google. Cần cho phép AARE (xem danh sách ứng dụng trên điện thoại).</string>
+    <string name="carapp_error_google_only">%1$s chỉ chấp nhận Android Auto của Google. Cần cho phép F-Auto (xem danh sách ứng dụng trên điện thoại).</string>
     <string name="carapp_error_cant_start">%1$s không thể khởi động: %2$s</string>
 </resources>

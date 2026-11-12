@@ -33,21 +33,28 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -63,10 +70,15 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.DirectionsCar
 import androidx.compose.material.icons.rounded.Forum
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Tv
@@ -77,9 +89,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -89,6 +101,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -99,11 +112,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -121,7 +140,9 @@ import net.prototux.aare.audio.CaptureMethod
 import net.prototux.aare.audio.CaptureMethods
 import net.prototux.aare.car.DrivingMode
 import net.prototux.aare.car.PhoneLocationFeed
+import net.prototux.aare.cert.CertificateAutoUpdate
 import net.prototux.aare.cert.CertificateDownload
+import net.prototux.aare.cert.GearheadKeyExtractor
 import net.prototux.aare.cert.CertificateStore
 import net.prototux.aare.host.AndroidAutoApps
 import net.prototux.aare.host.AssistantApp
@@ -135,9 +156,11 @@ import net.prototux.aare.mirror.MirrorTouchService
 import androidx.core.graphics.drawable.toBitmap
 import net.prototux.aare.launch.AppLauncher
 import net.prototux.aare.car.CarData
+import net.prototux.aare.media.MediaHub
 import net.prototux.aare.service.ProjectionService
 import net.prototux.aare.ui.car.WALLPAPER_NAMES
 import net.prototux.aare.ui.theme.PhoneTheme
+import net.prototux.aare.ui.theme.brandAccentScheme
 import rikka.shizuku.Shizuku
 import java.text.DateFormat
 import kotlin.math.roundToInt
@@ -163,22 +186,34 @@ class MainActivity : ComponentActivity() {
 
     /** Debug builds only: lets ./headunit.sh switch the head unit server on over adb. Returns true if applied. */
     private fun applyDebugExtras(intent: Intent?): Boolean {
-        if (!net.prototux.aare.BuildConfig.DEBUG || intent?.hasExtra("hu_server") != true) return false
+        if (!net.prototux.aare.BuildConfig.DEBUG) return false
+        // adb shell am start -n net.prototux.aare/.ui.MainActivity --ez car_preview true: opens the
+        // car screen preview, to check a layout change from a computer.
+        if (intent?.getBooleanExtra("car_preview", false) == true) startActivity(Intent(this, CarPreviewActivity::class.java))
+        if (intent?.hasExtra("hu_server") != true) return false
         Settings(this).headUnitServer = intent.getBooleanExtra("hu_server", false)
         return true
     }
 }
 
-/** The settings pages, Android Auto style: one per topic, opened from the home page. */
-private enum class Page(val titleRes: Int, val subtitleRes: Int, val icon: ImageVector) {
-    CAR_SCREEN(R.string.setup_page_car_screen_title, R.string.setup_page_car_screen_subtitle, Icons.Rounded.Dashboard),
-    APPS(R.string.setup_page_apps_title, R.string.setup_page_apps_subtitle, Icons.Rounded.Apps),
-    ASSISTANT(R.string.assistant_settings_title, R.string.assistant_page_subtitle, Icons.Rounded.Mic),
-    MESSAGES(R.string.msg_settings_title, R.string.msg_page_subtitle, Icons.Rounded.Forum),
-    AUDIO(R.string.audio_settings_title, R.string.audio_page_subtitle, Icons.AutoMirrored.Rounded.VolumeUp),
-    CONNECTION(R.string.setup_page_connection_title, R.string.setup_page_connection_subtitle, Icons.Rounded.Bluetooth),
-    CAR_DATA(R.string.setup_page_car_data_title, R.string.setup_page_car_data_subtitle, Icons.Rounded.DirectionsCar),
-    ADVANCED(R.string.setup_page_advanced_title, R.string.setup_page_advanced_subtitle, Icons.Rounded.Tune),
+/** The settings pages, Android Auto style: one per topic, opened from the Settings tab. */
+private enum class Page(val titleRes: Int, val subtitleRes: Int, val icon: ImageVector, val tint: Color) {
+    CAR_SCREEN(R.string.setup_page_car_screen_title, R.string.setup_page_car_screen_subtitle, Icons.Rounded.Dashboard, Color(0xFFD92D45)),
+    APPS(R.string.setup_page_apps_title, R.string.setup_page_apps_subtitle, Icons.Rounded.Apps, Color(0xFF5766E8)),
+    ASSISTANT(R.string.assistant_settings_title, R.string.assistant_page_subtitle, Icons.Rounded.Mic, Color(0xFF8A5BD8)),
+    MESSAGES(R.string.msg_settings_title, R.string.msg_page_subtitle, Icons.Rounded.Forum, Color(0xFF1F9D6E)),
+    AUDIO(R.string.audio_settings_title, R.string.audio_page_subtitle, Icons.AutoMirrored.Rounded.VolumeUp, Color(0xFFE0802A)),
+    CONNECTION(R.string.setup_page_connection_title, R.string.setup_page_connection_subtitle, Icons.Rounded.Bluetooth, Color(0xFF2B7DE0)),
+    CAR_DATA(R.string.setup_page_car_data_title, R.string.setup_page_car_data_subtitle, Icons.Rounded.DirectionsCar, Color(0xFFC2447A)),
+    ADVANCED(R.string.setup_page_advanced_title, R.string.setup_page_advanced_subtitle, Icons.Rounded.Tune, Color(0xFF5A6380)),
+}
+
+/** The phone app's bottom navigation: Home (connect/quick settings), Customize (car-screen look), My cars (status/data) and Settings (the Page list). */
+private enum class MainTab(val labelRes: Int, val icon: ImageVector) {
+    HOME(R.string.dash_menu_home, Icons.Rounded.Home),
+    CUSTOMIZE(R.string.setup_customize_title, Icons.Rounded.Palette),
+    CARS(R.string.setup_tab_cars, Icons.Rounded.DirectionsCar),
+    SETTINGS(R.string.setup_app_entry_settings, Icons.Rounded.Settings),
 }
 
 @Composable
@@ -189,7 +224,9 @@ private fun Home() {
     val state by ProjectionService.state.collectAsState()
     var refresh by remember { mutableIntStateOf(0) }
     var page by rememberSaveable { mutableStateOf<Page?>(null) }
-    LaunchedEffect(Unit) { ProjectionService.startIdleIfEnabled(ctx); ProjectionService.probeUsb(ctx); ProjectionService.probeWireless(ctx); UpdateChecker.refresh(ctx) }
+    var tab by rememberSaveable { mutableStateOf(MainTab.HOME) }
+    var carStyle by remember { mutableStateOf(settings.carStyle) }
+    LaunchedEffect(Unit) { ProjectionService.startIdleIfEnabled(ctx); ProjectionService.probeUsb(ctx); ProjectionService.probeWireless(ctx); UpdateChecker.refresh(ctx); CertificateAutoUpdate.refresh(ctx) }
     // Re-check permissions and capture methods whenever the user comes back to the app.
     val lifecycle = androidx.compose.ui.platform.LocalLifecycleOwner.current
     DisposableEffect(lifecycle) {
@@ -199,26 +236,37 @@ private fun Home() {
     }
     BackHandler(enabled = page != null) { page = null }
 
+    // One shared, secondary (non-driving) CarRuntime for every live car-screen preview thumbnail
+    // on the Home/Customize tabs, so switching tabs doesn't re-scan apps or re-attach listeners.
+    val scope = rememberCoroutineScope()
+    val previewRuntime = remember { CarRuntime(ctx, scope, settings, MediaHub(ctx, scope), primary = false) }
+    DisposableEffect(previewRuntime) {
+        previewRuntime.densityDpi = ctx.resources.displayMetrics.densityDpi
+        previewRuntime.screenWidthDp = 1280
+        previewRuntime.screenHeightDp = 720
+        previewRuntime.start()
+        onDispose { previewRuntime.stop() }
+    }
+
+    MaterialTheme(colorScheme = brandAccentScheme(MaterialTheme.colorScheme, isSystemInDarkTheme())) {
     AnimatedContent(page, label = "page", transitionSpec = { fadeIn(tween(150)) togetherWith fadeOut(tween(100)) }) { p ->
         if (p == null) {
-            LazyColumn(
-                Modifier.fillMaxSize().systemBarsPadding(),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                item { Header() }
-                item { UpdateBanner() }
-                item { StatusCard(state) }
-                item { Setup(state, refresh, { refresh++ }) { page = it } }
-                item {
-                    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer)) {
-                        Page.entries.forEach { CategoryRow(it) { page = it } }
-                    }
+            // No Scaffold bottom bar: that reserves an opaque strip the full width of the screen.
+            // The bar is drawn over the page instead, so only the pill itself has a background and
+            // the page scrolls underneath it (each tab leaves room at the end: [TabContentPadding]).
+            Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+                when (tab) {
+                    MainTab.HOME -> HomeTab(settings, state, refresh, { refresh++ }, previewRuntime, { page = it }) { tab = MainTab.SETTINGS }
+                    MainTab.CUSTOMIZE -> CustomizeTab(settings, previewRuntime, carStyle) { carStyle = it }
+                    MainTab.CARS -> CarsTab(settings, state, previewRuntime)
+                    MainTab.SETTINGS -> SettingsTab { page = it }
                 }
-                item { About() }
+                MainNavBar(tab, Modifier.align(Alignment.BottomCenter)) { tab = it }
             }
         } else {
-            Column(Modifier.fillMaxSize().systemBarsPadding()) {
+            // The same backdrop as the tabs: without it the settings pages fell back to the plain
+            // near-black surface behind them, a different color from the rest of the app.
+            Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).systemBarsPadding()) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { page = null }) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.common_back)) }
                     Spacer(Modifier.width(8.dp))
@@ -230,7 +278,7 @@ private fun Home() {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     when (p) {
-                        Page.CAR_SCREEN -> item { CarScreenSettings(settings, refresh) }
+                        Page.CAR_SCREEN -> item { CarScreenSettings(settings, refresh) { carStyle = it } }
                         Page.APPS -> item { AppsCard(settings) }
                         Page.ASSISTANT -> item { AssistantCard(settings) }
                         Page.MESSAGES -> item { MessageSettings(settings, refresh) }
@@ -248,12 +296,15 @@ private fun Home() {
             }
         }
     }
+    }
 }
 
 @Composable
 private fun CategoryRow(page: Page, onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 20.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(page.icon, null, tint = MaterialTheme.colorScheme.primary)
+        Box(Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(page.tint), contentAlignment = Alignment.Center) {
+            Icon(page.icon, null, tint = Color.White, modifier = Modifier.size(20.dp))
+        }
         Spacer(Modifier.width(18.dp))
         Column(Modifier.weight(1f)) {
             Text(stringResource(page.titleRes), style = MaterialTheme.typography.bodyLarge)
@@ -263,16 +314,518 @@ private fun CategoryRow(page: Page, onClick: () -> Unit) {
     }
 }
 
+// ---------------------------------------------------------------- bottom nav + tabs
+
+/** Room each tab's list leaves at its end, so its last item can scroll clear of the floating [MainNavBar]. */
+private val TabContentPadding = PaddingValues(start = 20.dp, top = 16.dp, end = 20.dp, bottom = 112.dp)
+
+/**
+ * The bottom navigation, as in the mockup: one rounded bar holding the four tabs, each an icon over
+ * its label, with a gradient oval behind the selected tab's icon only. Nothing around the bar has a
+ * background of its own: it floats over the page (see [Home]), which shows through at its sides and
+ * corners and scrolls underneath it.
+ */
 @Composable
-private fun Header() {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-            Icon(Icons.Rounded.DirectionsCar, null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
+private fun MainNavBar(tab: MainTab, modifier: Modifier = Modifier, onSelect: (MainTab) -> Unit) {
+    val dark = isSystemInDarkTheme()
+    val shape = RoundedCornerShape(30.dp)
+    Row(
+        modifier.fillMaxWidth().navigationBarsPadding().padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+            .shadow(16.dp, shape, clip = false)
+            .clip(shape)
+            // Solid: even a slightly see-through bar let the page's text show through behind the
+            // labels. Dark navy at night, the theme's own raised surface by day (it was a fixed
+            // dark navy in both).
+            .background(if (dark) Color(0xFF1B1733) else MaterialTheme.colorScheme.surfaceContainerHigh)
+            .border(1.dp, (if (dark) Color.White else Color.Black).copy(alpha = 0.08f), shape)
+            .padding(horizontal = 6.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        MainTab.entries.forEach { t -> NavPillItem(t, tab == t, dark, Modifier.weight(1f)) { onSelect(t) } }
+    }
+}
+
+@Composable
+private fun NavPillItem(t: MainTab, selected: Boolean, dark: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val idle = if (dark) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
+    val active = if (dark) Color.White else MaterialTheme.colorScheme.onSurface
+    Column(
+        modifier.clip(RoundedCornerShape(22.dp)).clickable(onClickLabel = stringResource(t.labelRes), onClick = onClick).padding(vertical = 2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        // The oval: behind the selected tab's icon only, the same size for every tab so the icons
+        // and labels never shift when the selection moves.
+        Box(
+            Modifier.size(width = 58.dp, height = 34.dp).clip(RoundedCornerShape(percent = 50))
+                .background(if (selected) Brand.gradient else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))),
+            contentAlignment = Alignment.Center,
+        ) { Icon(t.icon, null, tint = if (selected) Color.White else idle, modifier = Modifier.size(22.dp)) }
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(t.labelRes), color = if (selected) active else idle, maxLines = 1,
+            style = MaterialTheme.typography.labelMedium, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+        )
+    }
+}
+
+/** Home tab: connect/preview the car, four one-tap quick settings, then the first-run checklist if it isn't done. */
+@Composable
+private fun HomeTab(settings: Settings, state: ProjectionService.State, refresh: Int, recheck: () -> Unit, previewRuntime: CarRuntime, open: (Page) -> Unit, onSettingsClick: () -> Unit) {
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = TabContentPadding,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        item { Header(onSettingsClick) }
+        item { UpdateBanner() }
+        item { ConnectCard(settings, state, previewRuntime) }
+        item { QuickSettingsGrid(settings) }
+        item { Setup(state, refresh, recheck, open) }
+        item { About() }
+    }
+}
+
+/** The "not connected"/"connected" car card: name, last-connected, a live preview, Connect + Preview. */
+@Composable
+private fun ConnectCard(settings: Settings, state: ProjectionService.State, previewRuntime: CarRuntime) {
+    val ctx = LocalContext.current
+    val lastCar = settings.knownCars.entries.maxByOrNull { it.value }
+    val bg = if (state.connected)
+        Brush.linearGradient(listOf(Color(0xFF1F9D6E).copy(alpha = 0.35f), Color(0xFF5766E8).copy(alpha = 0.3f)))
+    else
+        Brush.linearGradient(listOf(Color(0xFFD92D45).copy(alpha = 0.35f), Color(0xFF5766E8).copy(alpha = 0.35f)))
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(bg)
+            .border(1.dp, Brand.glassLine, RoundedCornerShape(28.dp))
+            .padding(20.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(8.dp).clip(CircleShape).background(if (state.connected) Color(0xFF6EE8CC) else Color(0xFFFF8595)))
+            Spacer(Modifier.width(8.dp))
+            Text(
+                if (state.connected) stringResource(R.string.setup_status_connected_caps) else stringResource(R.string.notif_status_not_connected).uppercase(),
+                style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
+        Spacer(Modifier.height(6.dp))
+        Text(lastCar?.key ?: stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
+        val subtitle = when {
+            state.connected -> listOf(state.transport, state.video).filter { it.isNotBlank() }.joinToString(" · ")
+            lastCar != null -> stringResource(R.string.setup_car_last_connected, DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(lastCar.value))
+            else -> stringResource(R.string.setup_status_disconnected_hint)
+        }
+        Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(14.dp))
+        LiveCarPreview(previewRuntime, Modifier.fillMaxWidth().aspectRatio(16f / 9f)) { ctx.startActivity(Intent(ctx, CarPreviewActivity::class.java)) }
+        Spacer(Modifier.height(14.dp))
+        state.pendingTrust?.let { p ->
+            val trustLabel = stringResource(if (p.changed) R.string.setup_trust_new_cert else R.string.setup_trust_head_unit)
+            Pill(stringResource(R.string.setup_trust_fingerprint_suffix, trustLabel, p.fingerprint.take(16)), null) { ProjectionService.trust(ctx, p.peerKey, p.fingerprint) }
+            Spacer(Modifier.height(10.dp))
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            if (state.connected) {
+                Pill(stringResource(R.string.setup_disconnect), null) { ProjectionService.stop(ctx) }
+            } else {
+                WhitePill(stringResource(R.string.setup_action_connect)) {
+                    ProjectionService.startIdleIfEnabled(ctx); ProjectionService.probeUsb(ctx); ProjectionService.probeWireless(ctx)
+                    Toast.makeText(ctx, R.string.setup_action_connect_toast, Toast.LENGTH_SHORT).show()
+                }
+            }
+            Pill(stringResource(R.string.setup_preview_car_screen), Icons.Rounded.Tv) { ctx.startActivity(Intent(ctx, CarPreviewActivity::class.java)) }
+        }
+        state.lastError?.let {
+            Spacer(Modifier.height(8.dp))
+            Text(stringResource(R.string.setup_status_last_error, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        }
+    }
+}
+
+@Composable
+private fun WhitePill(label: String, onClick: () -> Unit) {
+    Row(
+        Modifier.clip(RoundedCornerShape(24.dp)).background(Color.White).clickable(onClick = onClick).padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) { Text(label, color = Color(0xFF1A1030), style = MaterialTheme.typography.labelLarge) }
+}
+
+/**
+ * A live, non-interactive thumbnail of [previewRuntime]'s car screen; tap opens the real preview.
+ * Renders the shell at a fixed 1280x720 "car" canvas and scales that whole layer down to fit
+ * [modifier]'s box, so the car UI's own responsive (weight-based) layout always fills the canvas
+ * evenly, however small the thumbnail ends up on screen.
+ */
+@Composable
+private fun LiveCarPreview(previewRuntime: CarRuntime, modifier: Modifier, onClick: () -> Unit) {
+    BoxWithConstraints(modifier.clip(RoundedCornerShape(16.dp)).background(Color.Black)) {
+        val density = androidx.compose.ui.platform.LocalDensity.current
+        val scale = minOf(maxWidth / 1280.dp, maxHeight / 720.dp)
+        androidx.compose.runtime.CompositionLocalProvider(
+            androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(density.density * scale, density.fontScale),
+        ) {
+            Box(Modifier.width(1280.dp).height(720.dp)) { previewRuntime.Root(Modifier.fillMaxSize()) }
+        }
+        Box(Modifier.matchParentSize().clickable(onClick = onClick))
+    }
+}
+
+/** Four one-tap toggles for settings people flip often, matching the Customize tab's own controls one-for-one. */
+@Composable
+private fun QuickSettingsGrid(settings: Settings) {
+    var wireless by remember { mutableStateOf(settings.wireless) }
+    var mapMusic by remember { mutableStateOf(settings.homeMapMusicDefault) }
+    var readAloud by remember { mutableStateOf(settings.readMessagesAloud) }
+    var hideRail by remember { mutableStateOf(settings.railAutoHide) }
+    Column {
+        SectionLabel(stringResource(R.string.setup_quick_settings_title))
+        Spacer(Modifier.height(10.dp))
+        val tiles = listOf(
+            Quad(stringResource(R.string.setup_toggle_wireless_title), stringResource(R.string.setup_quick_wireless_subtitle), Color(0xFF5766E8), wireless) { v: Boolean -> wireless = v; settings.wireless = v },
+            Quad(stringResource(R.string.setup_quick_map_music_title), stringResource(R.string.setup_quick_map_music_subtitle), Color(0xFFD92D45), mapMusic) { v: Boolean -> mapMusic = v; settings.homeMapMusicDefault = v },
+            Quad(stringResource(R.string.msg_toggle_read_aloud_title), stringResource(R.string.setup_quick_read_subtitle), Color(0xFF1F9D6E), readAloud) { v: Boolean -> readAloud = v; settings.readMessagesAloud = v },
+            Quad(stringResource(R.string.setup_quick_hide_rail_title), stringResource(R.string.setup_quick_hide_rail_subtitle), Color(0xFF8A5BD8), hideRail) { v: Boolean -> hideRail = v; settings.railAutoHide = v },
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            tiles.chunked(2).forEach { row ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    row.forEach { QuickTile(it, Modifier.weight(1f)) }
+                }
+            }
+        }
+    }
+}
+
+private class Quad(val title: String, val subtitle: String, val color: Color, val checked: Boolean, val onChange: (Boolean) -> Unit)
+
+@Composable
+private fun QuickTile(t: Quad, modifier: Modifier) {
+    Column(
+        modifier.clip(RoundedCornerShape(18.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
+            .clickable { t.onChange(!t.checked) }.padding(14.dp),
+    ) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(10.dp).clip(CircleShape).background(t.color))
+            Spacer(Modifier.weight(1f))
+            Switch(checked = t.checked, onCheckedChange = t.onChange)
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(t.title, style = MaterialTheme.typography.bodyLarge)
+        Text(t.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** Customize tab: a live preview plus the same shell-look controls the mockup groups together. */
+@Composable
+private fun CustomizeTab(settings: Settings, previewRuntime: CarRuntime, carStyle: String, onStyleChange: (String) -> Unit) {
+    var style by remember { mutableStateOf(carStyle) }
+    var mapMusic by remember { mutableStateOf(settings.homeMapMusicDefault) }
+    var railAutoHide by remember { mutableStateOf(settings.railAutoHide) }
+    var railRight by remember { mutableStateOf(settings.railPosition == Settings.RAIL_RIGHT) }
+    var musicSize by remember { mutableFloatStateOf(settings.musicWidgetSize) }
+    var duskLayout by remember { mutableStateOf(settings.carLayout == Settings.LAYOUT_DUSK) }
+    val ctx = LocalContext.current
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = TabContentPadding,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        item { Text(stringResource(R.string.setup_customize_title), style = MaterialTheme.typography.headlineSmall) }
+        item {
+            Column {
+                LiveCarPreview(previewRuntime, Modifier.fillMaxWidth().aspectRatio(16f / 9f)) { ctx.startActivity(Intent(ctx, CarPreviewActivity::class.java)) }
+                Spacer(Modifier.height(8.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(stringResource(R.string.setup_live_preview_label), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        stringResource(R.string.setup_open_on_car), style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        // The theme's own accent, not fixed white: white vanished on the phone's light theme.
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable { ctx.startActivity(Intent(ctx, CarPreviewActivity::class.java)) },
+                    )
+                }
+            }
+        }
+        item { ThemeSwatchRow(style) { style = it; settings.carStyle = it; onStyleChange(it) } }
+        // The layout decides which of the controls below do anything, so it belongs here with them
+        // rather than only under Settings > Car screen.
+        item {
+            Segmented2(stringResource(R.string.setup_choice_layout), stringResource(R.string.setup_layout_classic), stringResource(R.string.setup_layout_dusk), duskLayout) {
+                duskLayout = it; settings.carLayout = if (it) Settings.LAYOUT_DUSK else Settings.LAYOUT_CLASSIC
+            }
+        }
+        item {
+            Segmented2(stringResource(R.string.setup_choice_layout_home), stringResource(R.string.setup_layout_full), stringResource(R.string.setup_quick_map_music_title), mapMusic) {
+                mapMusic = it; settings.homeMapMusicDefault = it
+            }
+        }
+        // Auto-hide and the music widget's size exist only in the Dusk layout: Classic gets the
+        // side-bar side alone, rather than controls that do nothing.
+        if (duskLayout) item {
+            Segmented3(
+                stringResource(R.string.setup_choice_bar),
+                stringResource(R.string.setup_choice_left), !railRight && !railAutoHide,
+                stringResource(R.string.setup_choice_right), railRight && !railAutoHide,
+                stringResource(R.string.setup_choice_auto_hide), railAutoHide,
+            ) { choice ->
+                when (choice) {
+                    0 -> { railRight = false; railAutoHide = false; settings.railAutoHide = false; settings.railPosition = Settings.RAIL_LEFT }
+                    1 -> { railRight = true; railAutoHide = false; settings.railAutoHide = false; settings.railPosition = Settings.RAIL_RIGHT }
+                    else -> { railAutoHide = true; settings.railAutoHide = true }
+                }
+            }
+        } else item {
+            Segmented2(stringResource(R.string.setup_choice_bar), stringResource(R.string.setup_choice_left), stringResource(R.string.setup_choice_right), railRight) {
+                railRight = it; settings.railPosition = if (it) Settings.RAIL_RIGHT else Settings.RAIL_LEFT
+            }
+        }
+        if (duskLayout) item {
+            Column {
+                SectionLabel(stringResource(R.string.setup_music_widget_size))
+                Spacer(Modifier.height(6.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("S", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Slider(
+                        value = musicSize, onValueChange = { musicSize = it; settings.musicWidgetSize = it },
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color.White, activeTrackColor = Brand.pink,
+                            inactiveTrackColor = Brand.glass,
+                        ),
+                    )
+                    Text("L", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThemeSwatchRow(selected: String, onSelect: (String) -> Unit) {
+    data class Swatch(val style: String, val labelRes: Int, val colors: List<Color>)
+    val swatches = listOf(
+        Swatch(Settings.STYLE_DUSK, R.string.setup_style_dusk, listOf(Color(0xFF8A1D38), Color(0xFF1B3BB0))),
+        Swatch(Settings.STYLE_MIDNIGHT, R.string.setup_style_midnight, listOf(Color(0xFF141925), Color(0xFF46E0C8))),
+        Swatch(Settings.STYLE_AURORA, R.string.setup_style_aurora, listOf(Color(0xFFFF9AD0), Color(0xFF4FB4FF))),
+        Swatch(Settings.STYLE_FOREST, R.string.setup_style_forest, listOf(Color(0xFF14241C), Color(0xFF5FD66C))),
+        Swatch(Settings.STYLE_SPORT, R.string.setup_style_sport, listOf(Color(0xFF111111), Color(0xFFFF3B3B))),
+        Swatch(Settings.STYLE_LIGHT, R.string.setup_style_light, listOf(Color.White, Color(0xFFC9D8F5))),
+    )
+    Column {
+        SectionLabel(stringResource(R.string.setup_choice_style))
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            swatches.forEach { s ->
+                val on = s.style == selected
+                Column(Modifier.weight(1f).clickable { onSelect(s.style) }, horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        Modifier.fillMaxWidth().height(48.dp).clip(RoundedCornerShape(14.dp))
+                            .background(Brush.linearGradient(s.colors))
+                            .then(if (on) Modifier.border(2.5.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(14.dp)) else Modifier),
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        stringResource(s.labelRes), style = MaterialTheme.typography.labelSmall,
+                        color = if (on) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = if (on) FontWeight.Bold else FontWeight.Normal,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Segmented2(title: String, leftLabel: String, rightLabel: String, right: Boolean, onChange: (Boolean) -> Unit) {
+    Column {
+        SectionLabel(title)
+        Spacer(Modifier.height(8.dp))
+        Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            SegChip(leftLabel, !right, Modifier.weight(1f)) { onChange(false) }
+            SegChip(rightLabel, right, Modifier.weight(1f)) { onChange(true) }
+        }
+    }
+}
+
+@Composable
+private fun Segmented3(title: String, l1: String, s1: Boolean, l2: String, s2: Boolean, l3: String, s3: Boolean, onSelect: (Int) -> Unit) {
+    Column {
+        SectionLabel(title)
+        Spacer(Modifier.height(8.dp))
+        Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            SegChip(l1, s1, Modifier.weight(1f)) { onSelect(0) }
+            SegChip(l2, s2, Modifier.weight(1f)) { onSelect(1) }
+            SegChip(l3, s3, Modifier.weight(1f)) { onSelect(2) }
+        }
+    }
+}
+
+@Composable
+private fun SegChip(label: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    Box(
+        modifier.height(36.dp).clip(RoundedCornerShape(12.dp))
+            .background(if (selected) Brand.gradient else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent)))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(label, style = MaterialTheme.typography.labelMedium, color = if (selected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** My cars tab: connection status + live data while connected, a now-playing card, and known cars otherwise. */
+@Composable
+private fun CarsTab(settings: Settings, state: ProjectionService.State, previewRuntime: CarRuntime) {
+    val car by CarData.state.collectAsState()
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = TabContentPadding,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        item { Text(stringResource(R.string.setup_my_cars_title), style = MaterialTheme.typography.headlineSmall) }
+        if (state.connected) {
+            item { ConnectedStatusCard(state) }
+            item { DataTilesRow(car) }
+            item { NowPlayingCard(previewRuntime.media) }
+        } else {
+            item {
+                Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(20.dp)) {
+                    Text(stringResource(R.string.notif_status_not_connected), style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.height(6.dp))
+                    Text(stringResource(R.string.setup_status_disconnected_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        val cars = settings.knownCars
+        if (cars.isNotEmpty()) item {
+            Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(vertical = 8.dp)) {
+                cars.entries.sortedByDescending { it.value }.forEach { (name, time) ->
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Rounded.DirectionsCar, null, tint = MaterialTheme.colorScheme.primary)
+                        Spacer(Modifier.width(14.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(name, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                stringResource(R.string.setup_car_last_connected, DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(time)),
+                                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        TextButton(onClick = { settings.forgetCar(name) }) { Text(stringResource(R.string.setup_action_forget)) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ConnectedStatusCard(state: ProjectionService.State) {
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp))
+            .background(Brush.linearGradient(listOf(Color(0xFF1F9D6E).copy(alpha = 0.35f), Color(0xFF5766E8).copy(alpha = 0.3f))))
+            .border(1.dp, Color(0xFF6EE8CC).copy(alpha = 0.35f), RoundedCornerShape(28.dp))
+            .padding(20.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(8.dp).clip(CircleShape).background(Color(0xFF6EE8CC)))
+            Spacer(Modifier.width(8.dp))
+            Text(
+                (stringResource(R.string.setup_status_connected_caps) + " · " + state.transport).uppercase(),
+                style = MaterialTheme.typography.labelMedium, color = Color(0xFF6EE8CC), fontWeight = FontWeight.Bold,
+            )
+        }
+        Spacer(Modifier.height(6.dp))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+            Column(Modifier.weight(1f)) {
+                Text(state.status, style = MaterialTheme.typography.headlineSmall)
+                Text(state.video, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            val ctx = LocalContext.current
+            Pill(stringResource(R.string.setup_disconnect), null) { ProjectionService.stop(ctx) }
+        }
+    }
+}
+
+@Composable
+private fun DataTilesRow(car: CarData.State) {
+    val speed = car.speed?.let { "%.0f".format(it.value.metersPerSecond * 3.6f) } ?: "–"
+    val gear = car.gearName ?: "–"
+    val range = car.fuel?.value?.rangeKm?.toString() ?: "–"
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        DataTile(speed, stringResource(R.string.car_data_speed_unit), Modifier.weight(1f))
+        DataTile(gear, stringResource(R.string.car_data_gear), Modifier.weight(1f))
+        DataTile(range, stringResource(R.string.car_data_range_unit), Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun DataTile(value: String, label: String, modifier: Modifier) {
+    Column(
+        modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(value, style = MaterialTheme.typography.headlineSmall)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun NowPlayingCard(media: net.prototux.aare.media.MediaHub) {
+    val playing by media.playback.collectAsState()
+    val np = playing ?: return
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(52.dp).clip(RoundedCornerShape(14.dp)).background(Brush.linearGradient(listOf(Color(0xFFFF7A59), Color(0xFF4A6BFF)))))
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(np.title, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            Text(np.artist, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+        }
+        Box(
+            Modifier.size(40.dp).clip(CircleShape).background(Color.White).clickable { media.playPause() },
+            contentAlignment = Alignment.Center,
+        ) { Icon(if (np.playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow, null, tint = Color(0xFF1A1030)) }
+    }
+}
+
+/** Settings tab: every category row, colored, replacing the old single flat scrolling list. */
+@Composable
+private fun SettingsTab(open: (Page) -> Unit) {
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = TabContentPadding,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        item { Text(stringResource(R.string.setup_app_entry_settings), style = MaterialTheme.typography.headlineSmall) }
+        item {
+            Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer)) {
+                Page.entries.forEach { CategoryRow(it) { open(it) } }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Header(onSettingsClick: () -> Unit = {}) {
+    val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+    val greeting = when { hour < 12 -> stringResource(R.string.greeting_morning); hour < 18 -> stringResource(R.string.greeting_afternoon); else -> stringResource(R.string.greeting_evening) }
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            androidx.compose.ui.res.painterResource(R.mipmap.ic_launcher), null,
+            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)),
+        )
         Spacer(Modifier.width(14.dp))
-        Column {
-            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
+        Column(Modifier.weight(1f)) {
+            Text(greeting, style = MaterialTheme.typography.headlineSmall)
             Text(stringResource(R.string.setup_tagline), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Box(
+            Modifier.size(40.dp).clip(CircleShape).background(Brand.glass).border(1.dp, Brand.glassLine, CircleShape)
+                .clickable(onClick = onSettingsClick),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Rounded.Settings, null, tint = Color.White, modifier = Modifier.size(20.dp))
         }
     }
 }
@@ -280,8 +833,8 @@ private fun Header() {
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) {
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(20.dp)) {
-        Text(title, style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(8.dp))
+        SectionLabel(title)
+        Spacer(Modifier.height(12.dp))
         content()
     }
 }
@@ -313,49 +866,34 @@ private fun UpdateBanner() {
     }
 }
 
-@Composable
-private fun StatusCard(state: ProjectionService.State) {
-    val ctx = LocalContext.current
-    val bg = if (state.connected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(bg).padding(24.dp)) {
-        Text(if (state.connected) state.status else stringResource(R.string.notif_status_not_connected), style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(6.dp))
-        val certLabel = stringResource(R.string.setup_status_certificate, state.certificate)
-        val disconnectedHint = stringResource(R.string.setup_status_disconnected_hint)
-        val detail = when {
-            state.connected -> listOf(state.transport, state.video, certLabel).filter { it.isNotBlank() }.joinToString("\n")
-            else -> disconnectedHint
-        }
-        Text(detail, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        state.lastError?.let {
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.setup_status_last_error, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-        }
-        // The same Trust as the notification's, for when notifications are off.
-        state.pendingTrust?.let { p ->
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.notif_trust_reconnect_suffix, stringResource(R.string.notif_trust_warning)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.height(8.dp))
-            val trustLabel = stringResource(if (p.changed) R.string.setup_trust_new_cert else R.string.setup_trust_head_unit)
-            Pill(stringResource(R.string.setup_trust_fingerprint_suffix, trustLabel, p.fingerprint.take(16)), null) { ProjectionService.trust(ctx, p.peerKey, p.fingerprint) }
-        }
-        Spacer(Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Pill(stringResource(R.string.setup_preview_car_screen), Icons.Rounded.Tv) { ctx.startActivity(Intent(ctx, CarPreviewActivity::class.java)) }
-            if (state.connected) Pill(stringResource(R.string.setup_disconnect), null) { ProjectionService.stop(ctx) }
-        }
-    }
+/** F-Auto's own brand look (the pink→indigo gradient from the Dusk/phone mockups) — fixed, not tied to whichever car-screen theme is picked. */
+private object Brand {
+    val pink = Color(0xFFFF4D63)
+    val blue = Color(0xFF8B97FF)
+    val gradient = Brush.linearGradient(listOf(pink, blue))
+    val glass = Color.White.copy(alpha = 0.14f)
+    val glassLine = Color.White.copy(alpha = 0.18f)
 }
 
+/** A section heading in the mockup's style: small, uppercase, tracked, muted. */
+@Composable
+private fun SectionLabel(text: String) {
+    Text(
+        text.uppercase(), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.sp),
+        color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold,
+    )
+}
+
+/** A translucent "glass" pill (the mockup's `.sec` button) for secondary actions like Preview/Disconnect/Trust. */
 @Composable
 private fun Pill(label: String, icon: ImageVector?, onClick: () -> Unit) {
     Row(
-        Modifier.clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.primary).clickable(onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 10.dp),
+        Modifier.clip(RoundedCornerShape(24.dp)).background(Brand.glass).border(1.dp, Brand.glassLine, RoundedCornerShape(24.dp))
+            .clickable(onClick = onClick).padding(horizontal = 18.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon?.let { Icon(it, null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
-        Text(label, color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge)
+        icon?.let { Icon(it, null, tint = Color.White, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
+        Text(label, color = Color.White, style = MaterialTheme.typography.labelLarge)
     }
 }
 
@@ -464,6 +1002,8 @@ private fun ConnectionSettings(settings: Settings, refresh: Int) {
     var cars by remember { mutableStateOf(settings.knownCars) }
     var carGps by remember { mutableStateOf(settings.carGpsForPhone) }
     var btAddr by remember { mutableStateOf(settings.phoneBluetoothAddress) }
+    var connectNowTarget by remember { mutableStateOf(settings.wirelessConnectNowTarget) }
+    var compatMode by remember { mutableStateOf(settings.wirelessCompatMode) }
     val ctx = LocalContext.current
     val pinned = remember { net.prototux.aare.PinnedHeadUnits(ctx) }
     var pins by remember { mutableStateOf(pinned.all) }
@@ -477,10 +1017,43 @@ private fun ConnectionSettings(settings: Settings, refresh: Int) {
             Toggle(stringResource(R.string.setup_toggle_wireless_title), stringResource(R.string.setup_toggle_wireless_subtitle), wireless) { wireless = it; settings.wireless = it; if (it) ProjectionService.probeWireless(ctx) }
             Toggle(stringResource(R.string.setup_toggle_resume_music_title), stringResource(R.string.setup_toggle_resume_music_subtitle), resume) { resume = it; settings.resumeMedia = it }
             Spacer(Modifier.height(8.dp))
+            Choices(stringResource(R.string.setup_choice_wireless_compat), listOf(
+                Settings.WIRELESS_COMPAT_AUTO to stringResource(R.string.setup_choice_wireless_compat_auto),
+                Settings.WIRELESS_COMPAT_ON to stringResource(R.string.setup_choice_wireless_compat_on),
+                Settings.WIRELESS_COMPAT_OFF to stringResource(R.string.setup_choice_wireless_compat_off),
+            ), compatMode) { compatMode = it; settings.wirelessCompatMode = it }
+            Text(stringResource(R.string.setup_choice_wireless_compat_subtitle), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TextButton(onClick = {
+                settings.forgetWirelessProfiles()
+                Toast.makeText(ctx, R.string.setup_wireless_compat_forgotten, Toast.LENGTH_SHORT).show()
+            }) { Text(stringResource(R.string.setup_wireless_compat_forget)) }
+            Spacer(Modifier.height(8.dp))
             OutlinedTextField(btAddr, { btAddr = it; settings.phoneBluetoothAddress = it.trim() }, Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.setup_bt_address_label)) },
                 supportingText = { Text(stringResource(R.string.setup_bt_address_hint)) },
                 singleLine = true)
+            Spacer(Modifier.height(8.dp))
+            // Fortuner fork: dial a bonded device directly over RFCOMM once Bluetooth is already
+            // connected, the way D:\aa-phone-side (stage1) does, without waiting for Android to have
+            // cached that device's wireless-Android-Auto UUID (some adapters never answer that SDP
+            // query while the system's own Android Auto is disabled).
+            OutlinedTextField(connectNowTarget, { connectNowTarget = it; settings.wirelessConnectNowTarget = it.trim() }, Modifier.fillMaxWidth(),
+                label = { Text("Connect now: bonded device name contains") }, singleLine = true)
+            TextButton(onClick = {
+                val target = connectNowTarget.trim()
+                val connector = net.prototux.aare.transport.wireless.WirelessConnector(ctx, net.prototux.aare.DiagAapLog)
+                val matches = runCatching { connector.findBondedByName(target) }.getOrElse {
+                    Toast.makeText(ctx, "Can't look up bonded devices: ${it.message}", Toast.LENGTH_SHORT).show()
+                    return@TextButton
+                }
+                val device = matches.firstOrNull()
+                if (device == null) {
+                    Toast.makeText(ctx, "No bonded device with a name containing \"$target\"", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(ctx, "Connecting to ${device.name ?: device.address}…", Toast.LENGTH_SHORT).show()
+                    ProjectionService.startWireless(ctx, device.address)
+                }
+            }) { Text("Connect now") }
         }
         Section(stringResource(R.string.setup_section_updates)) {
             Toggle(stringResource(R.string.setup_toggle_updates_title), stringResource(R.string.setup_toggle_updates_subtitle), checkUpdates) {
@@ -497,7 +1070,7 @@ private fun ConnectionSettings(settings: Settings, refresh: Int) {
         }
         Section(stringResource(R.string.setup_section_video)) {
             Toggle(stringResource(R.string.setup_toggle_60fps_title), stringResource(R.string.setup_toggle_60fps_subtitle), fps60) { fps60 = it; settings.prefer60fps = it }
-            Choices(stringResource(R.string.setup_choice_max_resolution), listOf(480, 720, 1080, 1440).map { "$it" to "${it}p" }, "$maxH") {
+            Choices(stringResource(R.string.setup_choice_max_resolution), listOf(480, 720, 1080, 1440, 2160).map { "$it" to "${it}p" }, "$maxH") {
                 maxH = it.toInt(); settings.maxVideoHeight = maxH
             }
             Text(stringResource(R.string.setup_hint_lower_resolution), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -633,10 +1206,11 @@ private fun Toggle(title: String, subtitle: String, checked: Boolean, onChange: 
 }
 
 @Composable
-private fun CarScreenSettings(settings: Settings, refresh: Int) {
+private fun CarScreenSettings(settings: Settings, refresh: Int, onStyleChange: (String) -> Unit = {}) {
     val ctx = LocalContext.current
     var theme by remember { mutableStateOf(settings.carTheme) }
-    var rail by remember { mutableStateOf(settings.railPosition) }
+    var style by remember { mutableStateOf(settings.carStyle) }
+    var layout by remember { mutableStateOf(settings.carLayout) }
     var phoneScreen by remember { mutableStateOf(settings.phoneScreen) }
     var darkBar by remember { mutableStateOf(settings.darkBar) }
     var passenger by remember { mutableStateOf(settings.ignoreDriving) }
@@ -656,6 +1230,7 @@ private fun CarScreenSettings(settings: Settings, refresh: Int) {
         }
     }
     var calendar by remember { mutableStateOf(settings.showCalendar) }
+    var autoSpeaker by remember { mutableStateOf(settings.autoSpeakerOnCall) }
     @Suppress("UNUSED_EXPRESSION") refresh
     val touch = AndroidSettings.Secure.getString(ctx.contentResolver, AndroidSettings.Secure.ENABLED_ACCESSIBILITY_SERVICES).orEmpty()
         .split(':').any { ComponentName.unflattenFromString(it) == ComponentName(ctx, MirrorTouchService::class.java) }
@@ -664,9 +1239,24 @@ private fun CarScreenSettings(settings: Settings, refresh: Int) {
             Choices(stringResource(R.string.setup_choice_colors), listOf(Settings.THEME_AUTO to stringResource(R.string.setup_choice_colors_auto), Settings.THEME_DARK to stringResource(R.string.setup_choice_dark), Settings.THEME_LIGHT to stringResource(R.string.setup_choice_light)), theme) {
                 theme = it; settings.carTheme = it
             }
+            Text(stringResource(R.string.setup_choice_colors_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(12.dp))
-            Choices(stringResource(R.string.setup_choice_bar), listOf(Settings.RAIL_AUTO to stringResource(R.string.setup_choice_bar_auto), Settings.RAIL_LEFT to stringResource(R.string.setup_choice_left), Settings.RAIL_RIGHT to stringResource(R.string.setup_choice_right), Settings.RAIL_BOTTOM to stringResource(R.string.setup_choice_bottom)), rail) {
-                rail = it; settings.railPosition = it
+            Choices(stringResource(R.string.setup_choice_style), listOf(
+                Settings.STYLE_MIDNIGHT to stringResource(R.string.setup_style_midnight),
+                Settings.STYLE_AURORA to stringResource(R.string.setup_style_aurora),
+                Settings.STYLE_FOREST to stringResource(R.string.setup_style_forest),
+                Settings.STYLE_LIGHT to stringResource(R.string.setup_style_light),
+                Settings.STYLE_SPORT to stringResource(R.string.setup_style_sport),
+                Settings.STYLE_DUSK to stringResource(R.string.setup_style_dusk),
+            ), style) {
+                style = it; settings.carStyle = it; onStyleChange(it)
+            }
+            Spacer(Modifier.height(12.dp))
+            Choices(stringResource(R.string.setup_choice_layout), listOf(
+                Settings.LAYOUT_CLASSIC to stringResource(R.string.setup_layout_classic),
+                Settings.LAYOUT_DUSK to stringResource(R.string.setup_layout_dusk),
+            ), layout) {
+                layout = it; settings.carLayout = it
             }
             Toggle(stringResource(R.string.setup_toggle_dark_bar_title), stringResource(R.string.setup_toggle_dark_bar_subtitle), darkBar) { darkBar = it; settings.darkBar = it }
         }
@@ -690,6 +1280,9 @@ private fun CarScreenSettings(settings: Settings, refresh: Int) {
             }
         }
         Section(stringResource(R.string.phone_section_title)) {
+            Toggle(stringResource(R.string.setup_toggle_auto_speaker_title), stringResource(R.string.setup_toggle_auto_speaker_subtitle), autoSpeaker) {
+                autoSpeaker = it; settings.autoSpeakerOnCall = it
+            }
             Toggle(stringResource(R.string.phone_toggle_enable_title), stringResource(R.string.phone_toggle_enable_subtitle), phoneScreen) {
                 phoneScreen = it; settings.phoneScreen = it
             }
@@ -839,16 +1432,18 @@ private fun AudioSettings(settings: Settings, state: ProjectionService.State, re
 
 private const val SHIZUKU_REQUEST = 42
 
-/** A labelled row of mutually exclusive options. */
+/** A labelled row of mutually exclusive options, in the brand's gradient-chip style. */
 @Composable
 private fun Choices(title: String, options: List<Pair<String, String>>, selected: String, onSelect: (String) -> Unit) {
     Text(title, style = MaterialTheme.typography.bodyLarge)
-    Spacer(Modifier.height(6.dp))
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-        options.forEachIndexed { i, (value, label) ->
-            SegmentedButton(selected = value == selected, onClick = { onSelect(value) }, shape = SegmentedButtonDefaults.itemShape(i, options.size)) {
-                Text(label, maxLines = 1, style = MaterialTheme.typography.labelMedium)
-            }
+    Spacer(Modifier.height(8.dp))
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        options.forEach { (value, label) ->
+            SegChip(label, value == selected, Modifier.widthIn(min = 72.dp)) { onSelect(value) }
         }
     }
 }
@@ -999,6 +1594,8 @@ private fun StandaloneAppsSection(settings: Settings, ctx: android.content.Conte
                 color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
         }
         if (enabled) {
+            Text(stringResource(R.string.standalone_nav_hint), style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
             val apps by produceState<List<Triple<String, String, android.graphics.Bitmap?>>?>(null) {
                 value = withContext(Dispatchers.IO) { launchableApps(ctx) }
             }
@@ -1018,7 +1615,7 @@ private fun StandaloneAppsSection(settings: Settings, ctx: android.content.Conte
     }
 }
 
-/** Every app with a launcher icon, except AARE itself, for the standalone allow-list. */
+/** Every app with a launcher icon, except AARE itself, for the standalone allow-list: navigation apps first. */
 private fun launchableApps(ctx: android.content.Context): List<Triple<String, String, android.graphics.Bitmap?>> {
     val pm = ctx.packageManager
     val intent = android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_LAUNCHER)
@@ -1030,7 +1627,7 @@ private fun launchableApps(ctx: android.content.Context): List<Triple<String, St
             val info = runCatching { pm.getApplicationInfo(pkg, 0) }.getOrNull() ?: return@mapNotNull null
             val icon = runCatching { pm.getApplicationIcon(info).toBitmap(96, 96) }.getOrNull()
             Triple(pkg, pm.getApplicationLabel(info).toString(), icon)
-        }.sortedBy { it.second.lowercase() }
+        }.sortedWith(compareBy({ it.first !in net.prototux.aare.host.CarAppInfo.KNOWN_NAVIGATION_PACKAGES }, { it.second.lowercase() }))
 }
 
 @Composable
@@ -1114,13 +1711,21 @@ private fun AssistantRow(title: String, subtitle: String, app: AssistantApp?, se
 @Composable
 private fun CertificatesCard(certs: CertificateStore, state: ProjectionService.State) {
     val ctx = LocalContext.current
+    val settings = remember { Settings(ctx) }
     var entries by remember { mutableStateOf(certs.entries()) }
     // Saveable: the system picker can outlive the activity, and the key picker's result needs the certificate.
     var pickCert by rememberSaveable { mutableStateOf<Uri?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
     var p12 by rememberSaveable { mutableStateOf<Uri?>(null) }
     var downloading by remember { mutableStateOf(false) }
+    var extracting by remember { mutableStateOf(false) }
+    val installedGearheadVersion = remember { GearheadKeyExtractor.installedVersion(ctx) }
+    var autoUpdate by remember { mutableStateOf(settings.autoUpdateCert) }
     val scope = rememberCoroutineScope()
+    val autoUpdated by CertificateAutoUpdate.lastUpdated.collectAsState()
+    val expiringSoon by CertificateAutoUpdate.expiringSoon.collectAsState()
+    // CertificateAutoUpdate runs on its own thread; pick up what it imported.
+    LaunchedEffect(autoUpdated) { if (autoUpdated != null) entries = certs.entries() }
     val keyPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { keyUri ->
         val certUri = pickCert ?: return@rememberLauncherForActivityResult
         if (keyUri == null) return@rememberLauncherForActivityResult
@@ -1139,6 +1744,21 @@ private fun CertificatesCard(certs: CertificateStore, state: ProjectionService.S
         if (name.endsWith(".p12", true) || name.endsWith(".pfx", true) || type == "application/x-pkcs12") p12 = uri
         else { pickCert = uri; keyPicker.launch(arrayOf("*/*")) }
     }
+    fun runExtraction(block: () -> GearheadKeyExtractor.Extracted) {
+        extracting = true
+        error = null
+        scope.launch {
+            error = runCatching {
+                val extracted = withContext(Dispatchers.IO) { block() }
+                certs.importPem("Android Auto (extracted)", extracted.certPem, extracted.keyPem)
+                entries = certs.entries()
+            }.exceptionOrNull()?.let { it.message ?: it.toString() }
+            extracting = false
+        }
+    }
+    val apkPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) runExtraction { GearheadKeyExtractor.extractFromUri(ctx, uri) }
+    }
     Section(stringResource(R.string.cert_section_title)) {
         Text(stringResource(R.string.cert_hint),
             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -1155,7 +1775,7 @@ private fun CertificatesCard(certs: CertificateStore, state: ProjectionService.S
         }
         Row {
             TextButton(onClick = { certPicker.launch(arrayOf("*/*")) }) { Text(stringResource(R.string.cert_action_import)) }
-            TextButton(enabled = !downloading, onClick = {
+            if (CertificateDownload.ENABLED) TextButton(enabled = !downloading, onClick = {
                 downloading = true
                 error = null
                 scope.launch {
@@ -1168,7 +1788,39 @@ private fun CertificatesCard(certs: CertificateStore, state: ProjectionService.S
                 }
             }) { Text(stringResource(if (downloading) R.string.cert_action_downloading else R.string.cert_action_download)) }
         }
+        Row {
+            if (installedGearheadVersion != null) TextButton(enabled = !extracting, onClick = {
+                runExtraction { GearheadKeyExtractor.extractFromInstalled(ctx) }
+            }) { Text(stringResource(if (extracting) R.string.cert_action_extracting else R.string.cert_action_extract_installed)) }
+            TextButton(enabled = !extracting, onClick = { apkPicker.launch(arrayOf("*/*")) }) {
+                Text(stringResource(if (extracting) R.string.cert_action_extracting else R.string.cert_action_extract_file))
+            }
+        }
         error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+        if (CertificateDownload.ENABLED) {
+            Spacer(Modifier.height(8.dp))
+            Toggle(stringResource(R.string.cert_toggle_auto_update_title), stringResource(R.string.cert_toggle_auto_update_subtitle), autoUpdate) {
+                autoUpdate = it; settings.autoUpdateCert = it
+            }
+            autoUpdated?.let { version ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.cert_auto_updated_message, version), style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                    IconButton(onClick = { CertificateAutoUpdate.consumed() }) {
+                        Icon(Icons.Rounded.Close, stringResource(R.string.common_dismiss), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+            expiringSoon?.let { exp ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.cert_expiring_soon_message, exp.name, DateFormat.getDateInstance().format(exp.notAfter)),
+                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.weight(1f))
+                    IconButton(onClick = { CertificateAutoUpdate.dismissExpiryWarning(ctx) }) {
+                        Icon(Icons.Rounded.Close, stringResource(R.string.common_dismiss), tint = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        }
     }
     p12?.let { uri ->
         var password by remember { mutableStateOf("") }

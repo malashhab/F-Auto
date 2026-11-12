@@ -55,6 +55,12 @@ class SessionOptions(
     val peerKey: String? = null,
     /** Trust the first certificate of a head unit with nothing trusted yet (Bluetooth-bonded ones). */
     val trustOnFirstUse: Boolean = false,
+    /**
+     * Fortuner fork: answer the control-channel VERSION_REQUEST with exactly the head unit's own
+     * major.minor instead of AARE's usual 1.7/6.1 clamp. Matches what `D:\aa-phone-side` (stage1)
+     * sent, which is the only attempt so far that got AUTH_COMPLETE status 0 from this car.
+     */
+    val echoHeadUnitVersion: Boolean = false,
 ) {
     init {
         require(pins == null || peerKey != null) { "peerKey is required with pins" }
@@ -392,7 +398,10 @@ class AapSession(
         headUnitVersion = major to minor
         // Like the official phone: 1.7 to anything up to 1.7, 6.1 to the newer GAL numbering.
         // Status is always success; feature gating follows the head unit's own version.
-        val (replyMajor, replyMinor) = if (major < 1 || (major == 1 && minor <= 7)) 1 to 7 else 6 to 1
+        // echoHeadUnitVersion: stage1's byte-for-byte echo of whatever the head unit sent, which is
+        // the only attempt against this car that got AUTH_COMPLETE status 0 (protocol-notes.md B9).
+        val (replyMajor, replyMinor) = if (options.echoHeadUnitVersion) major to minor
+            else if (major < 1 || (major == 1 && minor <= 7)) 1 to 7 else 6 to 1
         log.i("head unit protocol $major.$minor, answering $replyMajor.$replyMinor")
         val body = byteArrayOf(
             (replyMajor shr 8).toByte(), replyMajor.toByte(),

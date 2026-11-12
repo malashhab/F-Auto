@@ -23,6 +23,12 @@ import java.util.Base64
  */
 object CertificateDownload {
 
+    /**
+     * CarDisplay fork: on again, as in upstream AARE (the owner dropped the earlier "never fetch
+     * Google's certificate" rule on 2026-11-11). Set to false to hide the button and the prompt.
+     */
+    const val ENABLED = true
+
     const val SOURCE = "https://github.com/iscle/android-auto-certificates"
     private const val BASE = "https://raw.githubusercontent.com/iscle/android-auto-certificates/main/android-auto/latest"
 
@@ -39,11 +45,21 @@ object CertificateDownload {
 
     /** Blocking: call it off the main thread. Throws [Unavailable], another [IOException] or [Invalid]. */
     fun fetch(): Downloaded {
-        val version = JSONObject(get("$BASE/metadata.json")).optString("version").ifBlank { "latest" }
+        if (!ENABLED) throw Invalid("certificate download is disabled in this build")
+        val version = fetchVersion()
         val cert = get("$BASE/certificate.pem")
         val key = get("$BASE/private-key.pem")
         runCatching { check(cert, key) }.onFailure { throw Invalid(it.message ?: it.toString()) }
         return Downloaded(version, cert, key)
+    }
+
+    /**
+     * Just the published version, one small request - what [net.prototux.aare.cert.CertificateAutoUpdate]
+     * polls to decide whether [fetch]'s larger request (cert + key) is worth making.
+     */
+    fun fetchVersion(): String {
+        if (!ENABLED) throw Invalid("certificate download is disabled in this build")
+        return JSONObject(get("$BASE/metadata.json")).optString("version").ifBlank { "latest" }
     }
 
     /** Checks that [certPem] is issued by the CA with SHA-256 [caSha256] and that [keyPem] is its key. */

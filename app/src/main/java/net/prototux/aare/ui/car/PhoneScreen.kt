@@ -9,6 +9,8 @@ import android.telephony.TelephonyManager
 import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +35,7 @@ import androidx.compose.material.icons.automirrored.rounded.CallMissed
 import androidx.compose.material.icons.automirrored.rounded.CallReceived
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.CallEnd
+import androidx.compose.material.icons.rounded.Dialpad
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -75,9 +78,14 @@ private val PERMISSIONS = listOf(Manifest.permission.CALL_PHONE, Manifest.permis
  * Calls from the car, like Android Auto's phone app: recent calls, favourite contacts and a
  * keypad (parked only). Calls are placed by Android's telephony, so their sound goes through the
  * car's Bluetooth hands-free link as usual.
+ *
+ * [duskLayout] shows a row of favourite contacts over a two-column recents grid — matching
+ * `CarUI/dusk-8in.html`'s Phone screen — instead of the Classic layout's tabs. That mockup drops
+ * the keypad tab entirely (favourites cover dialling a known contact); a small keypad button next
+ * to "Recents" keeps dialling an arbitrary number reachable without it, while parked.
  */
 @Composable
-internal fun PhoneScreen(runtime: CarRuntime, modifier: Modifier) {
+internal fun PhoneScreen(runtime: CarRuntime, duskLayout: Boolean = false, modifier: Modifier) {
     val context = LocalContext.current
     val driving = runtime.ui.drivingRestricted
     if (PERMISSIONS.any { context.checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }) {
@@ -101,6 +109,34 @@ internal fun PhoneScreen(runtime: CarRuntime, modifier: Modifier) {
         }
     }
 
+    if (duskLayout) {
+        var showKeypad by remember { mutableStateOf(false) }
+        Column(modifier.background(MaterialTheme.colorScheme.background).padding(horizontal = 24.dp, vertical = 16.dp)) {
+            if (inCall && Calls.canEnd) InCallCard { Calls.end(context) }
+            if (showKeypad && !driving) {
+                Row(Modifier.fillMaxWidth().padding(bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.phone_tab_keypad), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    Pill(stringResource(R.string.phone_tab_recents), selected = false, onClick = { showKeypad = false })
+                }
+                Box(Modifier.weight(1f).fillMaxWidth()) { Keypad { number -> call(Callee("", number, "")) } }
+            } else {
+                val contacts by produceState<List<Callee>?>(null, reload) { value = withContext(Dispatchers.IO) { contacts(context) } }
+                val recents by produceState<List<Callee>?>(null, reload) { value = withContext(Dispatchers.IO) { recents(context) } }
+                DuskFavoritesRow(contacts, call)
+                Row(Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.phone_tab_recents), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                    if (!driving) {
+                        Box(Modifier.size(LocalCarDimens.current.touchTarget).clip(CircleShape).clickable { showKeypad = true }, contentAlignment = Alignment.Center) {
+                            Icon(Icons.Rounded.Dialpad, stringResource(R.string.phone_tab_keypad), tint = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+                Box(Modifier.weight(1f).fillMaxWidth()) { CalleeGrid(recents, stringResource(R.string.phone_no_recent_calls), call) }
+            }
+        }
+        return
+    }
+
     Column(modifier.background(MaterialTheme.colorScheme.background).padding(horizontal = 24.dp)) {
         Row(Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             PhoneTab.entries.forEach { t ->
@@ -119,6 +155,46 @@ internal fun PhoneScreen(runtime: CarRuntime, modifier: Modifier) {
                     CalleeList(contacts, stringResource(R.string.phone_no_contacts), call)
                 }
                 PhoneTab.KEYPAD -> Keypad { number -> call(Callee("", number, "")) }
+            }
+        }
+    }
+}
+
+/** A row of favourite (starred) contacts as round avatars — the Dusk layout's top section, like `dusk-8in.html`'s Favorites row. */
+@Composable
+private fun DuskFavoritesRow(contacts: List<Callee>?, onCall: (Callee) -> Unit) {
+    if (contacts.isNullOrEmpty()) return
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        contacts.take(8).forEach { c ->
+            Column(
+                Modifier.width(76.dp).clip(RoundedCornerShape(16.dp)).clickable { onCall(c) },
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Box(Modifier.size(68.dp).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer), contentAlignment = Alignment.Center) {
+                    Text(c.name.ifBlank { c.number }.take(1).uppercase(), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(c.name.ifBlank { c.number }, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+        }
+    }
+}
+
+/** Two calls per row, like `dusk-8in.html`'s Recents grid — reuses [CalleeRow] in pairs instead of [CalleeList]'s single column. */
+@Composable
+private fun CalleeGrid(list: List<Callee>?, empty: String, onCall: (Callee) -> Unit) {
+    when {
+        list == null -> Placeholder(stringResource(R.string.common_loading), loading = true)
+        list.isEmpty() -> Placeholder(empty, loading = false, icon = Icons.Rounded.Person)
+        else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            items(list.chunked(2)) { pair ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    pair.forEach { c -> CalleeRow(c, Modifier.weight(1f), onCall) }
+                    if (pair.size < 2) Spacer(Modifier.weight(1f))
+                }
             }
         }
     }
@@ -147,32 +223,35 @@ private fun CalleeList(list: List<Callee>?, empty: String, onCall: (Callee) -> U
         list == null -> Placeholder(stringResource(R.string.common_loading), loading = true)
         list.isEmpty() -> Placeholder(empty, loading = false, icon = Icons.Rounded.Person)
         else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp)) {
-            items(list) { c ->
-                Row(
-                    Modifier.fillMaxWidth().heightIn(min = LocalCarDimens.current.touchTarget).clip(RoundedCornerShape(20.dp))
-                        .clickable { onCall(c) }.padding(horizontal = 8.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    val icon = when (c.type) {
-                        CallLog.Calls.MISSED_TYPE, CallLog.Calls.REJECTED_TYPE -> Icons.AutoMirrored.Rounded.CallMissed
-                        CallLog.Calls.OUTGOING_TYPE -> Icons.AutoMirrored.Rounded.CallMade
-                        CallLog.Calls.INCOMING_TYPE -> Icons.AutoMirrored.Rounded.CallReceived
-                        else -> Icons.Rounded.Person
-                    }
-                    val missed = c.type == CallLog.Calls.MISSED_TYPE
-                    Box(Modifier.size(52.dp).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer), contentAlignment = Alignment.Center) {
-                        Icon(icon, null, tint = if (missed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSecondaryContainer)
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(c.name.ifBlank { c.number }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                            color = if (missed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
-                        if (c.detail.isNotBlank()) Text(c.detail, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-                    }
-                    Icon(Icons.Rounded.Call, stringResource(R.string.common_call), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(horizontal = 12.dp))
-                }
-            }
+            items(list) { c -> CalleeRow(c, Modifier.fillMaxWidth(), onCall) }
         }
+    }
+}
+
+@Composable
+private fun CalleeRow(c: Callee, modifier: Modifier, onCall: (Callee) -> Unit) {
+    Row(
+        modifier.heightIn(min = LocalCarDimens.current.touchTarget).clip(RoundedCornerShape(20.dp))
+            .clickable { onCall(c) }.padding(horizontal = 8.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val icon = when (c.type) {
+            CallLog.Calls.MISSED_TYPE, CallLog.Calls.REJECTED_TYPE -> Icons.AutoMirrored.Rounded.CallMissed
+            CallLog.Calls.OUTGOING_TYPE -> Icons.AutoMirrored.Rounded.CallMade
+            CallLog.Calls.INCOMING_TYPE -> Icons.AutoMirrored.Rounded.CallReceived
+            else -> Icons.Rounded.Person
+        }
+        val missed = c.type == CallLog.Calls.MISSED_TYPE
+        Box(Modifier.size(52.dp).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer), contentAlignment = Alignment.Center) {
+            Icon(icon, null, tint = if (missed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSecondaryContainer)
+        }
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(c.name.ifBlank { c.number }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                color = if (missed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
+            if (c.detail.isNotBlank()) Text(c.detail, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+        }
+        Icon(Icons.Rounded.Call, stringResource(R.string.common_call), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(horizontal = 12.dp))
     }
 }
 

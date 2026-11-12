@@ -1,5 +1,6 @@
 package net.prototux.aare.launch;
 
+import android.view.MotionEvent;
 import android.view.Surface;
 
 /**
@@ -22,6 +23,12 @@ interface ILaunchHost {
 
     /** Inject a key (e.g. Back) into the launched app's display. */
     void key(long eventTime, int action, int keyCode) = 4;
+
+    /** Inject a whole touch event (any number of pointers: pinch, two-finger drag) into the launched app's display. */
+    oneway void motion(in MotionEvent event) = 6;
+
+    /** Open [uri] (a geo: or https: link) with [packageName] on the launched app's display, e.g. "navigate to…". */
+    boolean view(String uri, String packageName) = 7;
 
     /** Tear the display down and stop feeding the app. */
     void stop() = 5;

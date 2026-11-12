@@ -132,6 +132,14 @@ class WirelessBootstrap(
          * 0 disables.
          */
         val pingIntervalMs: Long = 1_000,
+        /**
+         * Fortuner fork: behave byte for byte like the phone that worked with the Kowan KA05 adapter
+         * (aa-phone-side stage1 and the official app): answer the version request with 6.1 and
+         * status 0 only, answer the WifiStartRequest at once with a status-only WifiStartResponse
+         * and only then ask for the credentials, send nothing but WifiConnectionStatus after the
+         * join, and send no pings of our own.
+         */
+        val officialPhoneOrder: Boolean = false,
     )
 
     enum class State { NEW, NEGOTIATING, JOINING, READY, DONE, FAILED }
@@ -153,6 +161,8 @@ class WirelessBootstrap(
     @Volatile private var linkEnded = false
     /** The link pinger runs (see [Options.pingIntervalMs]). */
     private var linkPinging = false
+    /** [Options.officialPhoneOrder]: the WifiStartResponse already went out when the request came. */
+    private var startResponseSent = false
 
     /**
      * Runs the bootstrap: returns once the link ended after a successful [Listener.onReady] (or
@@ -178,7 +188,7 @@ class WirelessBootstrap(
             // Order as the official phone (aa-proxy-rs and open-headunit both expect 7 then 6). The
             // dongle hangs up after reading two frames, so failing to send these is not fatal: the
             // head unit already knows everything it needs and the TCP connect is the real test.
-            sendQuietly(WppMessageId.START_RESPONSE, startResponse(joined.localAddress, WppStatus.SUCCESS))
+            if (!startResponseSent) sendQuietly(WppMessageId.START_RESPONSE, startResponse(joined.localAddress, WppStatus.SUCCESS))
             sendQuietly(WppMessageId.CONNECTION_STATUS, connectionStatus(WppStatus.SUCCESS, null))
             ensureOpen()
             state = State.READY
@@ -258,6 +268,10 @@ class WirelessBootstrap(
                     }
                     if (start != null) log.w("wireless: repeated WifiStartRequest, using the latest one")
                     start = request
+                    if (options.officialPhoneOrder && !startResponseSent) {
+                        send(WppMessageId.START_RESPONSE, startResponse(null, WppStatus.SUCCESS))
+                        startResponseSent = true
+                    }
                     // A phone that already has the credentials skips the info request.
                     if (credentials == null && infoRequestedAt == 0L) {
                         send(WppMessageId.INFO_REQUEST, ByteArray(0))
@@ -286,6 +300,12 @@ class WirelessBootstrap(
                 (if (request.hasCarInfo()) " car=\"${car.make} ${car.model}\" hu=\"${car.headUnitMake} ${car.headUnitModel}\"" else "") +
                 (if (request.hasSupportedWifiChannelType()) " channelType=${request.supportedWifiChannelType}" else "") +
                 (if (request.hasWppInfo()) " (offers WPP over TCP at ${request.wppInfo.ipAddress}:${request.wppInfo.port}, unsupported)" else ""))
+        }
+        if (options.officialPhoneOrder) {
+            // What the official phone sends (capture logcat-session1: "phone using version 6.1"):
+            // major 6, minor 1, status 0, nothing else. The adapter accepted exactly this.
+            send(WppMessageId.VERSION_RESPONSE, WifiVersionResponse.newBuilder().setMajor(6).setMinor(1).setStatus(WppStatus.SUCCESS).build().toByteArray())
+            return
         }
         // Gearhead's answer: echo the version, the device serial, phone_info and the Wi-Fi channel
         // type the head unit said it supports. Some strict OEM head units (e.g. Toyota, #46) withhold

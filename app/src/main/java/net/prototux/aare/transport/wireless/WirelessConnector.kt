@@ -58,6 +58,8 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
         /** Gearhead: 10 s, 3 tries. The head unit's server may come up a bit after its Wi-Fi. */
         val tcpConnectTimeoutMs: Int = 10_000,
         val tcpAttempts: Int = 3,
+        /** Pause between TCP attempts. The Kowan adapter refused the first try and accepted a later one. */
+        val tcpRetryDelayMs: Long = 1_000,
         /** Pin the BSSID the head unit sent: lets Android skip the approval dialog next time. */
         val matchBssid: Boolean = true,
         val bootstrap: WirelessBootstrap.Options = WirelessBootstrap.Options(),
@@ -100,6 +102,22 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
     private fun isConnected(device: BluetoothDevice): Boolean = runCatching {
         BluetoothDevice::class.java.getMethod("isConnected").invoke(device) as Boolean
     }.getOrDefault(false)
+
+    /**
+     * Fortuner fork: bonded devices whose name contains [nameContains], with no check at all that
+     * Android has cached the wireless-Android-Auto UUID for them (unlike [findHeadUnits] and
+     * [findConnectedHeadUnits]). Some adapters never answer the SDP query that fills that cache while
+     * the system's own Android Auto is disabled; `connect()` doesn't need the cache either, it dials
+     * the known UUID directly, the way `D:\aa-phone-side` (stage1) does. For the "Connect now" button.
+     */
+    @SuppressLint("MissingPermission")
+    fun findBondedByName(nameContains: String): List<BluetoothDevice> {
+        requirePermissions(bluetoothPermissions())
+        val adapter = adapter ?: return emptyList()
+        if (!adapter.isEnabled) return emptyList()
+        if (nameContains.isBlank()) return emptyList()
+        return adapter.bondedDevices.orEmpty().filter { it.name?.contains(nameContains, ignoreCase = true) == true }
+    }
 
     /**
      * Connects to [device] and returns the AAP byte pipe. Cancelling the coroutine aborts the
@@ -274,7 +292,7 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
                     last = e
                     runCatching { socket.close() }
                     log.w("wireless: TCP attempt $attempt/${options.tcpAttempts} to $ip:$port failed: ${e.message}")
-                    if (attempt < options.tcpAttempts) Thread.sleep(1_000)
+                    if (attempt < options.tcpAttempts) Thread.sleep(options.tcpRetryDelayMs)
                 }
             }
             throw WirelessException("cannot connect to the head unit's Android Auto server at $ip:$port", last)

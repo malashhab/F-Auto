@@ -88,6 +88,24 @@ class ProjectionService : Service() {
     private var projection: MediaProjection? = null
     private var usbAccessory: UsbAccessory? = null
     private var usbRetries = 0
+    /** A wireless link that dropped mid-drive (the dongle rebooting, a brief Wi-Fi/Bluetooth hiccup) usually comes back on its own; budget like [usbRetries]. */
+    private var wirelessRetries = 0
+    /** [stopEverything] ran: nothing reconnects on its own until something asks this service to connect again. */
+    private var stopRequested = false
+    /** The handshake of the wireless attempt or session in progress: true = the official-phone one (see [connectWireless]). */
+    private var wirelessOfficial = false
+    /** Automatic compatibility already tried the other handshake in this connection cycle: both were tried, no ping-pong. */
+    private var wirelessProfileSwitched = false
+    /** The Bluetooth address of the head unit or adapter behind the current session; null for USB and the developer server. */
+    private var sessionBluetoothAddress: String? = null
+    /** The current session got through service discovery: the handshake that led to it works with this head unit. */
+    @Volatile private var sessionEstablished = false
+    /** The current session's head unit, as its certificate pins know it (a Bluetooth address, "tcp", a USB key). */
+    private var sessionPeerKey = ""
+    /** The current session offers the Google-issued certificate by preference, not by [Settings.certificateIndex]. */
+    private var sessionPreferredGoogleCert = false
+    /** Head units that refused the Google-issued certificate since the service started: they get the usual rotation. */
+    private val googleCertRefusedBy = HashSet<String>()
     /** The accessory whose USB permission dialog is showing; keeps the service alive until answered. */
     private var usbPermissionPending: UsbAccessory? = null
     private var usbPermissionReceiver: BroadcastReceiver? = null
@@ -118,6 +136,7 @@ class ProjectionService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         goForeground()
+        if (intent?.action != ACTION_STOP) stopRequested = false
         when (intent?.action) {
             ACTION_USB -> IntentCompat.getParcelableExtra(intent, UsbManager.EXTRA_ACCESSORY, UsbAccessory::class.java)?.let { openUsb(it) }
             ACTION_WIRELESS -> intent.getStringExtra(EXTRA_DEVICE)?.let { connectWireless(it) }
@@ -193,18 +212,57 @@ class ProjectionService : Service() {
     /**
      * Wireless: Bluetooth bootstrap, join the car's Wi-Fi, TCP to its AAP server. Runs in the
      * foreground service because Android only lets foreground apps request Wi-Fi networks.
+     * [forceOfficial]: only from the automatic fallback, which retries with the other handshake.
+     *
+     * Two handshakes are known to work in the field, and no single one works everywhere:
+     *  - the normal one (AARE's): the version answer carries the phone's serial and info, which
+     *    strict built-in head units wait for (#46), and the protocol version is clamped to 1.7/6.1;
+     *  - the official-phone one: the bare message order, timing and exact version echo of a genuine
+     *    phone, which clone-style aftermarket adapters insist on (first found with a Kowan KA05).
+     * [Settings.WIRELESS_COMPAT_AUTO] doesn't need to know the adapter: it starts with the one that
+     * worked with this Bluetooth address before, else a guess from its name, and when that one gets
+     * no answer it tries the other, then remembers whichever reaches a working session. Either way
+     * it offers the Google-issued certificate first when there is a valid one, the only certificate
+     * every head unit accepts.
      */
-    private fun connectWireless(address: String) {
+    private fun connectWireless(address: String, forceOfficial: Boolean? = null) {
         if (session != null || wirelessJob?.isActive == true) return
         val adapter = getSystemService(android.bluetooth.BluetoothManager::class.java)?.adapter ?: return
         val device = runCatching { adapter.getRemoteDevice(address) }.getOrNull() ?: return
-        // Pass the phone's stable id as the WPP device serial and phone_info.instance_id: strict head
-        // units (#46) want the serial in the version response before they send the WifiStartRequest,
-        // and Google's receiver library ignores every phone message except pings and
-        // version responses until phone_info carries an instance id.
-        val connector = WirelessConnector(this, DiagAapLog,
-            WirelessConnector.Options(bootstrap = net.prototux.aare.aap.wireless.WirelessBootstrap.Options(
-                deviceSerial = settings.instanceId, instanceId = settings.instanceId, deviceName = runCatching { adapter.name }.getOrNull())))
+        val deviceLabel = runCatching { device.name }.getOrNull().orEmpty()
+        val mode = settings.wirelessCompatMode
+        val auto = mode == Settings.WIRELESS_COMPAT_AUTO
+        val known = settings.wirelessProfileFor(address)
+        var official = forceOfficial ?: when (mode) {
+            Settings.WIRELESS_COMPAT_ON -> true
+            Settings.WIRELESS_COMPAT_OFF -> false
+            else -> known ?: WIRELESS_COMPAT_NAME_HINTS.any { deviceLabel.contains(it, ignoreCase = true) }
+        }
+        // A connection asked for from outside starts a new cycle; the fallback's own retry doesn't.
+        if (forceOfficial == null) wirelessProfileSwitched = false
+        wirelessOfficial = official
+        fun connectorFor(official: Boolean) = if (official) {
+            WirelessConnector(this, DiagAapLog, WirelessConnector.Options(
+                tcpConnectTimeoutMs = 5_000, tcpAttempts = 20, tcpRetryDelayMs = 500,
+                bootstrap = net.prototux.aare.aap.wireless.WirelessBootstrap.Options(
+                    officialPhoneOrder = true, keepaliveIntervalMs = 0, pingIntervalMs = 0)))
+        } else {
+            // Pass the phone's stable id as the WPP device serial and phone_info.instance_id: strict head
+            // units (#46) want the serial in the version response before they send the WifiStartRequest,
+            // and Google's receiver library ignores every phone message except pings and
+            // version responses until phone_info carries an instance id.
+            WirelessConnector(this, DiagAapLog,
+                WirelessConnector.Options(bootstrap = net.prototux.aare.aap.wireless.WirelessBootstrap.Options(
+                    deviceSerial = settings.instanceId, instanceId = settings.instanceId, deviceName = runCatching { adapter.name }.getOrNull())))
+        }
+        fun describe(official: Boolean) = if (official) "official-phone" else "normal"
+        var connector = connectorFor(official)
+        log("wireless: ${deviceLabel.ifBlank { address }} gets the ${describe(official)} handshake (" + when {
+            forceOfficial != null -> "automatic fallback"
+            !auto -> "compatibility $mode"
+            known != null -> "worked with it before"
+            else -> "first guess"
+        } + ")")
         val missing = connector.missingPermissions()
         if (missing.isNotEmpty()) {
             log("wireless: missing permissions ${missing.joinToString { it.substringAfterLast('.') }}")
@@ -221,18 +279,37 @@ class ProjectionService : Service() {
             while (true) {
                 try {
                     val transport = connector.connect(device)
-                    startSession(transport, wireless = true, peerKey = address, trustOnFirstUse = true)
+                    startSession(transport, wireless = true, peerKey = address, trustOnFirstUse = true,
+                        // Off is AARE's own behaviour, untouched; otherwise the certificate every head unit takes.
+                        preferGoogleCertificate = mode != Settings.WIRELESS_COMPAT_OFF, echoHeadUnitVersion = official,
+                        bluetoothAddress = address)
                     return@launch
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
                     log("wireless: ${e.message}")
                     val carNotReady = generateSequence<Throwable>(e) { it.cause }.any { it is WirelessBootstrapException && it.whileNegotiating }
-                    if (carNotReady && retries < WIRELESS_RETRIES && session == null) {
+                    // While the handshake is still a guess, one patient retry is enough before the
+                    // other is tried: a full round of waits on the wrong one costs most of a minute.
+                    val guessing = auto && known == null && !wirelessProfileSwitched
+                    if (carNotReady && retries < (if (guessing) 1 else WIRELESS_RETRIES) && session == null) {
                         retries++
                         val wait = WIRELESS_RETRY_DELAY_MS * retries
-                        log("wireless: the car didn't start Android Auto yet; trying again in ${wait / 1000} s ($retries/$WIRELESS_RETRIES)")
+                        log("wireless: the car didn't start Android Auto yet; trying again in ${wait / 1000} s")
                         delay(wait)
+                        if (session == null) continue
+                        return@launch
+                    }
+                    // The handshake itself got no answer (silence, a hang-up, a refused TCP port), on a
+                    // head unit nothing is known about yet: the other one may be what it expects.
+                    if (auto && known == null && !wirelessProfileSwitched && session == null && handshakeFailure(e)) {
+                        wirelessProfileSwitched = true
+                        official = !official
+                        wirelessOfficial = official
+                        connector = connectorFor(official)
+                        retries = 0
+                        log("wireless: no luck with that handshake; trying the ${describe(official)} one")
+                        delay(WIRELESS_PROFILE_SWITCH_DELAY_MS)
                         if (session == null) continue
                         return@launch
                     }
@@ -241,6 +318,17 @@ class ProjectionService : Service() {
                 }
             }
         }
+    }
+
+    /**
+     * Whether a failed wireless attempt failed in the handshake (where the other handshake can help)
+     * rather than before it (Bluetooth off, not paired, nobody answering) or in joining the Wi-Fi.
+     */
+    private fun handshakeFailure(e: Throwable): Boolean {
+        val chain = generateSequence<Throwable>(e) { it.cause }.toList()
+        if (chain.any { it is WirelessBootstrapException && it.whileNegotiating }) return true
+        val text = chain.mapNotNull { it.message }.joinToString(" ")
+        return "Android Auto server" in text || "bootstrap took too long" in text || "bootstrap ended without result" in text
     }
 
     /**
@@ -340,7 +428,18 @@ class ProjectionService : Service() {
      * USB and developer server head units need a Trust tap for each new certificate.
      * [mirror]: whether the car may be offered the phone screen (the developer TCP server only if opted in).
      */
-    private fun startSession(transport: Transport, wireless: Boolean, peerKey: String, trustOnFirstUse: Boolean, mirror: Boolean = true) {
+    private fun startSession(
+        transport: Transport, wireless: Boolean, peerKey: String, trustOnFirstUse: Boolean, mirror: Boolean = true,
+        /**
+         * Fortuner fork: for the Kowan adapter, use the downloaded Google-issued certificate
+         * outright instead of AARE's usual rotation by `settings.certificateIndex` (which may still
+         * point at the self-signed/built-in entry from earlier attempts) and echo the head unit's
+         * version like stage1 (protocol-notes.md B9: this combination got AUTH_COMPLETE status 0).
+         */
+        preferGoogleCertificate: Boolean = false, echoHeadUnitVersion: Boolean = false,
+        /** The head unit's or adapter's Bluetooth address, for a session started by [connectWireless]. */
+        bluetoothAddress: String? = null,
+    ) {
         if (destroyed) { transport.close(); return }
         if (session != null) {
             log("already connected; refusing ${transport.name}")
@@ -348,11 +447,20 @@ class ProjectionService : Service() {
             return
         }
         lastSessionWireless = wireless
-        val cert = certs.pick(settings.certificateIndex)
-        log("connecting ${transport.name} with certificate \"${cert.name}\"")
+        sessionBluetoothAddress = bluetoothAddress
+        sessionPeerKey = peerKey
+        sessionEstablished = false
+        // Not one that has run out (the head unit answers -24), nor one this head unit already refused.
+        val google = if (preferGoogleCertificate && peerKey !in googleCertRefusedBy) {
+            val now = java.util.Date()
+            certs.entries().firstOrNull { it.isGoogleIssued && it.notAfter.after(now) }
+        } else null
+        sessionPreferredGoogleCert = google != null
+        val cert = google ?: certs.pick(settings.certificateIndex)
+        log("connecting ${transport.name} with certificate \"${cert.name}\"" + if (echoHeadUnitVersion) " (echoing the head unit's version)" else "")
         acquireWakeLock()
         sessionStart = SystemClock.elapsedRealtime()
-        val s = CarSession(this, transport, cert.identity, settings, media, { projection }, wireless, peerKey, trustOnFirstUse, sessionListener, mirror)
+        val s = CarSession(this, transport, cert.identity, settings, media, { projection }, wireless, peerKey, trustOnFirstUse, sessionListener, mirror, echoHeadUnitVersion)
         session = s
         _state.update { it.copy(connected = true, transport = transport.name, certificate = cert.name, lastError = null, pendingTrust = null) }
         s.start()
@@ -361,6 +469,17 @@ class ProjectionService : Service() {
     private val sessionListener = object : CarSession.Listener {
         override fun onStatus(session: CarSession, status: String) {
             log(status)
+            // Service discovery answered: this handshake works here. Remember it for this address,
+            // so the next drive starts with it and nothing has to be guessed again.
+            if (!sessionEstablished && session.headUnitName.isNotBlank()) {
+                sessionEstablished = true
+                sessionBluetoothAddress?.let { address ->
+                    if (settings.wirelessProfileFor(address) != wirelessOfficial) {
+                        settings.rememberWirelessProfile(address, wirelessOfficial)
+                        log("wireless: remembered the ${if (wirelessOfficial) "official-phone" else "normal"} handshake for $address")
+                    }
+                }
+            }
             _state.update { it.copy(status = status, headUnit = session.headUnitName, video = session.videoDescription) }
             updateNotification(status)
         }
@@ -389,11 +508,15 @@ class ProjectionService : Service() {
             pinRefusal?.let { notifyUntrusted(it) }
             if (certificateRejected) {
                 // Offer the next certificate next time: strict head units only accept Google-issued ones.
-                settings.certificateIndex = settings.certificateIndex + 1
+                // The preferred Google one was offered instead of the rotation's: this head unit goes
+                // back to the rotation, which moves on only if it pointed at that same certificate.
+                val offered = _state.value.certificate
+                if (sessionPreferredGoogleCert) googleCertRefusedBy += sessionPeerKey
+                if (!sessionPreferredGoogleCert || certs.pick(settings.certificateIndex).name == offered) settings.certificateIndex = settings.certificateIndex + 1
                 log("head unit rejected the certificate; next connection offers \"${certs.pick(settings.certificateIndex).name}\"")
                 // Strict head units accept only a Google-issued certificate. If we don't have one yet,
                 // offer to fetch it, so the user needn't open Advanced before connecting.
-                if (!certs.hasGoogleCertificate() && !certDownloadPrompted) {
+                if (CertificateDownload.ENABLED && !certs.hasGoogleCertificate() && !certDownloadPrompted) {
                     certDownloadPrompted = true
                     certNotice(getString(R.string.notif_cert_download_title), getString(R.string.notif_cert_download_message), retry = true)
                 }
@@ -405,17 +528,50 @@ class ProjectionService : Service() {
             // A USB link that dropped while still plugged in usually comes back: retry a few times.
             // Not a refused certificate: it would be refused again until the user trusts it.
             // The budget counts drops in a row, not per plug-in: a head unit that drops each link at once is not retried forever.
-            if (SystemClock.elapsedRealtime() - sessionStart > USB_RETRY_RESET_MS) usbRetries = 0
+            if (SystemClock.elapsedRealtime() - sessionStart > USB_RETRY_RESET_MS) { usbRetries = 0; wirelessRetries = 0 }
             val acc = usbAccessory
+            // Only a session that came in over Bluetooth can be dialled again (not the developer server's).
+            val wirelessAddress = sessionBluetoothAddress
+            val established = sessionEstablished
+            // An ending someone chose (Disconnect on the phone, the car saying bye-bye, e.g. ignition
+            // off or the driver leaving Android Auto) is not a dropped link: reconnecting on our own
+            // would undo it, and hammers an adapter that may need a moment (or a re-pair) afterwards.
+            val deliberate = stopRequested || reason.startsWith("stopped by phone") || reason == "session ended" ||
+                reason.startsWith("head unit ended the session")
             if (acc != null && pinRefusal == null && usbRetries++ < 3 && getSystemService(UsbManager::class.java).accessoryList?.contains(acc) == true) {
                 // openUsb checks hasPermission() again and asks for it if it was lost.
                 main.postDelayed({ if (this@ProjectionService.session == null) openUsb(acc) }, 1_500)
+            } else if (!established && !deliberate && pinRefusal == null && wirelessAddress != null && settings.wireless &&
+                settings.wirelessCompatMode == Settings.WIRELESS_COMPAT_AUTO && !wirelessProfileSwitched &&
+                settings.wirelessProfileFor(wirelessAddress) == null && stillBonded(wirelessAddress)) {
+                // The link came up but the session died before service discovery (no version request,
+                // a failed TLS handshake, a refused authentication), on a head unit nothing is known
+                // about yet: the other handshake answers the version differently, so try it once.
+                wirelessProfileSwitched = true
+                val other = !wirelessOfficial
+                log("wireless: the session ended before it was set up ($why); trying the ${if (other) "official-phone" else "normal"} handshake")
+                main.postDelayed({ if (this@ProjectionService.session == null && !stopRequested) connectWireless(wirelessAddress, forceOfficial = other) }, WIRELESS_PROFILE_SWITCH_DELAY_MS)
+            } else if (lastSessionWireless && !deliberate && pinRefusal == null && wirelessAddress != null && settings.wireless &&
+                wirelessRetries++ < WIRELESS_RECONNECT_RETRIES && stillBonded(wirelessAddress)) {
+                // Mid-drive drops (the dongle rebooting, a brief Wi-Fi/Bluetooth hiccup) are usually
+                // transient: the Bluetooth link is still bonded, so reconnect over it on our own
+                // instead of leaving the driver to notice and relaunch by hand.
+                val wait = WIRELESS_RECONNECT_DELAY_MS * (wirelessRetries)
+                log("wireless: link dropped ($why); retrying in ${wait / 1000} s ($wirelessRetries/$WIRELESS_RECONNECT_RETRIES)")
+                main.postDelayed({ if (this@ProjectionService.session == null && !stopRequested) connectWireless(wirelessAddress) }, wait)
             } else {
                 usbAccessory = null
                 usbRetries = 0
+                wirelessRetries = 0
                 main.postDelayed({ if (idle()) stopEverything() }, 3_000)
             }
         }
+    }
+
+    /** Whether [address] is still a bonded Bluetooth device: a dropped wireless link worth retrying, not one the user unpaired. */
+    private fun stillBonded(address: String): Boolean {
+        val adapter = getSystemService(android.bluetooth.BluetoothManager::class.java)?.adapter ?: return false
+        return runCatching { adapter.bondedDevices?.any { it.address == address } }.getOrDefault(false) == true
     }
 
     // ------------------------------------------------------------------ audio capture consent
@@ -609,9 +765,11 @@ class ProjectionService : Service() {
     private fun idle() = session == null && usbPermissionPending == null && tcpServer == null && wirelessJob?.isActive != true && projection == null
 
     private fun stopEverything() {
-        // No USB reconnect after this: the session's onEnded may come after the stop.
+        // No USB/wireless reconnect after this: the session's onEnded may come after the stop.
         usbAccessory = null
         usbRetries = 0
+        wirelessRetries = 0
+        stopRequested = true
         session?.stop()
         tcpServer?.stop(); tcpServer = null
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -631,6 +789,25 @@ class ProjectionService : Service() {
         /** Wireless attempts after a car that wasn't ready yet, waiting this much longer each time. */
         private const val WIRELESS_RETRIES = 2
         private const val WIRELESS_RETRY_DELAY_MS = 10_000L
+        /** Attempts to reconnect a wireless link that dropped after a session was already up. */
+        private const val WIRELESS_RECONNECT_RETRIES = 5
+        private const val WIRELESS_RECONNECT_DELAY_MS = 3_000L
+        /** A breath between the two handshakes of the automatic fallback: the adapter just hung up on one. */
+        private const val WIRELESS_PROFILE_SWITCH_DELAY_MS = 3_000L
+        /**
+         * [Settings.wirelessCompatMode]'s "auto" first guess, for a head unit that hasn't connected
+         * yet (afterwards the handshake that worked is remembered per Bluetooth address, and a wrong
+         * guess only costs one failed attempt before the other is tried): Bluetooth name fragments of common
+         * aftermarket wireless-Android-Auto dongles, which tend to need the exact message order,
+         * certificate choice and version echo a genuine phone uses to complete their handshake
+         * (first found with a Kowan KA05; the others are the same style of clone hardware under
+         * their usual branding). Not exhaustive — [Settings.wirelessCompatMode] overrides it for
+         * any adapter the guess gets wrong, new or old.
+         */
+        private val WIRELESS_COMPAT_NAME_HINTS = listOf(
+            "Kowan", "AA-Wireless", "AAWireless", "Carlinkit", "CPlay", "Ottocast", "Binize", "Motorola MA1",
+            "AutoKit", "AutoSky", "Teeran", "MSXTTLY", "Carsifi", "smartBox", "U2-", "CCPA", "Lamtto", "HEYINCAR",
+        )
         const val ACTION_USB = "net.prototux.aare.USB"
         const val ACTION_USB_PERMISSION = "net.prototux.aare.USB_PERMISSION"
         const val ACTION_IDLE = "net.prototux.aare.IDLE"

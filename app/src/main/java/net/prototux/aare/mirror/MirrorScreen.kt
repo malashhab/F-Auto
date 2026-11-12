@@ -162,10 +162,4 @@ private fun replay(context: android.content.Context, viewW: Int, viewH: Int, poi
 }
 
 /** Navigation apps that can't be hosted, recognised even before they post guidance. */
-private val KNOWN_NAVIGATION = setOf(
-    "com.google.android.apps.maps",
-    "com.waze",
-    "com.here.app.maps",
-    "com.sygic.aura",
-    "com.tomtom.gplay.navapp",
-)
+private val KNOWN_NAVIGATION = net.prototux.aare.host.CarAppInfo.KNOWN_NAVIGATION_PACKAGES

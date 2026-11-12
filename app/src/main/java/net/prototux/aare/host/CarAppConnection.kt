@@ -145,8 +145,12 @@ class CarAppConnection(
         // A second session of the same app, for the cluster display: the library tells them apart by SessionInfo.
         if (cluster) SessionInfoIntentEncoder.encode(SessionInfo(SessionInfo.DISPLAY_TYPE_CLUSTER, "aare-cluster"), bindIntent)
         val ok = runCatching {
+            // BIND_ABOVE_CLIENT: hosted apps (especially navigation ones) do their own background
+            // work — location updates, rerouting — and get killed under memory pressure more often
+            // than a plain bound service would, since they aren't the certified Android Auto host
+            // Android reserves some background-work exemptions for.
             context.bindService(bindIntent, serviceConnection,
-                Context.BIND_AUTO_CREATE or Context.BIND_INCLUDE_CAPABILITIES or Context.BIND_IMPORTANT)
+                Context.BIND_AUTO_CREATE or Context.BIND_INCLUDE_CAPABILITIES or Context.BIND_IMPORTANT or Context.BIND_ABOVE_CLIENT)
         }.getOrElse { log("bind failed", it); false }
         bound = ok
         if (!ok) fail(context.getString(R.string.carapp_error_start, info.label))

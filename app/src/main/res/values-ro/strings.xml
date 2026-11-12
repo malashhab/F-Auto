@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Îți permite să folosești ecranul telefonului din mașină: AARE reproduce pe telefon apăsările făcute pe ecranul mașinii și verifică ce aplicație este activă, astfel încât ecranul telefonului rămâne întrerupt în timpul condusului, cu excepția cazului în care afișează o aplicație de navigație. AARE nu citește altceva.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Îți permite să folosești ecranul telefonului din mașină: F-Auto reproduce pe telefon apăsările făcute pe ecranul mașinii și verifică ce aplicație este activă, astfel încât ecranul telefonului rămâne întrerupt în timpul condusului, cu excepția cazului în care afișează o aplicație de navigație. F-Auto nu citește altceva.</string>
     <string name="mirror_locked_placeholder">Ecranul telefonului este întrerupt cât timp telefonul este blocat. Deblochează telefonul pentru a-l afișa.</string>
-    <string name="mirror_driving_no_accessibility">Ecranul telefonului este întrerupt în timpul condusului. Pentru a afișa aplicațiile de navigație în timpul condusului, activează AARE în setările de accesibilitate ale telefonului: astfel AARE știe ce aplicație este deschisă.</string>
+    <string name="mirror_driving_no_accessibility">Ecranul telefonului este întrerupt în timpul condusului. Pentru a afișa aplicațiile de navigație în timpul condusului, activează F-Auto în setările de accesibilitate ale telefonului: astfel F-Auto știe ce aplicație este deschisă.</string>
     <string name="mirror_driving_nav_only">Ecranul telefonului este întrerupt în timpul condusului. Afișează doar aplicațiile de navigație.</string>
-    <string name="mirror_need_car_audio">Activează Audio mașină în AARE pe telefon și alege Ecran întreg când Android întreabă: ecranul telefonului folosește aceeași permisiune.</string>
-    <string name="mirror_need_accessibility">Pentru a folosi telefonul din mașină, activează AARE în setările de accesibilitate ale telefonului.</string>
+    <string name="mirror_need_car_audio">Activează Audio mașină în F-Auto pe telefon și alege Ecran întreg când Android întreabă: ecranul telefonului folosește aceeași permisiune.</string>
+    <string name="mirror_need_accessibility">Pentru a folosi telefonul din mașină, activează F-Auto în setările de accesibilitate ale telefonului.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Înapoi</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Locație</string>
     <string name="setup_toggle_car_gps_title">Folosește GPS-ul mașinii</string>
     <string name="setup_toggle_car_gps_subtitle">Cât timp ești conectat, aplicațiile de pe telefon văd poziția mașinii în loc de cea a telefonului, astfel încât aplicațiile de navigație nu le confundă</string>
-    <string name="setup_check_mock_location_title">Permite AARE să seteze locația</string>
-    <string name="setup_check_mock_location_subtitle">Opțiuni dezvoltator &gt; Selectează aplicația de locație simulată &gt; AARE</string>
+    <string name="setup_check_mock_location_title">Permite F-Auto să seteze locația</string>
+    <string name="setup_check_mock_location_subtitle">Opțiuni dezvoltator &gt; Selectează aplicația de locație simulată &gt; F-Auto</string>
     <string name="setup_section_video">Video</string>
     <string name="setup_toggle_60fps_title">Preferă 60 fps</string>
     <string name="setup_toggle_60fps_subtitle">Mai fluid când mașina îl acceptă</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Muzică, podcasturi, radio</string>
     <string name="setup_app_group_messaging">Mesagerie</string>
     <string name="setup_app_kind_messaging">Mesaje din notificările sale</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Aplicații Android Auto pe care AARE nu le poate afișa</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Aplicații Android Auto pe care F-Auto nu le poate afișa</string>
     <string name="setup_hint_allowlist">Aplicațiile construite cu versiuni recente ale bibliotecii auto de la Google acceptă doar gazdele din lista lor de permisiuni; vezi README.</string>
     <string name="setup_app_entry_phone">Telefon</string>
     <string name="setup_app_entry_settings">Setări</string>
     <string name="setup_app_entry_notifications">Notificări</string>
     <string name="setup_section_app_order">Ordinea în mașină</string>
     <string name="setup_section_connection_log">Jurnal de conectare</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Nu este afiliat cu Google. Android Auto este o marcă înregistrată a Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Nu este afiliat cu Google. Android Auto este o marcă înregistrată a Google LLC.</string>
     <string name="setup_choice_style">Stil</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Certificate telefon</string>
-    <string name="cert_hint">Unitățile centrale verifică certificatul telefonului. Unitățile centrale open-source acceptă certificatul generat; mașinile care folosesc software-ul Google pentru unitatea centrală acceptă doar un certificat emis de Google, pe care AARE nu îl poate include. Poți importa unul pe care ai dreptul să-l folosești (certificat PEM + cheie PKCS#8, sau PKCS#12). Poți descărca și certificatul din cea mai recentă aplicație Android Auto (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Unitățile centrale verifică certificatul telefonului. Unitățile centrale open-source acceptă certificatul generat; mașinile care folosesc software-ul Google pentru unitatea centrală acceptă doar un certificat emis de Google, pe care F-Auto nu îl poate include. Poți importa unul pe care ai dreptul să-l folosești (certificat PEM + cheie PKCS#8, sau PKCS#12). Poți descărca și certificatul din cea mai recentă aplicație Android Auto (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · până la %2$s</string>
     <string name="cert_action_remove">Elimină</string>
     <string name="cert_action_import">Importă certificat…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">În timpul condusului</string>
     <string name="msg_toggle_dnd_title">Nu deranja</string>
     <string name="msg_toggle_dnd_subtitle">Pune telefonul pe silențios cât timp este conectat; apelurile și conversațiile prioritare ajung totuși</string>
-    <string name="msg_check_dnd_access_title">Permite AARE să activeze Nu deranja</string>
+    <string name="msg_check_dnd_access_title">Permite F-Auto să activeze Nu deranja</string>
     <string name="msg_check_dnd_access_subtitle">Android întreabă o singură dată</string>
     <string name="msg_toggle_autoreply_title">Răspuns automat</string>
     <string name="msg_toggle_autoreply_subtitle">Răspunde persoanelor care scriu, o dată per conversație per deplasare (nu și grupurilor)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Nicio metodă nu este încă configurată: alege una mai jos.</string>
     <string name="audio_section_methods">Metode, în ordinea recomandării</string>
     <string name="audio_policy_ready">Pregătit. Muzica și vocea de navigație ajung separat în mașină, telefonul rămâne silențios.</string>
-    <string name="audio_policy_not_ready">Ca Android Auto: muzica și vocea de navigație separat, difuzorul telefonului dezactivat. Necesită un telefon cu root: instalează AARE ca aplicație de sistem cu modulul Magisk (vezi README).</string>
+    <string name="audio_policy_not_ready">Ca Android Auto: muzica și vocea de navigație separat, difuzorul telefonului dezactivat. Necesită un telefon cu root: instalează F-Auto ca aplicație de sistem cu modulul Magisk (vezi README).</string>
     <string name="audio_shizuku_ready">Pregătit. Tot ce redă telefonul ajunge în mașină, inclusiv vocea de navigație; telefonul rămâne silențios.</string>
     <string name="audio_shizuku_needs_android12">Necesită Android 12 sau o versiune mai nouă.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku este activ: apasă pentru a permite AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku este activ: apasă pentru a permite F-Auto.</string>
     <string name="audio_shizuku_install_hint">Nu necesită root. Instalează Shizuku, pornește-l (depanare wireless, o dată per repornire), apoi revino aici.</string>
     <string name="audio_playback_ready">Pregătit. Doar media: fără vocea de navigație, unele aplicații pot renunța, iar telefonul continuă să redea și el.</string>
     <string name="audio_playback_not_ready">Funcționează oriunde, cu limitări: doar media, fără vocea de navigație. Android cere să capturezi ecranul: alege Ecran întreg (folosit și de ecranul telefonului).</string>
-    <string name="audio_notice_setup_hint">Deschide AARE pe telefon și configurează audio mașină pentru a auzi telefonul în mașină</string>
+    <string name="audio_notice_setup_hint">Deschide F-Auto pe telefon și configurează audio mașină pentru a auzi telefonul în mașină</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Ecran telefon</string>
     <string name="phone_toggle_enable_title">Ecranul telefonului în mașină</string>
-    <string name="phone_toggle_enable_subtitle">Ecranul propriu al telefonului, pentru aplicațiile pe care AARE nu le poate găzdui (Google Maps, Waze). Întrerupt cât timp telefonul este blocat și în timpul condusului, cu excepția cazului în care o aplicație de navigație ghidează. Nu este oferit pe serverul unității centrale decât dacă este activat acolo</string>
+    <string name="phone_toggle_enable_subtitle">Ecranul propriu al telefonului, pentru aplicațiile pe care F-Auto nu le poate găzdui (Google Maps, Waze). Întrerupt cât timp telefonul este blocat și în timpul condusului, cu excepția cazului în care o aplicație de navigație ghidează. Nu este oferit pe serverul unității centrale decât dacă este activat acolo</string>
     <string name="phone_check_touch_title">Apăsare pe ecranul telefonului</string>
-    <string name="phone_check_touch_subtitle">Activează AARE în Accesibilitate. Aplicațiile instalate manual pot avea nevoie întâi de "Permite setările restricționate" în informațiile aplicației AARE</string>
+    <string name="phone_check_touch_subtitle">Activează F-Auto în Accesibilitate. Aplicațiile instalate manual pot avea nevoie întâi de "Permite setările restricționate" în informațiile aplicației F-Auto</string>
     <string name="phone_hint_touch_capture">Imaginea folosește permisiunea de captură a ecranului (pagina Audio mașină, alege Ecran întreg).</string>
-    <string name="phone_app_row_subtitle">Ecranul propriu al telefonului, pentru aplicațiile pe care AARE nu le poate găzdui</string>
+    <string name="phone_app_row_subtitle">Ecranul propriu al telefonului, pentru aplicațiile pe care F-Auto nu le poate găzdui</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Asistent vocal</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Acceptă doar o unitate centrală la care ești conectat chiar acum</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, apoi reconectează-te.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, apoi reconectează-te.</string>
-    <string name="notif_cert_changed_message">certificatul unității centrale s-a schimbat: apasă Acceptă în notificare sau în AARE doar dacă software-ul ei a fost actualizat, apoi reconectează-te</string>
-    <string name="notif_cert_untrusted_message">certificatul unității centrale nu este încă acceptat: apasă Acceptă în notificare sau în AARE, apoi reconectează-te</string>
+    <string name="notif_cert_changed_message">certificatul unității centrale s-a schimbat: apasă Acceptă în notificare sau în F-Auto doar dacă software-ul ei a fost actualizat, apoi reconectează-te</string>
+    <string name="notif_cert_untrusted_message">certificatul unității centrale nu este încă acceptat: apasă Acceptă în notificare sau în F-Auto, apoi reconectează-te</string>
     <string name="notif_car_nearby_title">Mașină în apropiere</string>
     <string name="notif_car_nearby_text">Apasă pentru a te conecta wireless</string>
     <string name="notif_status_connecting_to">Se conectează la %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Navigație</string>
     <string name="notif_navigation_no_app_text">Nicio aplicație de navigație în mașină</string>
     <string name="notif_assistant_title">Asistent</string>
-    <string name="notif_assistant_choose_text">Alege un asistent vocal în setările AARE de pe telefon</string>
+    <string name="notif_assistant_choose_text">Alege un asistent vocal în setările F-Auto de pe telefon</string>
     <string name="notif_assistant_no_car_screen">%1$s nu are ecran pentru mașină: s-a deschis pe telefon</string>
-    <string name="notif_assistant_cant_open">%1$s nu poate fi deschis. Alege alt asistent în setările AARE</string>
+    <string name="notif_assistant_cant_open">%1$s nu poate fi deschis. Alege alt asistent în setările F-Auto</string>
     <string name="notif_parked_only_title">Indisponibil în timpul condusului</string>
     <string name="notif_parked_only_text">Parchează pentru a folosi această funcție</string>
     <string name="notif_empty">Nicio notificare</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">Coada este goală</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Acordă AARE acces la notificări pe telefon pentru a vedea mesajele aici</string>
+    <string name="msg_no_access">Acordă F-Auto acces la notificări pe telefon pentru a vedea mesajele aici</string>
     <string name="msg_listener_not_ready">Nimic de văzut aici încă</string>
     <string name="msg_reply_sent">Răspuns trimis</string>
     <string name="msg_reply_rejected">%1$s nu a acceptat răspunsul</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Recente</string>
     <string name="phone_tab_contacts">Contacte</string>
     <string name="phone_tab_keypad">Tastatură</string>
-    <string name="phone_permissions_placeholder">Permite apelurile, istoricul apelurilor și contactele în AARE pe telefon (Finalizează configurarea).</string>
+    <string name="phone_permissions_placeholder">Permite apelurile, istoricul apelurilor și contactele în F-Auto pe telefon (Finalizează configurarea).</string>
     <string name="phone_notice_calling_title">Se apelează</string>
     <string name="phone_no_recent_calls">Niciun apel recent</string>
     <string name="phone_no_contacts">Niciun contact cu un număr de telefon</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Aplicații pe ecranul mașinii (avansat)</string>
-    <string name="standalone_section_warning">Acestea nu sunt aplicații Android Auto: AARE afișează ecranul normal al telefonului, doar la parcare, și necesită root sau Shizuku. Folosește pe propriul risc.</string>
+    <string name="standalone_section_warning">Acestea nu sunt aplicații Android Auto: F-Auto afișează ecranul normal al telefonului, doar la parcare, și necesită root sau Shizuku. Folosește pe propriul risc.</string>
     <string name="standalone_toggle_title">Lansează aplicații de telefon pe ecranul mașinii</string>
     <string name="standalone_toggle_subtitle">Alege aplicațiile de mai jos. Afișate doar la parcare.</string>
     <string name="standalone_need_root">Necesită root sau Shizuku. Configurează unul dintre ele în Audio mașină, apoi revino.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Giroscop</string>
     <string name="car_data_dtc">Coduri de eroare</string>
     <string name="setup_toggle_force_h264_title">Forțează video H.264</string>
-    <string name="setup_toggle_force_h264_subtitle">Implicit, AARE folosește cel mai bun codec pe care mașina și telefonul îl au în comun (H.265…). Activează dacă imaginea din mașină are probleme.</string>
+    <string name="setup_toggle_force_h264_subtitle">Implicit, F-Auto folosește cel mai bun codec pe care mașina și telefonul îl au în comun (H.265…). Activează dacă imaginea din mașină are probleme.</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">Încearcă din nou</string>
     <string name="common_something_went_wrong">Ceva nu a funcționat</string>
@@ -424,7 +424,7 @@
     <string name="media_error_skip_limit">Limita de omitere a fost atinsă</string>
     <string name="media_error_setup">Finalizează configurarea %1$s pe telefon</string>
     <string name="media_error_end_of_playlist">Sfârșitul listei de redare</string>
-    <string name="media_error_permission">%1$s nu permite AARE să îl exploreze</string>
+    <string name="media_error_permission">%1$s nu permite F-Auto să îl exploreze</string>
     <string name="media_error_io">Problemă de rețea sau de stocare</string>
     <string name="media_error_not_supported">Nu este acceptat de %1$s</string>
     <string name="media_error_disconnected">%1$s s-a deconectat</string>
@@ -438,6 +438,6 @@
     <string name="carapp_error_refused">%1$s a refuzat conexiunea</string>
     <string name="carapp_error_api_level">%1$s necesită nivelul API auto %2$d; acest sistem acceptă %3$d</string>
     <string name="carapp_error_stopped">%1$s s-a oprit</string>
-    <string name="carapp_error_google_only">%1$s acceptă doar Android Auto de la Google. Trebuie să permită AARE (vezi lista de aplicații de pe telefon).</string>
+    <string name="carapp_error_google_only">%1$s acceptă doar Android Auto de la Google. Trebuie să permită F-Auto (vezi lista de aplicații de pe telefon).</string>
     <string name="carapp_error_cant_start">%1$s nu a putut porni: %2$s</string>
 </resources>

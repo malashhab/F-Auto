@@ -2,6 +2,8 @@ package net.prototux.aare.car
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -42,4 +44,34 @@ object Calls {
     @Suppress("DEPRECATION")
     fun state(context: Context): Int = runCatching { context.getSystemService(TelephonyManager::class.java).callState }
         .getOrDefault(TelephonyManager.CALL_STATE_IDLE)
+
+    /**
+     * Forces the call onto the phone's own loudspeaker and microphone, away from whatever route
+     * Android picked (often a wireless adapter's Bluetooth hands-free profile, whose "microphone"
+     * is frequently just not wired up). Safe to call repeatedly; a no-op once already on speaker.
+     */
+    @Suppress("DEPRECATION")
+    fun useSpeaker(context: Context) {
+        val am = context.getSystemService(AudioManager::class.java) ?: return
+        speakerForced = true
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val speaker = am.availableCommunicationDevices.firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
+            if (speaker != null) runCatching { am.setCommunicationDevice(speaker) }
+            else runCatching { am.isSpeakerphoneOn = true }
+        } else {
+            runCatching { am.isSpeakerphoneOn = true }
+        }
+    }
+
+    /** Undoes [useSpeaker] once the call is over; a no-op if it never ran. */
+    @Suppress("DEPRECATION")
+    fun releaseSpeaker(context: Context) {
+        if (!speakerForced) return
+        speakerForced = false
+        val am = context.getSystemService(AudioManager::class.java) ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) runCatching { am.clearCommunicationDevice() }
+        else runCatching { am.isSpeakerphoneOn = false }
+    }
+
+    @Volatile private var speakerForced = false
 }

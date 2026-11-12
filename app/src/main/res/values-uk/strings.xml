@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Дозволяє користуватися екраном телефону з автомобіля: AARE відтворює на телефоні дотики, зроблені на екрані автомобіля, і перевіряє, який застосунок активний, щоб екран телефону залишався призупиненим під час керування, якщо на ньому не показано навігаційний застосунок. AARE більше нічого не читає.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Дозволяє користуватися екраном телефону з автомобіля: F-Auto відтворює на телефоні дотики, зроблені на екрані автомобіля, і перевіряє, який застосунок активний, щоб екран телефону залишався призупиненим під час керування, якщо на ньому не показано навігаційний застосунок. F-Auto більше нічого не читає.</string>
     <string name="mirror_locked_placeholder">Екран телефону призупинено, поки телефон заблокований. Розблокуйте телефон, щоб його показати.</string>
-    <string name="mirror_driving_no_accessibility">Екран телефону призупинено під час керування. Щоб показувати навігаційні застосунки під час керування, увімкніть AARE в налаштуваннях спеціальних можливостей телефону: це повідомляє AARE, який застосунок відкрито.</string>
+    <string name="mirror_driving_no_accessibility">Екран телефону призупинено під час керування. Щоб показувати навігаційні застосунки під час керування, увімкніть F-Auto в налаштуваннях спеціальних можливостей телефону: це повідомляє F-Auto, який застосунок відкрито.</string>
     <string name="mirror_driving_nav_only">Екран телефону призупинено під час керування. Він показує лише навігаційні застосунки.</string>
-    <string name="mirror_need_car_audio">Увімкніть Звук в автомобілі в AARE на телефоні та виберіть Весь екран, коли Android запитає: екран телефону використовує той самий дозвіл.</string>
-    <string name="mirror_need_accessibility">Щоб користуватися телефоном з автомобіля, увімкніть AARE в налаштуваннях спеціальних можливостей телефону.</string>
+    <string name="mirror_need_car_audio">Увімкніть Звук в автомобілі в F-Auto на телефоні та виберіть Весь екран, коли Android запитає: екран телефону використовує той самий дозвіл.</string>
+    <string name="mirror_need_accessibility">Щоб користуватися телефоном з автомобіля, увімкніть F-Auto в налаштуваннях спеціальних можливостей телефону.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Назад</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Геолокація</string>
     <string name="setup_toggle_car_gps_title">Використовувати GPS автомобіля</string>
     <string name="setup_toggle_car_gps_subtitle">Під час з\'єднання застосунки на телефоні бачать позицію автомобіля замість позиції телефону, тож навігаційні застосунки не плутають ці дві</string>
-    <string name="setup_check_mock_location_title">Дозволити AARE встановлювати геолокацію</string>
-    <string name="setup_check_mock_location_subtitle">Параметри розробника &gt; Вибрати застосунок фіктивної геолокації &gt; AARE</string>
+    <string name="setup_check_mock_location_title">Дозволити F-Auto встановлювати геолокацію</string>
+    <string name="setup_check_mock_location_subtitle">Параметри розробника &gt; Вибрати застосунок фіктивної геолокації &gt; F-Auto</string>
     <string name="setup_section_video">Відео</string>
     <string name="setup_toggle_60fps_title">Надавати перевагу 60 кадрам/с</string>
     <string name="setup_toggle_60fps_subtitle">Плавніше, якщо автомобіль це підтримує</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Музика, подкасти, радіо</string>
     <string name="setup_app_group_messaging">Повідомлення</string>
     <string name="setup_app_kind_messaging">Повідомлення з його сповіщень</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Застосунки Android Auto, які AARE не може показати</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Застосунки Android Auto, які F-Auto не може показати</string>
     <string name="setup_hint_allowlist">Застосунки, створені на новіших версіях бібліотеки Google для автомобілів, приймають лише хости зі списку дозволених; див. README.</string>
     <string name="setup_app_entry_phone">Телефон</string>
     <string name="setup_app_entry_settings">Налаштування</string>
     <string name="setup_app_entry_notifications">Сповіщення</string>
     <string name="setup_section_app_order">Порядок в автомобілі</string>
     <string name="setup_section_connection_log">Журнал з\'єднань</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Не пов\'язано з Google. Android Auto є торговою маркою Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Не пов\'язано з Google. Android Auto є торговою маркою Google LLC.</string>
     <string name="setup_choice_style">Стиль</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Сертифікати телефону</string>
-    <string name="cert_hint">Головні пристрої перевіряють сертифікат телефону. Головні пристрої з відкритим кодом приймають згенерований сертифікат; автомобілі з програмним забезпеченням головного пристрою Google приймають лише сертифікат, виданий Google, який AARE не може включити. Ви можете імпортувати той, на використання якого маєте право (сертифікат PEM + ключ PKCS#8, або PKCS#12). Також можна завантажити сертифікат з найновішої версії Android Auto (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Головні пристрої перевіряють сертифікат телефону. Головні пристрої з відкритим кодом приймають згенерований сертифікат; автомобілі з програмним забезпеченням головного пристрою Google приймають лише сертифікат, виданий Google, який F-Auto не може включити. Ви можете імпортувати той, на використання якого маєте право (сертифікат PEM + ключ PKCS#8, або PKCS#12). Також можна завантажити сертифікат з найновішої версії Android Auto (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · до %2$s</string>
     <string name="cert_action_remove">Видалити</string>
     <string name="cert_action_import">Імпортувати сертифікат…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">Під час керування</string>
     <string name="msg_toggle_dnd_title">Не турбувати</string>
     <string name="msg_toggle_dnd_subtitle">Вимикати звук телефону під час з\'єднання; дзвінки та пріоритетні розмови все одно проходять</string>
-    <string name="msg_check_dnd_access_title">Дозволити AARE увімкнути Не турбувати</string>
+    <string name="msg_check_dnd_access_title">Дозволити F-Auto увімкнути Не турбувати</string>
     <string name="msg_check_dnd_access_subtitle">Android запитує один раз</string>
     <string name="msg_toggle_autoreply_title">Автовідповідь</string>
     <string name="msg_toggle_autoreply_subtitle">Відповідає тим, хто пише, один раз на розмову за поїздку (не групам)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Жодний метод ще не налаштовано: виберіть один нижче.</string>
     <string name="audio_section_methods">Методи, кращі спочатку</string>
     <string name="audio_policy_ready">Готово. Музика і голос навігації йдуть до автомобіля окремо, телефон залишається тихим.</string>
-    <string name="audio_policy_not_ready">Як Android Auto: музика і голос навігації окремо, динамік телефону вимкнено. Потрібен телефон з root-правами: установіть AARE як системний застосунок за допомогою модуля Magisk (див. README).</string>
+    <string name="audio_policy_not_ready">Як Android Auto: музика і голос навігації окремо, динамік телефону вимкнено. Потрібен телефон з root-правами: установіть F-Auto як системний застосунок за допомогою модуля Magisk (див. README).</string>
     <string name="audio_shizuku_ready">Готово. Усе, що відтворює телефон, йде до автомобіля, включно з голосом навігації; телефон залишається тихим.</string>
     <string name="audio_shizuku_needs_android12">Потрібен Android 12 або новіший.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku працює: натисніть, щоб дозволити AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku працює: натисніть, щоб дозволити F-Auto.</string>
     <string name="audio_shizuku_install_hint">Root-права не потрібні. Установіть Shizuku, запустіть його (бездротове налагодження, один раз після перезавантаження), а потім поверніться сюди.</string>
     <string name="audio_playback_ready">Готово. Лише медіа: без голосу навігації, деякі застосунки відключаються, а телефон теж продовжує відтворювати.</string>
     <string name="audio_playback_not_ready">Працює всюди, з обмеженнями: лише медіа, без голосу навігації. Android запитує про захоплення екрана: виберіть Весь екран (також використовується екраном телефону).</string>
-    <string name="audio_notice_setup_hint">Відкрийте AARE на телефоні та налаштуйте звук в автомобілі, щоб чути телефон в автомобілі</string>
+    <string name="audio_notice_setup_hint">Відкрийте F-Auto на телефоні та налаштуйте звук в автомобілі, щоб чути телефон в автомобілі</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Екран телефону</string>
     <string name="phone_toggle_enable_title">Екран телефону в автомобілі</string>
-    <string name="phone_toggle_enable_subtitle">Власний екран телефону, для застосунків, які AARE не може хостити (Google Maps, Waze). Призупинено, коли телефон заблокований, і під час керування, якщо навігаційний застосунок не веде маршрут. Не пропонується на сервері головного пристрою, якщо там не увімкнено</string>
+    <string name="phone_toggle_enable_subtitle">Власний екран телефону, для застосунків, які F-Auto не може хостити (Google Maps, Waze). Призупинено, коли телефон заблокований, і під час керування, якщо навігаційний застосунок не веде маршрут. Не пропонується на сервері головного пристрою, якщо там не увімкнено</string>
     <string name="phone_check_touch_title">Дотик на екрані телефону</string>
-    <string name="phone_check_touch_subtitle">Увімкніть AARE в Спеціальних можливостях. Застосунки, встановлені не з магазину, можуть спочатку вимагати «Дозволити обмежені налаштування» в інформації про застосунок AARE</string>
+    <string name="phone_check_touch_subtitle">Увімкніть F-Auto в Спеціальних можливостях. Застосунки, встановлені не з магазину, можуть спочатку вимагати «Дозволити обмежені налаштування» в інформації про застосунок F-Auto</string>
     <string name="phone_hint_touch_capture">Зображення використовує дозвіл на захоплення екрана (сторінка Звук в автомобілі, виберіть Весь екран).</string>
-    <string name="phone_app_row_subtitle">Власний екран телефону, для застосунків, які AARE не може хостити</string>
+    <string name="phone_app_row_subtitle">Власний екран телефону, для застосунків, які F-Auto не може хостити</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Голосовий асистент</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Довіряйте лише головному пристрою, до якого ви підключені зараз</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, потім з\'єднайтеся знову.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, потім з\'єднайтеся знову.</string>
-    <string name="notif_cert_changed_message">сертифікат головного пристрою змінився: натисніть Довіряти в сповіщенні або в AARE лише якщо його програмне забезпечення було оновлено, потім з\'єднайтеся знову</string>
-    <string name="notif_cert_untrusted_message">сертифікат головного пристрою ще не довірений: натисніть Довіряти в сповіщенні або в AARE, потім з\'єднайтеся знову</string>
+    <string name="notif_cert_changed_message">сертифікат головного пристрою змінився: натисніть Довіряти в сповіщенні або в F-Auto лише якщо його програмне забезпечення було оновлено, потім з\'єднайтеся знову</string>
+    <string name="notif_cert_untrusted_message">сертифікат головного пристрою ще не довірений: натисніть Довіряти в сповіщенні або в F-Auto, потім з\'єднайтеся знову</string>
     <string name="notif_car_nearby_title">Автомобіль поруч</string>
     <string name="notif_car_nearby_text">Натисніть, щоб з\'єднатися бездротово</string>
     <string name="notif_status_connecting_to">З\'єднання з %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Навігація</string>
     <string name="notif_navigation_no_app_text">В автомобілі немає навігаційного застосунку</string>
     <string name="notif_assistant_title">Асистент</string>
-    <string name="notif_assistant_choose_text">Виберіть голосового асистента в налаштуваннях AARE на телефоні</string>
+    <string name="notif_assistant_choose_text">Виберіть голосового асистента в налаштуваннях F-Auto на телефоні</string>
     <string name="notif_assistant_no_car_screen">%1$s не має екрана для автомобіля: він відкрився на телефоні</string>
-    <string name="notif_assistant_cant_open">Не вдається відкрити %1$s. Виберіть іншого асистента в налаштуваннях AARE</string>
+    <string name="notif_assistant_cant_open">Не вдається відкрити %1$s. Виберіть іншого асистента в налаштуваннях F-Auto</string>
     <string name="notif_parked_only_title">Недоступно під час керування</string>
     <string name="notif_parked_only_text">Паркуйтеся, щоб це використати</string>
     <string name="notif_empty">Немає сповіщень</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">Черга порожня</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Надайте AARE доступ до сповіщень на телефоні, щоб бачити повідомлення тут</string>
+    <string name="msg_no_access">Надайте F-Auto доступ до сповіщень на телефоні, щоб бачити повідомлення тут</string>
     <string name="msg_listener_not_ready">Тут ще нічого немає</string>
     <string name="msg_reply_sent">Відповідь надіслано</string>
     <string name="msg_reply_rejected">%1$s не прийняв відповідь</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Останні</string>
     <string name="phone_tab_contacts">Контакти</string>
     <string name="phone_tab_keypad">Клавіатура</string>
-    <string name="phone_permissions_placeholder">Дозвольте дзвінки, історію дзвінків і контакти в AARE на телефоні (Завершити налаштування).</string>
+    <string name="phone_permissions_placeholder">Дозвольте дзвінки, історію дзвінків і контакти в F-Auto на телефоні (Завершити налаштування).</string>
     <string name="phone_notice_calling_title">Дзвінок</string>
     <string name="phone_no_recent_calls">Немає останніх дзвінків</string>
     <string name="phone_no_contacts">Немає контактів з номером телефону</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Застосунки на екрані автомобіля (розширені)</string>
-    <string name="standalone_section_warning">Це не застосунки Android Auto: AARE показує їхній звичайний екран телефону, лише під час паркування, і потребує root або Shizuku. Використовуйте на власний ризик.</string>
+    <string name="standalone_section_warning">Це не застосунки Android Auto: F-Auto показує їхній звичайний екран телефону, лише під час паркування, і потребує root або Shizuku. Використовуйте на власний ризик.</string>
     <string name="standalone_toggle_title">Запуск застосунків телефону на екрані автомобіля</string>
     <string name="standalone_toggle_subtitle">Виберіть застосунки нижче. Відображаються лише під час паркування.</string>
     <string name="standalone_need_root">Потрібен root або Shizuku. Налаштуйте одне з них на сторінці Звук в автомобілі, а потім поверніться.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Гіроскоп</string>
     <string name="car_data_dtc">Коди несправностей</string>
     <string name="setup_toggle_force_h264_title">Примусово використовувати відео H.264</string>
-    <string name="setup_toggle_force_h264_subtitle">За замовчуванням AARE використовує найкращий кодек, який підтримують і автомобіль, і телефон (H.265…). Увімкніть, якщо зображення в автомобілі спотворене.</string>
+    <string name="setup_toggle_force_h264_subtitle">За замовчуванням F-Auto використовує найкращий кодек, який підтримують і автомобіль, і телефон (H.265…). Увімкніть, якщо зображення в автомобілі спотворене.</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">Спробувати знову</string>
     <string name="common_something_went_wrong">Щось пішло не так</string>
@@ -424,7 +424,7 @@
     <string name="media_error_skip_limit">Досягнуто ліміту пропусків</string>
     <string name="media_error_setup">Завершіть налаштування %1$s на телефоні</string>
     <string name="media_error_end_of_playlist">Кінець списку відтворення</string>
-    <string name="media_error_permission">%1$s не дозволяє AARE переглядати його</string>
+    <string name="media_error_permission">%1$s не дозволяє F-Auto переглядати його</string>
     <string name="media_error_io">Проблема з мережею чи пам\'яттю</string>
     <string name="media_error_not_supported">Не підтримується %1$s</string>
     <string name="media_error_disconnected">%1$s від\'єднано</string>
@@ -438,6 +438,6 @@
     <string name="carapp_error_refused">%1$s відмовив у з\'єднанні</string>
     <string name="carapp_error_api_level">Для %1$s потрібен рівень API автомобіля %2$d; цей хост підтримує %3$d</string>
     <string name="carapp_error_stopped">%1$s зупинився</string>
-    <string name="carapp_error_google_only">%1$s приймає лише Android Auto від Google. Потрібно дозволити AARE (див. список застосунків на телефоні).</string>
+    <string name="carapp_error_google_only">%1$s приймає лише Android Auto від Google. Потрібно дозволити F-Auto (див. список застосунків на телефоні).</string>
     <string name="carapp_error_cant_start">Не вдалося запустити %1$s: %2$s</string>
 </resources>

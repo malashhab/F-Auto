@@ -91,6 +91,10 @@ class AppLauncher(private val context: Context) {
         runCatching { host?.touch(downTime, eventTime, action, x, y, pointerId) }
     }
     fun key(eventTime: Long, action: Int, keyCode: Int) { runCatching { host?.key(eventTime, action, keyCode) } }
+    /** Forwards a whole touch event (multi-pointer). */
+    fun motion(event: android.view.MotionEvent) { runCatching { host?.motion(event) } }
+    /** Opens [uri] with [pkg] on the launched app's display. False if the launcher isn't running. */
+    fun view(uri: String, pkg: String): Boolean = runCatching { host?.view(uri, pkg) ?: false }.getOrDefault(false)
 
     fun release() {
         runCatching { host?.stop() }

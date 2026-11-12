@@ -50,6 +50,44 @@ class Settings(context: Context) {
         get() = prefs.getBoolean("wireless", true)
         set(v) = prefs.edit { putBoolean("wireless", v) }
 
+    /**
+     * Fortuner fork: the bonded device name (substring, case-insensitive) the "Connect now" button
+     * dials directly over RFCOMM, the way `D:\aa-phone-side` (stage1) does — skipping AARE's normal
+     * check that Android has already cached the wireless-Android-Auto UUID for that device (SDP),
+     * which some adapters never do while the system's own Android Auto is disabled.
+     */
+    var wirelessConnectNowTarget: String
+        get() = prefs.getString("wireless_connect_now_target", "") ?: ""
+        set(v) = prefs.edit { putString("wireless_connect_now_target", v) }
+
+    /**
+     * Some wireless adapters (cheap aftermarket dongles especially) only complete the handshake
+     * when every message matches exactly what a genuine phone sends ([WIRELESS_COMPAT_ON]); most
+     * don't need that and work with AARE's normal, slightly different sequence
+     * ([WIRELESS_COMPAT_OFF]). [WIRELESS_COMPAT_AUTO] (the default) works it out per adapter: it
+     * starts with whichever worked with that adapter before ([wirelessProfileFor]), else a guess
+     * from its Bluetooth name, tries the other when the first gets no answer, and remembers the one
+     * that reaches a working session. On and Off pin one sequence for every adapter.
+     */
+    var wirelessCompatMode: String
+        get() = prefs.getString("wireless_compat_mode", WIRELESS_COMPAT_AUTO) ?: WIRELESS_COMPAT_AUTO
+        set(v) = prefs.edit { putString("wireless_compat_mode", v) }
+
+    /**
+     * The handshake that reached a working session with the head unit or adapter at this Bluetooth
+     * address: true the genuine-phone one, false AARE's normal one, null if it never connected.
+     */
+    fun wirelessProfileFor(address: String): Boolean? =
+        prefs.getStringSet("wireless_profiles", emptySet()).orEmpty().firstOrNull { it.startsWith("$address\t") }?.endsWith("\t1")
+
+    fun rememberWirelessProfile(address: String, official: Boolean) {
+        val others = prefs.getStringSet("wireless_profiles", emptySet()).orEmpty().filterNot { it.startsWith("$address\t") }
+        prefs.edit { putStringSet("wireless_profiles", (others + "$address\t${if (official) 1 else 0}").toSet()) }
+    }
+
+    /** Forgets every remembered handshake: the next connection to each adapter is worked out again. */
+    fun forgetWirelessProfiles() = prefs.edit { remove("wireless_profiles") }
+
     /** Check GitHub for a newer release and warn on the home screen. Off never touches the network. */
     var checkUpdates: Boolean
         get() = prefs.getBoolean("check_updates", true)
@@ -89,16 +127,42 @@ class Settings(context: Context) {
         get() = prefs.getBoolean("force_h264", false)
         set(v) = prefs.edit { putBoolean("force_h264", v) }
 
-    /** Where the car screen's bar goes: next to the driver ([RAIL_AUTO]), [RAIL_LEFT], [RAIL_RIGHT] or [RAIL_BOTTOM]. */
+    /** Which side of the Dusk car screen the floating rail sits on: [RAIL_LEFT] (the default) or [RAIL_RIGHT]. */
     var railPosition: String
         get() = prefs.getString("rail_position", null)
-            ?: if (prefs.contains("rail_right")) (if (prefs.getBoolean("rail_right", false)) RAIL_RIGHT else RAIL_LEFT) else RAIL_AUTO
+            ?: if (prefs.contains("rail_right")) (if (prefs.getBoolean("rail_right", false)) RAIL_RIGHT else RAIL_LEFT) else RAIL_LEFT
         set(v) = prefs.edit { putString("rail_position", v); remove("rail_right") }
 
-    /** The car screen's layout: [STYLE_AUTO] (Android Auto's) or [STYLE_CARPLAY] (an easter egg). */
+    /** The Dusk car screen's rail starts collapsed, for more map/media width ("Side bar: Auto-hide" / "Hide side bar"). */
+    var railAutoHide: Boolean
+        get() = prefs.getBoolean("rail_auto_hide", false)
+        set(v) = prefs.edit { putBoolean("rail_auto_hide", v) }
+
+    /** The Dusk car screen's Home starts in Map + Music focus instead of the Full widget view. */
+    var homeMapMusicDefault: Boolean
+        get() = prefs.getBoolean("home_map_music_default", false)
+        set(v) = prefs.edit { putBoolean("home_map_music_default", v) }
+
+    /** How much of Dusk Home's Map + Music row the music card takes, from 0 (smallest) to 1 (largest). */
+    var musicWidgetSize: Float
+        get() = prefs.getFloat("music_widget_size", 0.5f)
+        set(v) = prefs.edit { putFloat("music_widget_size", v) }
+
+    /** The car screen's color theme: [STYLE_MIDNIGHT] (the default), [STYLE_AURORA], [STYLE_FOREST], [STYLE_LIGHT] or [STYLE_SPORT]. */
     var carStyle: String
-        get() = prefs.getString("car_style", STYLE_AUTO) ?: STYLE_AUTO
+        get() = prefs.getString("car_style", STYLE_MIDNIGHT) ?: STYLE_MIDNIGHT
         set(v) = prefs.edit { putString("car_style", v) }
+
+    /**
+     * The car screen's layout — independent of [carStyle]'s colors: [LAYOUT_CLASSIC] (the default,
+     * AARE's original rail/dashboard/bottom-bar arrangement) or [LAYOUT_DUSK] (the restructured
+     * layout from `CarUI/dusk.html`: a floating glass rail, a resume-playback header on Home, a
+     * full-bleed Nav view, a three-column Phone screen, a sidebar Settings screen). Any of the 5
+     * color themes can be paired with either layout.
+     */
+    var carLayout: String
+        get() = prefs.getString("car_layout", LAYOUT_CLASSIC) ?: LAYOUT_CLASSIC
+        set(v) = prefs.edit { putString("car_layout", v) }
 
     /**
      * Passenger mode: ignore the car's "driving" signal, so a passenger can type a destination or
@@ -137,6 +201,19 @@ class Settings(context: Context) {
     var carAudio: Boolean
         get() = prefs.getBoolean("car_audio", true)
         set(v) = prefs.edit { putBoolean("car_audio", v) }
+
+    /**
+     * Switch calls to speakerphone as soon as they connect, while the car screen is up. AARE only
+     * controls calls through Android's telephony; it never carries their audio itself (unlike
+     * media/navigation, which it streams over its own channel), so a call's audio still goes
+     * wherever the phone's normal call routing sends it. Many wireless adapters advertise a
+     * Bluetooth hands-free profile with no real microphone behind it, silently swallowing the
+     * other side's ability to hear the driver until speakerphone is tapped by hand; this setting
+     * does that automatically instead of leaving the driver to notice and fix it mid-call.
+     */
+    var autoSpeakerOnCall: Boolean
+        get() = prefs.getBoolean("auto_speaker_on_call", true)
+        set(v) = prefs.edit { putBoolean("auto_speaker_on_call", v) }
 
     /**
      * The phone's own Bluetooth MAC, for the car's in-session pairing handshake. Android hides it
@@ -289,6 +366,30 @@ class Settings(context: Context) {
         get() = prefs.getInt("cert_index", 0)
         set(v) = prefs.edit { putInt("cert_index", v) }
 
+    /**
+     * Let [net.prototux.aare.cert.CertificateAutoUpdate] fetch and import a newer Android Auto
+     * certificate on its own, once one is published, instead of waiting for a head unit to reject
+     * the old one or for the user to tap Download in Advanced. Off never touches that repository
+     * except from the manual button or the post-rejection prompt.
+     */
+    var autoUpdateCert: Boolean
+        get() = prefs.getBoolean("auto_update_cert", true)
+        set(v) = prefs.edit { putBoolean("auto_update_cert", v) }
+
+    /** [net.prototux.aare.cert.CertificateAutoUpdate]'s check cache: when it last asked, at most once a day. */
+    var certAutoCheckLastMs: Long
+        get() = prefs.getLong("cert_auto_check_last_ms", 0)
+        set(v) = prefs.edit { putLong("cert_auto_check_last_ms", v) }
+
+    /**
+     * The certificate entry name the user has already seen an "expires soon, no update found"
+     * warning for (see [net.prototux.aare.cert.CertificateAutoUpdate]); the warning stays quiet for
+     * that exact certificate and comes back only once a different one is the one running out.
+     */
+    var certExpiryWarningDismissedFor: String?
+        get() = prefs.getString("cert_expiry_warning_dismissed_for", null)
+        set(v) = prefs.edit { if (v == null) remove("cert_expiry_warning_dismissed_for") else putString("cert_expiry_warning_dismissed_for", v) }
+
     companion object {
         const val BROWSER_DEFAULT_URL = "https://duckduckgo.com/"
         const val RAIL_AUTO = "auto"
@@ -298,11 +399,29 @@ class Settings(context: Context) {
         const val THEME_AUTO = "auto"
         const val THEME_DARK = "dark"
         const val THEME_LIGHT = "light"
-        const val STYLE_AUTO = "auto"
-        const val STYLE_CARPLAY = "carplay"
+        // The car screen's one shell (a fixed left icon rail + persistent bottom media/status bar,
+        // a dashboard toggling between a map+widgets view and a map+music view) comes in these
+        // color themes, matching Dashboard/CarUI's reference mockups.
+        /** The default: dark, teal/blue. */
+        const val STYLE_MIDNIGHT = "midnight"
+        const val STYLE_AURORA = "aurora"
+        const val STYLE_FOREST = "forest"
+        const val STYLE_LIGHT = "light"
+        const val STYLE_SPORT = "sport"
+        const val STYLE_DUSK = "dusk"
+        /** [carLayout]: AARE's original rail/dashboard/bottom-bar arrangement (the default). */
+        const val LAYOUT_CLASSIC = "classic"
+        /** [carLayout]: the restructured layout from `CarUI/dusk.html`. */
+        const val LAYOUT_DUSK = "dusk_layout"
         const val WALLPAPER_CUSTOM = "custom"
         /** The user's wallpaper photo, in the app's files. */
         const val WALLPAPER_FILE = "wallpaper.jpg"
+        /** [wirelessCompatMode]: guess from the adapter's Bluetooth name (the default). */
+        const val WIRELESS_COMPAT_AUTO = "auto"
+        /** [wirelessCompatMode]: always send the exact message order/certificate/version echo a genuine phone uses. */
+        const val WIRELESS_COMPAT_ON = "on"
+        /** [wirelessCompatMode]: always use AARE's normal sequence. */
+        const val WIRELESS_COMPAT_OFF = "off"
     }
 
     fun registerListener(l: SharedPreferences.OnSharedPreferenceChangeListener) = prefs.registerOnSharedPreferenceChangeListener(l)

@@ -6,14 +6,13 @@ import android.view.MotionEvent
 import android.view.Surface
 import android.view.TextureView
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PauseCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,14 +38,17 @@ import net.prototux.aare.media.Placeholder
  * [TextureView] gives its surface to the privileged [AppLauncher], which puts a virtual display
  * there, launches [packageName] on it, and receives the car's touches we forward.
  *
- * Not an Android Auto app, so — like the phone-screen mirror — it is paused while driving. The
- * privileged core is device-tested; here it just wires the surface, touches and lifecycle.
+ * Not an Android Auto app, so — like the phone-screen mirror — it is paused while driving, except
+ * a [navigation] app (Google Maps, Waze): directions are what it is there for, so it keeps running
+ * and takes the whole screen with no banner. The privileged core is device-tested; here it just
+ * wires the surface, touches and lifecycle.
  */
 @Composable
-internal fun StandaloneAppScreen(runtime: CarRuntime, driving: Boolean, packageName: String, modifier: Modifier) {
+internal fun StandaloneAppScreen(runtime: CarRuntime, driving: Boolean, packageName: String, navigation: Boolean, modifier: Modifier) {
     val context = LocalContext.current
     val launcher = remember(packageName) { AppLauncher(context) }
     var started by remember(packageName) { mutableStateOf(false) }
+    val paused = driving && !navigation
 
     DisposableEffect(packageName) {
         // Hardware / head-unit Back goes to the launched app.
@@ -64,8 +65,15 @@ internal fun StandaloneAppScreen(runtime: CarRuntime, driving: Boolean, packageN
         }
     }
 
+    // "Navigate to…" from the dashboard: hand the geo: link to the app once it is on the display.
+    LaunchedEffect(started) {
+        if (!started) return@LaunchedEffect
+        val uri = runtime.pendingNavigateUri ?: return@LaunchedEffect
+        if (launcher.view(uri, packageName)) runtime.pendingNavigateUri = null
+    }
+
     Box(modifier.background(Color.Black)) {
-        if (!driving) {
+        if (!paused) {
             androidx.compose.ui.viewinterop.AndroidView(
                 factory = { ctx ->
                     TextureView(ctx).apply {
@@ -86,32 +94,20 @@ internal fun StandaloneAppScreen(runtime: CarRuntime, driving: Boolean, packageN
                             override fun onSurfaceTextureDestroyed(st: SurfaceTexture): Boolean = true
                             override fun onSurfaceTextureUpdated(st: SurfaceTexture) = Unit
                         }
+                        // The raw events, every pointer included: the virtual display is the view's
+                        // size, so view coordinates are display coordinates, and a pinch on the map
+                        // arrives as the two-finger gesture it is.
+                        setOnTouchListener { v, event ->
+                            launcher.motion(event)
+                            if (event.actionMasked == MotionEvent.ACTION_UP) v.performClick()
+                            true
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize(),
             )
-            // Forward the car's touches to the launched app's display (single pointer for now).
-            Box(Modifier.fillMaxSize().pointerInput(packageName) {
-                awaitEachGesture {
-                    val down = awaitFirstDown(requireUnconsumed = false)
-                    val t0 = down.uptimeMillis
-                    launcher.touch(t0, t0, MotionEvent.ACTION_DOWN, down.position.x, down.position.y, 0)
-                    down.consume()
-                    while (true) {
-                        val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
-                        if (change.pressed) {
-                            launcher.touch(t0, change.uptimeMillis, MotionEvent.ACTION_MOVE, change.position.x, change.position.y, 0)
-                        } else {
-                            launcher.touch(t0, change.uptimeMillis, MotionEvent.ACTION_UP, change.position.x, change.position.y, 0)
-                            change.consume()
-                            break
-                        }
-                        change.consume()
-                    }
-                }
-            })
-            // A quiet reminder that this isn't an Android Auto app.
-            Text(
+            // A quiet reminder that this isn't an Android Auto app; a navigation app gets the whole screen.
+            if (!navigation) Text(
                 stringResource(R.string.standalone_not_native),
                 style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,

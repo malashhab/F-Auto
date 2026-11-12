@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Hiermee kunt u het telefoonscherm vanuit de auto gebruiken: AARE geeft de aanrakingen op het autoscherm door aan de telefoon en controleert welke app op de voorgrond staat, zodat het telefoonscherm tijdens het rijden gepauzeerd blijft, behalve wanneer een navigatie-app wordt weergegeven. AARE leest niets anders.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Hiermee kunt u het telefoonscherm vanuit de auto gebruiken: F-Auto geeft de aanrakingen op het autoscherm door aan de telefoon en controleert welke app op de voorgrond staat, zodat het telefoonscherm tijdens het rijden gepauzeerd blijft, behalve wanneer een navigatie-app wordt weergegeven. F-Auto leest niets anders.</string>
     <string name="mirror_locked_placeholder">Het telefoonscherm is gepauzeerd zolang de telefoon vergrendeld is. Ontgrendel de telefoon om het te tonen.</string>
-    <string name="mirror_driving_no_accessibility">Het telefoonscherm is gepauzeerd tijdens het rijden. Om navigatie-apps tijdens het rijden te tonen, schakelt u AARE in bij de toegankelijkheidsinstellingen van de telefoon: zo weet AARE welke app open is.</string>
+    <string name="mirror_driving_no_accessibility">Het telefoonscherm is gepauzeerd tijdens het rijden. Om navigatie-apps tijdens het rijden te tonen, schakelt u F-Auto in bij de toegankelijkheidsinstellingen van de telefoon: zo weet F-Auto welke app open is.</string>
     <string name="mirror_driving_nav_only">Het telefoonscherm is gepauzeerd tijdens het rijden. Het toont alleen navigatie-apps.</string>
-    <string name="mirror_need_car_audio">Schakel Autoaudio in bij AARE op de telefoon en kies Volledig scherm wanneer Android dit vraagt: het telefoonscherm gebruikt dezelfde toestemming.</string>
-    <string name="mirror_need_accessibility">Om de telefoon vanuit de auto te gebruiken, schakelt u AARE in bij de toegankelijkheidsinstellingen van de telefoon.</string>
+    <string name="mirror_need_car_audio">Schakel Autoaudio in bij F-Auto op de telefoon en kies Volledig scherm wanneer Android dit vraagt: het telefoonscherm gebruikt dezelfde toestemming.</string>
+    <string name="mirror_need_accessibility">Om de telefoon vanuit de auto te gebruiken, schakelt u F-Auto in bij de toegankelijkheidsinstellingen van de telefoon.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Terug</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Locatie</string>
     <string name="setup_toggle_car_gps_title">GPS van de auto gebruiken</string>
     <string name="setup_toggle_car_gps_subtitle">Tijdens de verbinding zien apps op de telefoon de positie van de auto in plaats van die van de telefoon zelf, zodat navigatie-apps de twee niet mengen</string>
-    <string name="setup_check_mock_location_title">AARE toestaan de locatie in te stellen</string>
-    <string name="setup_check_mock_location_subtitle">Ontwikkelaarsopties &gt; App voor neplocatie selecteren &gt; AARE</string>
+    <string name="setup_check_mock_location_title">F-Auto toestaan de locatie in te stellen</string>
+    <string name="setup_check_mock_location_subtitle">Ontwikkelaarsopties &gt; App voor neplocatie selecteren &gt; F-Auto</string>
     <string name="setup_section_video">Video</string>
     <string name="setup_toggle_60fps_title">Voorkeur voor 60 fps</string>
     <string name="setup_toggle_60fps_subtitle">Vloeiender als de auto het ondersteunt</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Muziek, podcasts, radio</string>
     <string name="setup_app_group_messaging">Berichten</string>
     <string name="setup_app_kind_messaging">Berichten uit hun meldingen</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Android Auto-apps die AARE niet kan tonen</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Android Auto-apps die F-Auto niet kan tonen</string>
     <string name="setup_hint_allowlist">Apps die zijn gebouwd met recente versies van Google\'s auto-bibliotheek accepteren alleen hosts op hun toestaanlijst; zie de README.</string>
     <string name="setup_app_entry_phone">Telefoon</string>
     <string name="setup_app_entry_settings">Instellingen</string>
     <string name="setup_app_entry_notifications">Meldingen</string>
     <string name="setup_section_app_order">Volgorde in de auto</string>
     <string name="setup_section_connection_log">Verbindingslogboek</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Niet aangesloten bij Google. Android Auto is een handelsmerk van Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Niet aangesloten bij Google. Android Auto is een handelsmerk van Google LLC.</string>
     <string name="setup_choice_style">Stijl</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Telefooncertificaten</string>
-    <string name="cert_hint">Head units controleren het certificaat van de telefoon. Opensource head units accepteren het gegenereerde certificaat; auto\'s met Google\'s head-unit-software accepteren alleen een certificaat dat door Google is uitgegeven, dat AARE niet kan meeleveren. U kunt een certificaat importeren dat u mag gebruiken (PEM-certificaat + PKCS#8-sleutel, of PKCS#12). U kunt ook het certificaat van de nieuwste Android Auto-app downloaden (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Head units controleren het certificaat van de telefoon. Opensource head units accepteren het gegenereerde certificaat; auto\'s met Google\'s head-unit-software accepteren alleen een certificaat dat door Google is uitgegeven, dat F-Auto niet kan meeleveren. U kunt een certificaat importeren dat u mag gebruiken (PEM-certificaat + PKCS#8-sleutel, of PKCS#12). U kunt ook het certificaat van de nieuwste Android Auto-app downloaden (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · tot %2$s</string>
     <string name="cert_action_remove">Verwijderen</string>
     <string name="cert_action_import">Certificaat importeren…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">Tijdens het rijden</string>
     <string name="msg_toggle_dnd_title">Niet storen</string>
     <string name="msg_toggle_dnd_subtitle">Zet de telefoon op stil tijdens de verbinding; oproepen en prioritaire gesprekken komen nog steeds door</string>
-    <string name="msg_check_dnd_access_title">AARE toestaan Niet storen in te schakelen</string>
+    <string name="msg_check_dnd_access_title">F-Auto toestaan Niet storen in te schakelen</string>
     <string name="msg_check_dnd_access_subtitle">Android vraagt dit eenmaal</string>
     <string name="msg_toggle_autoreply_title">Automatisch antwoord</string>
     <string name="msg_toggle_autoreply_subtitle">Beantwoordt mensen die schrijven, eenmaal per gesprek per rit (geen groepen)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Nog geen methode ingesteld: kies er hieronder een.</string>
     <string name="audio_section_methods">Methoden, beste eerst</string>
     <string name="audio_policy_ready">Gereed. Muziek en navigatiestem gaan apart naar de auto, de telefoon blijft stil.</string>
-    <string name="audio_policy_not_ready">Zoals Android Auto: muziek en navigatiestem apart, telefoonluidspreker uit. Vereist een geroote telefoon: installeer AARE als systeemapp met de Magisk-module (zie de README).</string>
+    <string name="audio_policy_not_ready">Zoals Android Auto: muziek en navigatiestem apart, telefoonluidspreker uit. Vereist een geroote telefoon: installeer F-Auto als systeemapp met de Magisk-module (zie de README).</string>
     <string name="audio_shizuku_ready">Gereed. Alles wat de telefoon afspeelt gaat naar de auto, inclusief navigatiestem; de telefoon blijft stil.</string>
     <string name="audio_shizuku_needs_android12">Vereist Android 12 of nieuwer.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku draait: tik om AARE toe te staan.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku draait: tik om F-Auto toe te staan.</string>
     <string name="audio_shizuku_install_hint">Geen root nodig. Installeer Shizuku, start het (draadloos debuggen, eenmaal per herstart), en kom dan hier terug.</string>
     <string name="audio_playback_ready">Gereed. Alleen media: geen navigatiestem, sommige apps doen niet mee, en de telefoon blijft ook afspelen.</string>
     <string name="audio_playback_not_ready">Werkt overal, met beperkingen: alleen media, geen navigatiestem. Android vraagt om het scherm op te nemen: kies Volledig scherm (ook gebruikt door het telefoonscherm).</string>
-    <string name="audio_notice_setup_hint">Open AARE op de telefoon en stel Autoaudio in om de telefoon in de auto te horen</string>
+    <string name="audio_notice_setup_hint">Open F-Auto op de telefoon en stel Autoaudio in om de telefoon in de auto te horen</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Telefoonscherm</string>
     <string name="phone_toggle_enable_title">Telefoonscherm in de auto</string>
-    <string name="phone_toggle_enable_subtitle">Het eigen scherm van de telefoon, voor apps die AARE niet kan hosten (Google Maps, Waze). Gepauzeerd zolang de telefoon vergrendeld is, en tijdens het rijden, behalve wanneer een navigatie-app de weg wijst. Niet aangeboden op de head-unit-server, behalve als daar ingeschakeld</string>
+    <string name="phone_toggle_enable_subtitle">Het eigen scherm van de telefoon, voor apps die F-Auto niet kan hosten (Google Maps, Waze). Gepauzeerd zolang de telefoon vergrendeld is, en tijdens het rijden, behalve wanneer een navigatie-app de weg wijst. Niet aangeboden op de head-unit-server, behalve als daar ingeschakeld</string>
     <string name="phone_check_touch_title">Aanraken op het telefoonscherm</string>
-    <string name="phone_check_touch_subtitle">Schakel AARE in bij Toegankelijkheid. Sideloaded apps hebben mogelijk eerst "Beperkte instellingen toestaan" nodig in de app-info van AARE</string>
+    <string name="phone_check_touch_subtitle">Schakel F-Auto in bij Toegankelijkheid. Sideloaded apps hebben mogelijk eerst "Beperkte instellingen toestaan" nodig in de app-info van F-Auto</string>
     <string name="phone_hint_touch_capture">De afbeelding gebruikt de schermopname-machtiging (pagina Autoaudio, kies Volledig scherm).</string>
-    <string name="phone_app_row_subtitle">Het eigen scherm van de telefoon, voor apps die AARE niet kan hosten</string>
+    <string name="phone_app_row_subtitle">Het eigen scherm van de telefoon, voor apps die F-Auto niet kan hosten</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Spraakassistent</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Vertrouw alleen een head unit waarmee u nu verbonden bent</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, maak dan opnieuw verbinding.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, maak dan opnieuw verbinding.</string>
-    <string name="notif_cert_changed_message">certificaat van head unit gewijzigd: tik op Vertrouwen in de melding of in AARE, alleen als de software is bijgewerkt, maak dan opnieuw verbinding</string>
-    <string name="notif_cert_untrusted_message">certificaat van head unit nog niet vertrouwd: tik op Vertrouwen in de melding of in AARE, maak dan opnieuw verbinding</string>
+    <string name="notif_cert_changed_message">certificaat van head unit gewijzigd: tik op Vertrouwen in de melding of in F-Auto, alleen als de software is bijgewerkt, maak dan opnieuw verbinding</string>
+    <string name="notif_cert_untrusted_message">certificaat van head unit nog niet vertrouwd: tik op Vertrouwen in de melding of in F-Auto, maak dan opnieuw verbinding</string>
     <string name="notif_car_nearby_title">Auto in de buurt</string>
     <string name="notif_car_nearby_text">Tik om draadloos verbinding te maken</string>
     <string name="notif_status_connecting_to">Verbinden met %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Navigatie</string>
     <string name="notif_navigation_no_app_text">Geen navigatie-app in de auto</string>
     <string name="notif_assistant_title">Assistent</string>
-    <string name="notif_assistant_choose_text">Kies een spraakassistent in de instellingen van AARE op de telefoon</string>
+    <string name="notif_assistant_choose_text">Kies een spraakassistent in de instellingen van F-Auto op de telefoon</string>
     <string name="notif_assistant_no_car_screen">%1$s heeft geen autoscherm: het is geopend op de telefoon</string>
-    <string name="notif_assistant_cant_open">%1$s kan niet worden geopend. Kies een andere assistent in de instellingen van AARE</string>
+    <string name="notif_assistant_cant_open">%1$s kan niet worden geopend. Kies een andere assistent in de instellingen van F-Auto</string>
     <string name="notif_parked_only_title">Niet beschikbaar tijdens het rijden</string>
     <string name="notif_parked_only_text">Parkeer om dit te gebruiken</string>
     <string name="notif_empty">Geen meldingen</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">De wachtrij is leeg</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Geef AARE meldingstoegang op de telefoon om hier berichten te zien</string>
+    <string name="msg_no_access">Geef F-Auto meldingstoegang op de telefoon om hier berichten te zien</string>
     <string name="msg_listener_not_ready">Hier is nog niets te zien</string>
     <string name="msg_reply_sent">Antwoord verzonden</string>
     <string name="msg_reply_rejected">%1$s heeft het antwoord niet geaccepteerd</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Recent</string>
     <string name="phone_tab_contacts">Contacten</string>
     <string name="phone_tab_keypad">Kiezer</string>
-    <string name="phone_permissions_placeholder">Sta oproepen, oproepgeschiedenis en contacten toe in AARE op de telefoon (Installatie afronden).</string>
+    <string name="phone_permissions_placeholder">Sta oproepen, oproepgeschiedenis en contacten toe in F-Auto op de telefoon (Installatie afronden).</string>
     <string name="phone_notice_calling_title">Bellen</string>
     <string name="phone_no_recent_calls">Geen recente oproepen</string>
     <string name="phone_no_contacts">Geen contacten met een telefoonnummer</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Apps op het autoscherm (geavanceerd)</string>
-    <string name="standalone_section_warning">Dit zijn geen Android Auto-apps: AARE toont hun normale telefoonscherm, alleen tijdens parkeren, en vereist root of Shizuku. Gebruik op eigen risico.</string>
+    <string name="standalone_section_warning">Dit zijn geen Android Auto-apps: F-Auto toont hun normale telefoonscherm, alleen tijdens parkeren, en vereist root of Shizuku. Gebruik op eigen risico.</string>
     <string name="standalone_toggle_title">Telefoonapps starten op het autoscherm</string>
     <string name="standalone_toggle_subtitle">Kies de apps hieronder. Alleen getoond tijdens parkeren.</string>
     <string name="standalone_need_root">Vereist root of Shizuku. Stel er een in op de pagina Autoaudio en kom dan terug.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Gyroscoop</string>
     <string name="car_data_dtc">Foutcodes</string>
     <string name="setup_toggle_force_h264_title">H.264-video forceren</string>
-    <string name="setup_toggle_force_h264_subtitle">Standaard gebruikt AARE de beste codec die auto en telefoon gemeen hebben (H.265…). Schakel dit in als het beeld in de auto hapert.</string>
+    <string name="setup_toggle_force_h264_subtitle">Standaard gebruikt F-Auto de beste codec die auto en telefoon gemeen hebben (H.265…). Schakel dit in als het beeld in de auto hapert.</string>
     <!-- newly translated strings -->
     <string name="common_ok">OK</string>
     <string name="common_try_again">Opnieuw proberen</string>
@@ -425,7 +425,7 @@
     <string name="media_error_skip_limit">Limiet voor overslaan bereikt</string>
     <string name="media_error_setup">Rond het instellen van %1$s op uw telefoon af</string>
     <string name="media_error_end_of_playlist">Einde van de afspeellijst</string>
-    <string name="media_error_permission">%1$s staat niet toe dat AARE erin bladert</string>
+    <string name="media_error_permission">%1$s staat niet toe dat F-Auto erin bladert</string>
     <string name="media_error_io">Netwerk- of opslagprobleem</string>
     <string name="media_error_not_supported">Niet ondersteund door %1$s</string>
     <string name="media_error_disconnected">%1$s is losgekoppeld</string>
@@ -439,6 +439,6 @@
     <string name="carapp_error_refused">%1$s heeft de verbinding geweigerd</string>
     <string name="carapp_error_api_level">%1$s heeft auto-API-niveau %2$d nodig; deze host ondersteunt %3$d</string>
     <string name="carapp_error_stopped">%1$s is gestopt</string>
-    <string name="carapp_error_google_only">%1$s accepteert alleen Google\'s Android Auto. Het moet AARE toestaan (zie de app-lijst op de telefoon).</string>
+    <string name="carapp_error_google_only">%1$s accepteert alleen Google\'s Android Auto. Het moet F-Auto toestaan (zie de app-lijst op de telefoon).</string>
     <string name="carapp_error_cant_start">%1$s kon niet starten: %2$s</string>
 </resources>

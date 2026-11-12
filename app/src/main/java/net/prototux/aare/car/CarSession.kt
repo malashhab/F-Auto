@@ -101,6 +101,8 @@ class CarSession(
     private val listener: Listener,
     /** Offer the phone screen to the car; false for the developer TCP server unless opted in, as its peer is unauthenticated. */
     mirror: Boolean = true,
+    /** Fortuner fork: see [SessionOptions.echoHeadUnitVersion]. */
+    echoHeadUnitVersion: Boolean = false,
 ) : AapSession.Callbacks {
 
     interface Listener {
@@ -115,7 +117,7 @@ class CarSession(
     private val aap = AapSession(transport, identity, PhoneDescription(
         deviceName = deviceName(), label = "Android", instanceId = settings.instanceId,
         smallIcon = icon(32), mediumIcon = icon(64), largeIcon = icon(128),
-    ), this, net.prototux.aare.SessionAapLog.also { it.verbose = settings.verboseProtocolLog }, SessionOptions(sendPings = wireless, pins = PinnedHeadUnits(context), peerKey = peerKey, trustOnFirstUse = trustOnFirstUse))
+    ), this, net.prototux.aare.SessionAapLog.also { it.verbose = settings.verboseProtocolLog }, SessionOptions(sendPings = wireless, pins = PinnedHeadUnits(context), peerKey = peerKey, trustOnFirstUse = trustOnFirstUse, echoHeadUnitVersion = echoHeadUnitVersion))
 
     private var video: VideoChannel? = null
     private var mic: MicrophoneChannel? = null

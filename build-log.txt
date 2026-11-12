@@ -1,0 +1,155 @@
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-9.8.2-bin.zip
+..............10%..............20%...............30%..............40%...............50%..............60%...............70%..............80%...............90%..............100%
+
+Welcome to Gradle 9.8.2!
+
+Here are the highlights of this release:
+ - Java 27 support
+ - Maven mirror settings reuse
+ - Linked problem locations in build output
+
+For more details see https://docs.gradle.org/9.8.2/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.8.2/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Calculating task graph as no cached configuration is available for tasks: :aap:test :app:assembleDebug
+> Task :aap:protobufDummy UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :aap:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :aap:extractProto
+> Task :aap:extractIncludeProto
+> Task :aap:extractIncludeTestProto
+> Task :aap:extractTestProto
+> Task :aap:generateTestProto NO-SOURCE
+> Task :aap:processTestProtoResources
+> Task :aap:processTestResources NO-SOURCE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :aap:generateProto
+> Task :aap:processProtoResources
+> Task :aap:processResources
+> Task :app:generateDebugBuildConfig
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:processDebugNavigationResources
+> Task :app:compileDebugAidl
+> Task :app:javaPreCompileDebug
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:phoneIdentityAssets
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:parseDebugLocalResources
+> Task :app:generateDebugRFile
+> Task :app:generateDebugGlobalSynthetics
+> Task :app:desugarDebugFileDependencies
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:checkDebugDuplicateClasses
+> Task :aap:compileKotlin
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/AapSession.kt:583:51 'var make: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/AapSession.kt:583:80 'var model: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/AapSession.kt:583:117 'var headUnitMake: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/AapSession.kt:584:46 'var headUnitModel: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/channels/CarChannels.kt:123:19 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/channels/CarChannels.kt:123:59 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/channels/CarChannels.kt:151:15 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/aap/src/main/kotlin/net/prototux/aare/aap/channels/CarChannels.kt:151:51 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugNavigationResources
+> Task :app:mergeExtDexDebug
+> Task :aap:compileJava
+> Task :aap:classes
+> Task :aap:jar
+> Task :aap:compileTestKotlin
+> Task :aap:compileTestJava NO-SOURCE
+> Task :aap:testClasses UP-TO-DATE
+> Task :app:compileDebugKotlin
+> Task :aap:test
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so. Run with --info option to learn more.
+
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:processDebugMainManifest
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:processDebugResources
+
+> Task :app:compileDebugKotlin
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/audio/PcmSources.kt:193:37 Java type mismatch: inferred type is 'Any?', but 'Any' was expected.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/audio/ShellAudioService.kt:53:52 'static fun setgid(p0: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/audio/ShellAudioService.kt:53:74 'static fun setuid(p0: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/Calls.kt:28:76 'fun acceptRingingCall(): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/CarData.kt:116:64 'var make: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/CarData.kt:116:100 'var model: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/CarData.kt:117:48 'var year: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/CarSession.kt:205:51 'var make: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/CarSession.kt:205:95 'var model: String!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:123:20 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:135:13 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:139:41 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:140:24 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:181:20 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:188:13 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:193:41 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:194:24 'class NavigationNextTurnDistanceEvent : GeneratedMessageLite<NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent!, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEvent.Builder!>, NavigationNextTurnDistanceEventOuterClass.NavigationNextTurnDistanceEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:262:70 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:263:53 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:264:25 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:271:34 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:272:39 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:273:72 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:274:48 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:275:47 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:276:43 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:277:44 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:278:45 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:279:41 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:280:42 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:281:44 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:282:43 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:283:47 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:284:36 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:285:38 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:286:39 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:287:48 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/NavStatusBridge.kt:288:25 'class NavigationNextTurnEvent : GeneratedMessageLite<NavigationNextTurnEventOuterClass.NavigationNextTurnEvent!, NavigationNextTurnEventOuterClass.NavigationNextTurnEvent.Builder!>, NavigationNextTurnEventOuterClass.NavigationNextTurnEventOrBuilder' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/car/PhoneLocationFeed.kt:76:80 'fun unsafeCheckOpNoThrow(p0: String, p1: Int, p2: String): Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/AssistantBar.kt:70:28 Cast is redundant.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/AssistantBar.kt:75:31 Unnecessary safe call on a non-null receiver of type 'MessageTemplate'.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/AssistantBar.kt:97:76 'val title: CarText?' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/CarAppScreen.kt:88:10 'class PlaceListNavigationTemplate : Any, Template' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/CarAppScreen.kt:88:46 'class RoutePreviewNavigationTemplate : Any, Template' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/CarAppScreen.kt:88:85 'class MapTemplate : Any, Template' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/templates/SectionedUi.kt:191:22 Unnecessary safe call on a non-null receiver of type 'CarIcon'.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/host/templates/TabUi.kt:50:27 Unnecessary safe call on a non-null receiver of type 'Action'.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/launch/LaunchMain.kt:28:16 'static fun prepareMainLooper(): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/notify/PhoneGuidance.kt:102:48 'field bigContentView: RemoteViews!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/notify/PhoneGuidance.kt:102:68 'field contentView: RemoteViews!' is deprecated. Deprecated in Java.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/transport/UsbAccessoryTransport.kt:44:64 Elvis operator (?:) always returns the left operand of non-nullable type 'String'.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/ui/MainActivity.kt:194:50 'val LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///C:/Users/mhdal/Projects/CarDisplay/app/src/main/java/net/prototux/aare/video/ProjectionDisplay.kt:145:80 'fun onBackPressed(): Unit' is deprecated. Deprecated in Java.
+
+> Task :app:compressDebugJavaRes
+> Task :app:mergeDebugJavaResource
+> Task :app:compileDebugJavaWithJavac
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:assembleDebug
+> Task :app:createDebugApkListingFileRedirect
+
+[Incubating] Problems report is available at: file:///C:/Users/mhdal/Projects/CarDisplay/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 4m 32s
+53 actionable tasks: 53 executed
+Configuration cache entry stored.

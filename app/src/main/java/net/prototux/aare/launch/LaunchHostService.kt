@@ -42,7 +42,7 @@ class LaunchHostService : ILaunchHost.Stub {
 
     override fun start(surface: Surface, width: Int, height: Int, dpi: Int, packageName: String): Int {
         stop()
-        val ctx = injectedContext ?: systemContext() ?: return -1
+        val ctx = ownerContext() ?: return -1
         val vd = createDisplay(ctx, surface, width, height, dpi) ?: return -1
         display = vd
         displayId = vd.display.displayId
@@ -66,6 +66,32 @@ class LaunchHostService : ILaunchHost.Stub {
         ev.recycle()
     }
 
+    /** A complete touch event from the car screen, pointers and all: pinch-zoom on a map needs two. */
+    override fun motion(event: MotionEvent?) {
+        val src = event ?: return
+        val ev = MotionEvent.obtain(src)
+        ev.source = SOURCE_TOUCHSCREEN
+        setDisplayId(ev, displayId)
+        inject(ev)
+        ev.recycle()
+    }
+
+    /** Opens [uri] with [pkg] on the app's display (a geo: link starts directions in a maps app). */
+    override fun view(uri: String?, pkg: String?): Boolean {
+        if (uri.isNullOrBlank() || displayId < 0) return false
+        val ctx = ownerContext() ?: return false
+        val viaAm = if (pkg.isNullOrBlank()) amStart(displayId, "-a", Intent.ACTION_VIEW, "-d", uri)
+            else amStart(displayId, "-a", Intent.ACTION_VIEW, "-d", uri, "-p", pkg)
+        if (viaAm) return true
+        return runCatching {
+            val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(uri))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            if (!pkg.isNullOrBlank()) intent.setPackage(pkg)
+            ctx.startActivity(intent, ActivityOptions.makeBasic().setLaunchDisplayId(displayId).toBundle())
+            true
+        }.onFailure { Log.w(TAG, "view($uri) failed: ${it.message}") }.getOrDefault(false)
+    }
+
     override fun key(eventTime: Long, action: Int, keyCode: Int) {
         val ev = KeyEvent(eventTime, eventTime, action, keyCode, 0, 0, -1, 0, 0, SOURCE_KEYBOARD)
         setDisplayId(ev, displayId)
@@ -84,6 +110,25 @@ class LaunchHostService : ILaunchHost.Stub {
     }
 
     // ---------------------------------------------------------------- privileged plumbing (reflection)
+
+    /**
+     * A context whose package this process's uid actually owns. DisplayManager rejects a virtual
+     * display whose owner package doesn't belong to the calling uid ("packageName must match the
+     * owner uid"), and Shizuku hands this service AARE's own context while running it as shell
+     * (uid 2000), so under Shizuku the shell package's context is used instead. Root (uid 0) and
+     * the su helper keep the system context.
+     */
+    private val ownerCtx: Context? by lazy {
+        val base = injectedContext ?: systemContext()
+        val uid = android.os.Process.myUid()
+        if (uid == SHELL_UID && base != null) {
+            runCatching { base.createPackageContext(SHELL_PACKAGE, 0) }
+                .onFailure { Log.w(TAG, "no shell package context: ${it.message}") }
+                .getOrNull() ?: base
+        } else base
+    }
+
+    private fun ownerContext(): Context? = ownerCtx
 
     /** Build the virtual display. Trusted + its own display group lets an arbitrary app run and focus on it. */
     private fun createDisplay(ctx: Context, surface: Surface, w: Int, h: Int, dpi: Int): VirtualDisplay? {
@@ -104,10 +149,28 @@ class LaunchHostService : ILaunchHost.Stub {
     private fun launch(ctx: Context, pkg: String, onDisplay: Int): Boolean = runCatching {
         val intent = ctx.packageManager.getLaunchIntentForPackage(pkg)
             ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK) ?: return false
+        val component = intent.component?.flattenToShortString()
+        if (component != null && amStart(onDisplay, "-n", component, "--activity-clear-task")) return true
         val opts = ActivityOptions.makeBasic().setLaunchDisplayId(onDisplay)
         ctx.startActivity(intent, opts.toBundle())
         true
     }.onFailure { Log.w(TAG, "startActivity($pkg) failed: ${it.message}") }.getOrDefault(false)
+
+    /**
+     * `am start --display N …` as a child process. Under Shizuku this process is the shell uid but
+     * every Context it can get carries another package's name (AARE's from Shizuku, "android" from
+     * the system context), which ActivityTaskManager rejects ("package does not belong to uid").
+     * The `am` command is what `adb shell` itself uses, so it carries the right identity.
+     */
+    private fun amStart(onDisplay: Int, vararg args: String): Boolean = runCatching {
+        val cmd = listOf("am", "start", "--display", onDisplay.toString(), "--user", "0") + args
+        val p = ProcessBuilder(cmd).redirectErrorStream(true).start()
+        val out = p.inputStream.bufferedReader().use { it.readText() }.trim()
+        val code = p.waitFor()
+        val ok = code == 0 && !out.contains("Error") && !out.contains("Exception")
+        if (ok) Log.i(TAG, "am start ok: $out") else Log.w(TAG, "am start failed ($code): $out")
+        ok
+    }.onFailure { Log.w(TAG, "am start could not run: ${it.message}") }.getOrDefault(false)
 
     /** Inject one event into the launched app's display via InputManager's hidden injectInputEvent. */
     private fun inject(event: InputEvent) {
@@ -118,12 +181,18 @@ class LaunchHostService : ILaunchHost.Stub {
         }.onFailure { Log.w(TAG, "injectInputEvent failed: ${it.message}") }
     }
 
-    /** InputManager.getInstance() (hidden; still the simplest handle that exposes injectInputEvent). */
+    /**
+     * The InputManager that exposes the hidden injectInputEvent: the system service on Android 14+
+     * (where the static getInstance() is gone), getInstance() on older versions.
+     */
     private val inputManager: Any? by lazy {
-        runCatching {
+        val fromService = runCatching {
+            ownerContext()?.getSystemService(android.hardware.input.InputManager::class.java)
+        }.getOrNull()
+        fromService ?: runCatching {
             val cls = Class.forName("android.hardware.input.InputManager")
             cls.getMethod("getInstance").invoke(null)
-        }.onFailure { Log.w(TAG, "InputManager.getInstance failed: ${it.message}") }.getOrNull()
+        }.onFailure { Log.w(TAG, "no InputManager: ${it.message}") }.getOrNull()
     }
 
     private fun setDisplayId(event: InputEvent, id: Int) {
@@ -154,6 +223,8 @@ class LaunchHostService : ILaunchHost.Stub {
         const val SOURCE_TOUCHSCREEN = 0x00001002 // InputDevice.SOURCE_TOUCHSCREEN
         const val SOURCE_KEYBOARD = 0x00000101 // InputDevice.SOURCE_KEYBOARD
         const val INJECT_INPUT_EVENT_MODE_ASYNC = 0
+        const val SHELL_UID = 2000
+        const val SHELL_PACKAGE = "com.android.shell"
 
         // VirtualDisplay flags (public + hidden bits). Hidden ones let a foreign app run and take focus.
         const val FLAG_PUBLIC = 1 shl 0

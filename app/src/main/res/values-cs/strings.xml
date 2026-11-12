@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Umožňuje používat obrazovku telefonu z auta: AARE na telefonu přehrává dotyky provedené na obrazovce auta a zjišťuje, která aplikace je v popředí, takže obrazovka telefonu zůstává při jízdě pozastavena, pokud nezobrazuje navigační aplikaci. AARE nečte nic jiného.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Umožňuje používat obrazovku telefonu z auta: F-Auto na telefonu přehrává dotyky provedené na obrazovce auta a zjišťuje, která aplikace je v popředí, takže obrazovka telefonu zůstává při jízdě pozastavena, pokud nezobrazuje navigační aplikaci. F-Auto nečte nic jiného.</string>
     <string name="mirror_locked_placeholder">Obrazovka telefonu je pozastavena, když je telefon uzamčen. Odemkněte telefon, aby se zobrazila.</string>
-    <string name="mirror_driving_no_accessibility">Obrazovka telefonu je při jízdě pozastavena. Chcete-li zobrazovat navigační aplikace při jízdě, zapněte AARE v nastavení přístupnosti telefonu: řekne AARE, která aplikace je otevřená.</string>
+    <string name="mirror_driving_no_accessibility">Obrazovka telefonu je při jízdě pozastavena. Chcete-li zobrazovat navigační aplikace při jízdě, zapněte F-Auto v nastavení přístupnosti telefonu: řekne F-Auto, která aplikace je otevřená.</string>
     <string name="mirror_driving_nav_only">Obrazovka telefonu je při jízdě pozastavena. Zobrazuje pouze navigační aplikace.</string>
-    <string name="mirror_need_car_audio">Zapněte Zvuk v autě v AARE na telefonu a při dotazu Androidu zvolte Celou obrazovku: obrazovka telefonu používá stejné oprávnění.</string>
-    <string name="mirror_need_accessibility">Chcete-li používat telefon z auta, zapněte AARE v nastavení přístupnosti telefonu.</string>
+    <string name="mirror_need_car_audio">Zapněte Zvuk v autě v F-Auto na telefonu a při dotazu Androidu zvolte Celou obrazovku: obrazovka telefonu používá stejné oprávnění.</string>
+    <string name="mirror_need_accessibility">Chcete-li používat telefon z auta, zapněte F-Auto v nastavení přístupnosti telefonu.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Zpět</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Poloha</string>
     <string name="setup_toggle_car_gps_title">Použít GPS auta</string>
     <string name="setup_toggle_car_gps_subtitle">Při připojení aplikace v telefonu vidí polohu auta místo polohy telefonu, takže navigační aplikace obě polohy nemíchají</string>
-    <string name="setup_check_mock_location_title">Povolit AARE nastavovat polohu</string>
-    <string name="setup_check_mock_location_subtitle">Možnosti pro vývojáře &gt; Vybrat aplikaci pro simulovanou polohu &gt; AARE</string>
+    <string name="setup_check_mock_location_title">Povolit F-Auto nastavovat polohu</string>
+    <string name="setup_check_mock_location_subtitle">Možnosti pro vývojáře &gt; Vybrat aplikaci pro simulovanou polohu &gt; F-Auto</string>
     <string name="setup_section_video">Video</string>
     <string name="setup_toggle_60fps_title">Preferovat 60 fps</string>
     <string name="setup_toggle_60fps_subtitle">Plynnější, pokud to auto podporuje</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Hudba, podcasty, rádio</string>
     <string name="setup_app_group_messaging">Zprávy</string>
     <string name="setup_app_kind_messaging">Zprávy z jejích oznámení</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Aplikace Android Auto, které AARE nemůže zobrazit</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Aplikace Android Auto, které F-Auto nemůže zobrazit</string>
     <string name="setup_hint_allowlist">Aplikace vytvořené s novějšími verzemi knihovny Google pro auta akceptují jen hostitele na seznamu povolených; viz README.</string>
     <string name="setup_app_entry_phone">Telefon</string>
     <string name="setup_app_entry_settings">Nastavení</string>
     <string name="setup_app_entry_notifications">Oznámení</string>
     <string name="setup_section_app_order">Pořadí v autě</string>
     <string name="setup_section_connection_log">Protokol připojení</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Nesouvisí s Google. Android Auto je ochranná známka společnosti Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Nesouvisí s Google. Android Auto je ochranná známka společnosti Google LLC.</string>
     <string name="setup_choice_style">Styl</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Certifikáty telefonu</string>
-    <string name="cert_hint">Hlavní jednotky kontrolují certifikát telefonu. Open-source hlavní jednotky přijímají vygenerovaný certifikát; auta se softwarem hlavní jednotky Google přijímají pouze certifikát vydaný Google, který AARE nemůže zahrnout. Můžete importovat certifikát, ke kterému máte právo použití (certifikát PEM + klíč PKCS#8, nebo PKCS#12). Můžete také stáhnout certifikát z nejnovější aplikace Android Auto (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Hlavní jednotky kontrolují certifikát telefonu. Open-source hlavní jednotky přijímají vygenerovaný certifikát; auta se softwarem hlavní jednotky Google přijímají pouze certifikát vydaný Google, který F-Auto nemůže zahrnout. Můžete importovat certifikát, ke kterému máte právo použití (certifikát PEM + klíč PKCS#8, nebo PKCS#12). Můžete také stáhnout certifikát z nejnovější aplikace Android Auto (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · do %2$s</string>
     <string name="cert_action_remove">Odstranit</string>
     <string name="cert_action_import">Importovat certifikát…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">Za jízdy</string>
     <string name="msg_toggle_dnd_title">Nerušit</string>
     <string name="msg_toggle_dnd_subtitle">Při připojení ztlumit telefon; hovory a prioritní konverzace stále procházejí</string>
-    <string name="msg_check_dnd_access_title">Povolit AARE zapínat Nerušit</string>
+    <string name="msg_check_dnd_access_title">Povolit F-Auto zapínat Nerušit</string>
     <string name="msg_check_dnd_access_subtitle">Android se zeptá jednou</string>
     <string name="msg_toggle_autoreply_title">Automatická odpověď</string>
     <string name="msg_toggle_autoreply_subtitle">Odpovídá lidem, kteří píšou, jednou na konverzaci za jízdu (ne skupinám)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Ještě není nastavena žádná metoda: vyberte jednu níže.</string>
     <string name="audio_section_methods">Metody, nejlepší první</string>
     <string name="audio_policy_ready">Připraveno. Hudba a hlas navigace jdou do auta samostatně, telefon zůstává tichý.</string>
-    <string name="audio_policy_not_ready">Jako Android Auto: hudba a hlas navigace samostatně, reproduktor telefonu vypnutý. Vyžaduje telefon s rootem: nainstalujte AARE jako systémovou aplikaci pomocí modulu Magisk (viz README).</string>
+    <string name="audio_policy_not_ready">Jako Android Auto: hudba a hlas navigace samostatně, reproduktor telefonu vypnutý. Vyžaduje telefon s rootem: nainstalujte F-Auto jako systémovou aplikaci pomocí modulu Magisk (viz README).</string>
     <string name="audio_shizuku_ready">Připraveno. Vše, co telefon přehrává, jde do auta, včetně hlasu navigace; telefon zůstává tichý.</string>
     <string name="audio_shizuku_needs_android12">Vyžaduje Android 12 nebo novější.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku běží: klepnutím povolte AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku běží: klepnutím povolte F-Auto.</string>
     <string name="audio_shizuku_install_hint">Root není potřeba. Nainstalujte Shizuku, spusťte ho (bezdrátové ladění, jednou po restartu), a pak se vraťte sem.</string>
     <string name="audio_playback_ready">Připraveno. Pouze média: bez hlasu navigace, některé aplikace se odhlásí, a telefon přehrává i nadále.</string>
     <string name="audio_playback_not_ready">Funguje všude, s omezeními: pouze média, bez hlasu navigace. Android požádá o snímání obrazovky: zvolte Celou obrazovku (používá i obrazovka telefonu).</string>
-    <string name="audio_notice_setup_hint">Otevřete AARE na telefonu a nastavte zvuk v autě, abyste slyšeli telefon v autě</string>
+    <string name="audio_notice_setup_hint">Otevřete F-Auto na telefonu a nastavte zvuk v autě, abyste slyšeli telefon v autě</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Obrazovka telefonu</string>
     <string name="phone_toggle_enable_title">Obrazovka telefonu v autě</string>
-    <string name="phone_toggle_enable_subtitle">Vlastní obrazovka telefonu, pro aplikace, které AARE nemůže hostovat (Google Maps, Waze). Pozastavena, když je telefon uzamčen, a za jízdy, pokud nenavádí navigační aplikace. Nenabízena na serveru hlavní jednotky, pokud tam není povolena</string>
+    <string name="phone_toggle_enable_subtitle">Vlastní obrazovka telefonu, pro aplikace, které F-Auto nemůže hostovat (Google Maps, Waze). Pozastavena, když je telefon uzamčen, a za jízdy, pokud nenavádí navigační aplikace. Nenabízena na serveru hlavní jednotky, pokud tam není povolena</string>
     <string name="phone_check_touch_title">Dotyk na obrazovce telefonu</string>
-    <string name="phone_check_touch_subtitle">Zapněte AARE v Přístupnosti. Nahrané aplikace mohou nejprve potřebovat "Povolit omezená nastavení" v informacích o aplikaci AARE</string>
+    <string name="phone_check_touch_subtitle">Zapněte F-Auto v Přístupnosti. Nahrané aplikace mohou nejprve potřebovat "Povolit omezená nastavení" v informacích o aplikaci F-Auto</string>
     <string name="phone_hint_touch_capture">Obraz používá oprávnění ke snímání obrazovky (stránka Zvuk v autě, zvolte Celou obrazovku).</string>
-    <string name="phone_app_row_subtitle">Vlastní obrazovka telefonu, pro aplikace, které AARE nemůže hostovat</string>
+    <string name="phone_app_row_subtitle">Vlastní obrazovka telefonu, pro aplikace, které F-Auto nemůže hostovat</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Hlasový asistent</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Důvěřujte pouze hlavní jednotce, ke které jste právě připojeni</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, pak se znovu připojte.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, pak se znovu připojte.</string>
-    <string name="notif_cert_changed_message">certifikát hlavní jednotky se změnil: klepněte na Důvěřovat v oznámení nebo v AARE pouze pokud byl její software aktualizován, pak se znovu připojte</string>
-    <string name="notif_cert_untrusted_message">certifikát hlavní jednotky ještě není důvěryhodný: klepněte na Důvěřovat v oznámení nebo v AARE, pak se znovu připojte</string>
+    <string name="notif_cert_changed_message">certifikát hlavní jednotky se změnil: klepněte na Důvěřovat v oznámení nebo v F-Auto pouze pokud byl její software aktualizován, pak se znovu připojte</string>
+    <string name="notif_cert_untrusted_message">certifikát hlavní jednotky ještě není důvěryhodný: klepněte na Důvěřovat v oznámení nebo v F-Auto, pak se znovu připojte</string>
     <string name="notif_car_nearby_title">Auto v okolí</string>
     <string name="notif_car_nearby_text">Klepnutím se bezdrátově připojíte</string>
     <string name="notif_status_connecting_to">Připojování k %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Navigace</string>
     <string name="notif_navigation_no_app_text">V autě není navigační aplikace</string>
     <string name="notif_assistant_title">Asistent</string>
-    <string name="notif_assistant_choose_text">Vyberte hlasového asistenta v nastavení AARE na telefonu</string>
+    <string name="notif_assistant_choose_text">Vyberte hlasového asistenta v nastavení F-Auto na telefonu</string>
     <string name="notif_assistant_no_car_screen">%1$s nemá obrazovku pro auto: otevřel se na telefonu</string>
-    <string name="notif_assistant_cant_open">%1$s nelze otevřít. Vyberte jiného asistenta v nastavení AARE</string>
+    <string name="notif_assistant_cant_open">%1$s nelze otevřít. Vyberte jiného asistenta v nastavení F-Auto</string>
     <string name="notif_parked_only_title">Nedostupné za jízdy</string>
     <string name="notif_parked_only_text">Zaparkujte, abyste to mohli použít</string>
     <string name="notif_empty">Žádná oznámení</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">Fronta je prázdná</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Udělte AARE přístup k oznámením v telefonu, abyste zde viděli zprávy</string>
+    <string name="msg_no_access">Udělte F-Auto přístup k oznámením v telefonu, abyste zde viděli zprávy</string>
     <string name="msg_listener_not_ready">Zatím tu nic není</string>
     <string name="msg_reply_sent">Odpověď odeslána</string>
     <string name="msg_reply_rejected">%1$s odpověď nepřijal</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Poslední</string>
     <string name="phone_tab_contacts">Kontakty</string>
     <string name="phone_tab_keypad">Klávesnice</string>
-    <string name="phone_permissions_placeholder">Povolte hovory, historii hovorů a kontakty v AARE na telefonu (Dokončit nastavení).</string>
+    <string name="phone_permissions_placeholder">Povolte hovory, historii hovorů a kontakty v F-Auto na telefonu (Dokončit nastavení).</string>
     <string name="phone_notice_calling_title">Volání</string>
     <string name="phone_no_recent_calls">Žádné nedávné hovory</string>
     <string name="phone_no_contacts">Žádné kontakty s telefonním číslem</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Aplikace na obrazovce auta (pokročilé)</string>
-    <string name="standalone_section_warning">Toto nejsou aplikace Android Auto: AARE zobrazuje jejich běžnou obrazovku telefonu, jen při zaparkování, a vyžaduje root nebo Shizuku. Používáte na vlastní riziko.</string>
+    <string name="standalone_section_warning">Toto nejsou aplikace Android Auto: F-Auto zobrazuje jejich běžnou obrazovku telefonu, jen při zaparkování, a vyžaduje root nebo Shizuku. Používáte na vlastní riziko.</string>
     <string name="standalone_toggle_title">Spouštět aplikace telefonu na obrazovce auta</string>
     <string name="standalone_toggle_subtitle">Vyberte aplikace níže. Zobrazeno jen při zaparkování.</string>
     <string name="standalone_need_root">Vyžaduje root nebo Shizuku. Nastavte jedno z nich na stránce Zvuk v autě a pak se vraťte.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Gyroskop</string>
     <string name="car_data_dtc">Chybové kódy</string>
     <string name="setup_toggle_force_h264_title">Vynutit video H.264</string>
-    <string name="setup_toggle_force_h264_subtitle">Ve výchozím nastavení AARE používá nejlepší kodek sdílený autem a telefonem (H.265…). Zapněte, pokud obraz v autě trhá nebo je poškozený.</string>
+    <string name="setup_toggle_force_h264_subtitle">Ve výchozím nastavení F-Auto používá nejlepší kodek sdílený autem a telefonem (H.265…). Zapněte, pokud obraz v autě trhá nebo je poškozený.</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">Zkusit znovu</string>
     <string name="common_something_went_wrong">Něco se pokazilo</string>
@@ -424,7 +424,7 @@
     <string name="media_error_skip_limit">Dosažen limit přeskočení</string>
     <string name="media_error_setup">Dokončete nastavení %1$s na telefonu</string>
     <string name="media_error_end_of_playlist">Konec playlistu</string>
-    <string name="media_error_permission">%1$s neumožňuje AARE jej procházet</string>
+    <string name="media_error_permission">%1$s neumožňuje F-Auto jej procházet</string>
     <string name="media_error_io">Problém se sítí nebo úložištěm</string>
     <string name="media_error_not_supported">%1$s to nepodporuje</string>
     <string name="media_error_disconnected">%1$s se odpojilo</string>
@@ -438,6 +438,6 @@
     <string name="carapp_error_refused">%1$s odmítl připojení</string>
     <string name="carapp_error_api_level">%1$s vyžaduje úroveň car API %2$d; tato hlavní jednotka podporuje %3$d</string>
     <string name="carapp_error_stopped">%1$s se zastavilo</string>
-    <string name="carapp_error_google_only">%1$s akceptuje pouze Android Auto od Googlu. Musí povolit AARE (viz seznam aplikací na telefonu).</string>
+    <string name="carapp_error_google_only">%1$s akceptuje pouze Android Auto od Googlu. Musí povolit F-Auto (viz seznam aplikací na telefonu).</string>
     <string name="carapp_error_cant_start">%1$s se nepodařilo spustit: %2$s</string>
 </resources>

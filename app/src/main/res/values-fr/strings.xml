@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">Permet d\'utiliser l\'écran du téléphone depuis la voiture : AARE reproduit sur le téléphone les appuis effectués sur l\'écran de la voiture, et vérifie quelle application est au premier plan pour que l\'écran du téléphone reste en pause pendant la conduite, sauf s\'il affiche une application de navigation. AARE ne lit rien d\'autre.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">Permet d\'utiliser l\'écran du téléphone depuis la voiture : F-Auto reproduit sur le téléphone les appuis effectués sur l\'écran de la voiture, et vérifie quelle application est au premier plan pour que l\'écran du téléphone reste en pause pendant la conduite, sauf s\'il affiche une application de navigation. F-Auto ne lit rien d\'autre.</string>
     <string name="mirror_locked_placeholder">L\'écran du téléphone est en pause tant que le téléphone est verrouillé. Déverrouillez le téléphone pour l\'afficher.</string>
-    <string name="mirror_driving_no_accessibility">L\'écran du téléphone est en pause pendant la conduite. Pour afficher les applications de navigation en conduisant, activez AARE dans les paramètres d\'accessibilité du téléphone : cela indique à AARE quelle application est ouverte.</string>
+    <string name="mirror_driving_no_accessibility">L\'écran du téléphone est en pause pendant la conduite. Pour afficher les applications de navigation en conduisant, activez F-Auto dans les paramètres d\'accessibilité du téléphone : cela indique à F-Auto quelle application est ouverte.</string>
     <string name="mirror_driving_nav_only">L\'écran du téléphone est en pause pendant la conduite. Il n\'affiche que les applications de navigation.</string>
-    <string name="mirror_need_car_audio">Activez l\'audio voiture dans AARE sur le téléphone, et choisissez Écran entier quand Android le demande : l\'écran du téléphone utilise la même autorisation.</string>
-    <string name="mirror_need_accessibility">Pour utiliser le téléphone depuis la voiture, activez AARE dans les paramètres d\'accessibilité du téléphone.</string>
+    <string name="mirror_need_car_audio">Activez l\'audio voiture dans F-Auto sur le téléphone, et choisissez Écran entier quand Android le demande : l\'écran du téléphone utilise la même autorisation.</string>
+    <string name="mirror_need_accessibility">Pour utiliser le téléphone depuis la voiture, activez F-Auto dans les paramètres d\'accessibilité du téléphone.</string>
 
     <!-- common: shared across screens -->
     <string name="common_back">Retour</string>
@@ -55,8 +55,8 @@
     <string name="setup_section_location">Position</string>
     <string name="setup_toggle_car_gps_title">Utiliser le GPS de la voiture</string>
     <string name="setup_toggle_car_gps_subtitle">Une fois connecté, les applications du téléphone voient la position de la voiture plutôt que celle du téléphone, pour éviter que les applications de navigation ne mélangent les deux</string>
-    <string name="setup_check_mock_location_title">Autoriser AARE à définir la position</string>
-    <string name="setup_check_mock_location_subtitle">Options pour les développeurs &gt; Application de simulation de position &gt; AARE</string>
+    <string name="setup_check_mock_location_title">Autoriser F-Auto à définir la position</string>
+    <string name="setup_check_mock_location_subtitle">Options pour les développeurs &gt; Application de simulation de position &gt; F-Auto</string>
     <string name="setup_section_video">Vidéo</string>
     <string name="setup_toggle_60fps_title">Préférer 60 fps</string>
     <string name="setup_toggle_60fps_subtitle">Plus fluide si la voiture le prend en charge</string>
@@ -104,15 +104,15 @@
     <string name="setup_app_kind_media">Musique, podcasts, radio</string>
     <string name="setup_app_group_messaging">Messagerie</string>
     <string name="setup_app_kind_messaging">Messages via ses notifications</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">Applications Android Auto que AARE ne peut pas afficher</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">Applications Android Auto que F-Auto ne peut pas afficher</string>
     <string name="setup_hint_allowlist">Les applications créées avec des versions récentes de la bibliothèque voiture de Google n\'acceptent que les hôtes figurant dans leur liste d\'autorisation ; voir le README.</string>
     <string name="setup_app_entry_phone">Téléphone</string>
     <string name="setup_app_entry_settings">Paramètres</string>
     <string name="setup_app_entry_notifications">Notifications</string>
     <string name="setup_section_app_order">Ordre dans la voiture</string>
     <string name="setup_section_connection_log">Journal de connexion</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · Non affilié à Google. Android Auto est une marque de Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Non affilié à Google. Android Auto est une marque de Google LLC.</string>
     <string name="setup_choice_style">Style</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -123,7 +123,7 @@
 
     <!-- cert: certificate management -->
     <string name="cert_section_title">Certificats du téléphone</string>
-    <string name="cert_hint">Les autoradios vérifient le certificat du téléphone. Les autoradios open source acceptent celui généré automatiquement ; les voitures utilisant le logiciel d\'autoradio de Google n\'acceptent qu\'un certificat délivré par Google, qu\'AARE ne peut pas inclure. Vous pouvez importer un certificat que vous avez le droit d\'utiliser (certificat PEM + clé PKCS#8, ou PKCS#12). Vous pouvez aussi télécharger celui de la dernière version d\'Android Auto (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">Les autoradios vérifient le certificat du téléphone. Les autoradios open source acceptent celui généré automatiquement ; les voitures utilisant le logiciel d\'autoradio de Google n\'acceptent qu\'un certificat délivré par Google, qu\'F-Auto ne peut pas inclure. Vous pouvez importer un certificat que vous avez le droit d\'utiliser (certificat PEM + clé PKCS#8, ou PKCS#12). Vous pouvez aussi télécharger celui de la dernière version d\'Android Auto (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · jusqu\'au %2$s</string>
     <string name="cert_action_remove">Supprimer</string>
     <string name="cert_action_import">Importer un certificat…</string>
@@ -160,7 +160,7 @@
     <string name="msg_section_while_driving">Pendant la conduite</string>
     <string name="msg_toggle_dnd_title">Ne pas déranger</string>
     <string name="msg_toggle_dnd_subtitle">Rend le téléphone silencieux une fois connecté ; les appels et conversations prioritaires passent toujours</string>
-    <string name="msg_check_dnd_access_title">Autoriser AARE à activer Ne pas déranger</string>
+    <string name="msg_check_dnd_access_title">Autoriser F-Auto à activer Ne pas déranger</string>
     <string name="msg_check_dnd_access_subtitle">Android le demande une seule fois</string>
     <string name="msg_toggle_autoreply_title">Réponse automatique</string>
     <string name="msg_toggle_autoreply_subtitle">Répond aux personnes qui écrivent, une fois par conversation et par trajet (hors groupes)</string>
@@ -175,23 +175,23 @@
     <string name="audio_no_method">Aucune méthode n\'est encore configurée : choisissez-en une ci-dessous.</string>
     <string name="audio_section_methods">Méthodes, la meilleure en premier</string>
     <string name="audio_policy_ready">Prêt. La musique et la voix de navigation vont séparément à la voiture, le téléphone reste silencieux.</string>
-    <string name="audio_policy_not_ready">Comme Android Auto : musique et voix de navigation séparées, haut-parleur du téléphone coupé. Nécessite un téléphone rooté : installez AARE comme application système avec le module Magisk (voir le README).</string>
+    <string name="audio_policy_not_ready">Comme Android Auto : musique et voix de navigation séparées, haut-parleur du téléphone coupé. Nécessite un téléphone rooté : installez F-Auto comme application système avec le module Magisk (voir le README).</string>
     <string name="audio_shizuku_ready">Prêt. Tout ce que joue le téléphone va à la voiture, voix de navigation incluse ; le téléphone reste silencieux.</string>
     <string name="audio_shizuku_needs_android12">Nécessite Android 12 ou une version plus récente.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku est actif : appuyez pour autoriser AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku est actif : appuyez pour autoriser F-Auto.</string>
     <string name="audio_shizuku_install_hint">Aucun root nécessaire. Installez Shizuku, démarrez-le (débogage sans fil, une fois par redémarrage), puis revenez ici.</string>
     <string name="audio_playback_ready">Prêt. Médias uniquement : pas de voix de navigation, certaines applications s\'en excluent, et le téléphone continue aussi de jouer.</string>
     <string name="audio_playback_not_ready">Fonctionne partout, avec des limites : médias uniquement, pas de voix de navigation. Android demande à capturer l\'écran : choisissez Écran entier (aussi utilisé par l\'écran du téléphone).</string>
-    <string name="audio_notice_setup_hint">Ouvrez AARE sur le téléphone et configurez l\'audio voiture pour entendre le téléphone dans la voiture</string>
+    <string name="audio_notice_setup_hint">Ouvrez F-Auto sur le téléphone et configurez l\'audio voiture pour entendre le téléphone dans la voiture</string>
 
     <!-- phone: phone screen feature -->
     <string name="phone_section_title">Écran du téléphone</string>
     <string name="phone_toggle_enable_title">Écran du téléphone dans la voiture</string>
-    <string name="phone_toggle_enable_subtitle">L\'écran du téléphone lui-même, pour les applications qu\'AARE ne peut pas héberger (Google Maps, Waze). En pause tant que le téléphone est verrouillé, et pendant la conduite sauf si une application de navigation guide. Non proposé sur le serveur autoradio sauf activation là-bas</string>
+    <string name="phone_toggle_enable_subtitle">L\'écran du téléphone lui-même, pour les applications qu\'F-Auto ne peut pas héberger (Google Maps, Waze). En pause tant que le téléphone est verrouillé, et pendant la conduite sauf si une application de navigation guide. Non proposé sur le serveur autoradio sauf activation là-bas</string>
     <string name="phone_check_touch_title">Toucher sur l\'écran du téléphone</string>
-    <string name="phone_check_touch_subtitle">Activez AARE dans Accessibilité. Les applications installées manuellement peuvent d\'abord nécessiter « Autoriser les paramètres restreints » dans les infos de l\'application AARE</string>
+    <string name="phone_check_touch_subtitle">Activez F-Auto dans Accessibilité. Les applications installées manuellement peuvent d\'abord nécessiter « Autoriser les paramètres restreints » dans les infos de l\'application F-Auto</string>
     <string name="phone_hint_touch_capture">L\'image utilise l\'autorisation de capture d\'écran (page Audio voiture, choisissez Écran entier).</string>
-    <string name="phone_app_row_subtitle">L\'écran du téléphone lui-même, pour les applications qu\'AARE ne peut pas héberger</string>
+    <string name="phone_app_row_subtitle">L\'écran du téléphone lui-même, pour les applications qu\'F-Auto ne peut pas héberger</string>
 
     <!-- assistant: voice assistant settings and bar -->
     <string name="assistant_settings_title">Assistant vocal</string>
@@ -214,8 +214,8 @@
     <string name="notif_trust_warning">Ne faites confiance qu\'à un autoradio auquel vous êtes connecté en ce moment</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s, puis reconnectez-vous.</string>
     <string name="notif_trust_reconnect_suffix">%1$s, puis reconnectez-vous.</string>
-    <string name="notif_cert_changed_message">certificat de l\'autoradio modifié : appuyez sur Faire confiance dans la notification ou dans AARE uniquement si son logiciel a été mis à jour, puis reconnectez-vous</string>
-    <string name="notif_cert_untrusted_message">certificat de l\'autoradio pas encore approuvé : appuyez sur Faire confiance dans la notification ou dans AARE, puis reconnectez-vous</string>
+    <string name="notif_cert_changed_message">certificat de l\'autoradio modifié : appuyez sur Faire confiance dans la notification ou dans F-Auto uniquement si son logiciel a été mis à jour, puis reconnectez-vous</string>
+    <string name="notif_cert_untrusted_message">certificat de l\'autoradio pas encore approuvé : appuyez sur Faire confiance dans la notification ou dans F-Auto, puis reconnectez-vous</string>
     <string name="notif_car_nearby_title">Voiture à proximité</string>
     <string name="notif_car_nearby_text">Appuyez pour vous connecter sans fil</string>
     <string name="notif_status_connecting_to">Connexion à %1$s</string>
@@ -232,9 +232,9 @@
     <string name="notif_navigation_title">Navigation</string>
     <string name="notif_navigation_no_app_text">Aucune application de navigation dans la voiture</string>
     <string name="notif_assistant_title">Assistant</string>
-    <string name="notif_assistant_choose_text">Choisissez un assistant vocal dans les paramètres d\'AARE sur le téléphone</string>
+    <string name="notif_assistant_choose_text">Choisissez un assistant vocal dans les paramètres d\'F-Auto sur le téléphone</string>
     <string name="notif_assistant_no_car_screen">%1$s n\'a pas d\'écran voiture : il s\'est ouvert sur le téléphone</string>
-    <string name="notif_assistant_cant_open">%1$s ne peut pas être ouvert. Choisissez un autre assistant dans les paramètres d\'AARE</string>
+    <string name="notif_assistant_cant_open">%1$s ne peut pas être ouvert. Choisissez un autre assistant dans les paramètres d\'F-Auto</string>
     <string name="notif_parked_only_title">Non disponible en conduisant</string>
     <string name="notif_parked_only_text">Garez-vous pour utiliser cette fonction</string>
     <string name="notif_empty">Aucune notification</string>
@@ -276,7 +276,7 @@
     <string name="media_queue_empty">La file d\'attente est vide</string>
 
     <!-- msg: messaging screen (notifications-based conversations) -->
-    <string name="msg_no_access">Accordez à AARE l\'accès aux notifications sur le téléphone pour voir les messages ici</string>
+    <string name="msg_no_access">Accordez à F-Auto l\'accès aux notifications sur le téléphone pour voir les messages ici</string>
     <string name="msg_listener_not_ready">Rien à voir ici pour le moment</string>
     <string name="msg_reply_sent">Réponse envoyée</string>
     <string name="msg_reply_rejected">%1$s n\'a pas accepté la réponse</string>
@@ -296,7 +296,7 @@
     <string name="phone_tab_recents">Récents</string>
     <string name="phone_tab_contacts">Contacts</string>
     <string name="phone_tab_keypad">Clavier</string>
-    <string name="phone_permissions_placeholder">Autorisez les appels, l\'historique des appels et les contacts dans AARE sur le téléphone (Terminer la configuration).</string>
+    <string name="phone_permissions_placeholder">Autorisez les appels, l\'historique des appels et les contacts dans F-Auto sur le téléphone (Terminer la configuration).</string>
     <string name="phone_notice_calling_title">Appel en cours</string>
     <string name="phone_no_recent_calls">Aucun appel récent</string>
     <string name="phone_no_contacts">Aucun contact avec un numéro de téléphone</string>
@@ -322,7 +322,7 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">Apps sur l\'écran de la voiture (avancé)</string>
-    <string name="standalone_section_warning">Ce ne sont pas des apps Android Auto : AARE affiche leur écran de téléphone normal, uniquement à l\'arrêt, et nécessite root ou Shizuku. Utilisation à vos risques et périls.</string>
+    <string name="standalone_section_warning">Ce ne sont pas des apps Android Auto : F-Auto affiche leur écran de téléphone normal, uniquement à l\'arrêt, et nécessite root ou Shizuku. Utilisation à vos risques et périls.</string>
     <string name="standalone_toggle_title">Lancer des apps du téléphone sur l\'écran de la voiture</string>
     <string name="standalone_toggle_subtitle">Choisissez les apps ci-dessous. Affichées uniquement à l\'arrêt.</string>
     <string name="standalone_need_root">Nécessite root ou Shizuku. Configurez l\'un des deux dans Audio voiture, puis revenez ici.</string>
@@ -386,7 +386,7 @@
     <string name="car_data_gyroscope">Gyroscope</string>
     <string name="car_data_dtc">Codes défaut</string>
     <string name="setup_toggle_force_h264_title">Forcer la vidéo H.264</string>
-    <string name="setup_toggle_force_h264_subtitle">Par défaut, AARE utilise le meilleur codec partagé par la voiture et le téléphone (H.265…). Activez cette option si l\'image de la voiture est perturbée.</string>
+    <string name="setup_toggle_force_h264_subtitle">Par défaut, F-Auto utilise le meilleur codec partagé par la voiture et le téléphone (H.265…). Activez cette option si l\'image de la voiture est perturbée.</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">Réessayer</string>
     <string name="common_something_went_wrong">Une erreur s\'est produite</string>
@@ -424,7 +424,7 @@
     <string name="media_error_skip_limit">Limite de morceaux sautés atteinte</string>
     <string name="media_error_setup">Terminez la configuration de %1$s sur votre téléphone</string>
     <string name="media_error_end_of_playlist">Fin de la liste de lecture</string>
-    <string name="media_error_permission">%1$s n\'autorise pas AARE à le parcourir</string>
+    <string name="media_error_permission">%1$s n\'autorise pas F-Auto à le parcourir</string>
     <string name="media_error_io">Problème réseau ou de stockage</string>
     <string name="media_error_not_supported">Non pris en charge par %1$s</string>
     <string name="media_error_disconnected">%1$s déconnecté</string>
@@ -438,6 +438,6 @@
     <string name="carapp_error_refused">%1$s a refusé la connexion</string>
     <string name="carapp_error_api_level">%1$s nécessite le niveau d\'API voiture %2$d ; cet autoradio prend en charge %3$d</string>
     <string name="carapp_error_stopped">%1$s s\'est arrêté</string>
-    <string name="carapp_error_google_only">%1$s n\'accepte que l\'Android Auto de Google. Il doit autoriser AARE (voir la liste des applications sur le téléphone).</string>
+    <string name="carapp_error_google_only">%1$s n\'accepte que l\'Android Auto de Google. Il doit autoriser F-Auto (voir la liste des applications sur le téléphone).</string>
     <string name="carapp_error_cant_start">%1$s n\'a pas pu démarrer : %2$s</string>
 </resources>

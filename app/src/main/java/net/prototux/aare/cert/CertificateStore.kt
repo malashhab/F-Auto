@@ -47,6 +47,11 @@ class CertificateStore(private val context: Context) {
     /** Whether a Google-issued certificate (downloaded or imported) is available to offer. */
     fun hasGoogleCertificate(): Boolean = entries().any { it.isGoogleIssued }
 
+    /** The version of the currently-imported [CertificateDownload] result, or null if none was ever imported. */
+    fun downloadedVersion(): String? = dir.listFiles().orEmpty()
+        .firstOrNull { File(it, DOWNLOADED_MARKER).exists() }
+        ?.let { load(it)?.name?.removePrefix("Android Auto ") }
+
     /** AARE's own certificate, from the release build's assets; null in builds made without it. */
     private val builtIn: Entry? by lazy {
         runCatching {

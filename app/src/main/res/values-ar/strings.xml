@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AARE</string>
-    <string name="mirror_touch_description">يتيح لك استخدام شاشة الهاتف من السيارة: يعيد AARE توجيه اللمسات التي تتم على شاشة السيارة إلى الهاتف، ويتحقق من التطبيق الظاهر في المقدمة حتى تبقى شاشة الهاتف متوقفة مؤقتًا أثناء القيادة إلا إذا كانت تعرض تطبيق تنقّل. لا يقرأ AARE أي شيء آخر.</string>
+    <string name="app_name">F-Auto</string>
+    <string name="mirror_touch_description">يتيح لك استخدام شاشة الهاتف من السيارة: يعيد F-Auto توجيه اللمسات التي تتم على شاشة السيارة إلى الهاتف، ويتحقق من التطبيق الظاهر في المقدمة حتى تبقى شاشة الهاتف متوقفة مؤقتًا أثناء القيادة إلا إذا كانت تعرض تطبيق تنقّل. لا يقرأ F-Auto أي شيء آخر.</string>
     <string name="mirror_locked_placeholder">تتوقف شاشة الهاتف مؤقتًا أثناء قفل الهاتف. افتح قفل الهاتف لعرضها.</string>
-    <string name="mirror_driving_no_accessibility">تتوقف شاشة الهاتف مؤقتًا أثناء القيادة. لعرض تطبيقات التنقّل أثناء القيادة، فعِّل AARE في إعدادات إمكانية الوصول في الهاتف: فهذا يُعلم AARE بالتطبيق المفتوح حاليًا.</string>
+    <string name="mirror_driving_no_accessibility">تتوقف شاشة الهاتف مؤقتًا أثناء القيادة. لعرض تطبيقات التنقّل أثناء القيادة، فعِّل F-Auto في إعدادات إمكانية الوصول في الهاتف: فهذا يُعلم F-Auto بالتطبيق المفتوح حاليًا.</string>
     <string name="mirror_driving_nav_only">تتوقف شاشة الهاتف مؤقتًا أثناء القيادة. وتعرض تطبيقات التنقّل فقط.</string>
-    <string name="mirror_need_car_audio">فعِّل خيار صوت السيارة في AARE على الهاتف، واختر الشاشة بالكامل عندما يطلب نظام Android ذلك: تستخدم شاشة الهاتف نفس الإذن.</string>
-    <string name="mirror_need_accessibility">لاستخدام الهاتف من السيارة، فعِّل AARE في إعدادات إمكانية الوصول في الهاتف.</string>
+    <string name="mirror_need_car_audio">فعِّل خيار صوت السيارة في F-Auto على الهاتف، واختر الشاشة بالكامل عندما يطلب نظام Android ذلك: تستخدم شاشة الهاتف نفس الإذن.</string>
+    <string name="mirror_need_accessibility">لاستخدام الهاتف من السيارة، فعِّل F-Auto في إعدادات إمكانية الوصول في الهاتف.</string>
 
     <string name="common_back">رجوع</string>
     <string name="common_up">أعلى</string>
@@ -53,8 +53,8 @@
     <string name="setup_section_location">الموقع</string>
     <string name="setup_toggle_car_gps_title">استخدام نظام GPS في السيارة</string>
     <string name="setup_toggle_car_gps_subtitle">أثناء الاتصال، ترى التطبيقات على الهاتف موضع السيارة بدلًا من موضع الهاتف نفسه، لتجنّب الخلط بين الموضعين في تطبيقات التنقّل</string>
-    <string name="setup_check_mock_location_title">السماح لـ AARE بتحديد الموقع</string>
-    <string name="setup_check_mock_location_subtitle">خيارات المطوّرين &gt; اختيار تطبيق الموقع التجريبي &gt; AARE</string>
+    <string name="setup_check_mock_location_title">السماح لـ F-Auto بتحديد الموقع</string>
+    <string name="setup_check_mock_location_subtitle">خيارات المطوّرين &gt; اختيار تطبيق الموقع التجريبي &gt; F-Auto</string>
     <string name="setup_section_video">الفيديو</string>
     <string name="setup_toggle_60fps_title">تفضيل 60 إطارًا/ثانية</string>
     <string name="setup_toggle_60fps_subtitle">أكثر سلاسة عندما تدعمه السيارة</string>
@@ -102,15 +102,15 @@
     <string name="setup_app_kind_media">الموسيقى، البودكاست، الراديو</string>
     <string name="setup_app_group_messaging">المراسلة</string>
     <string name="setup_app_kind_messaging">رسائل من إشعاراته</string>
-    <string name="setup_app_group_aare">AARE</string>
-    <string name="setup_section_unsupported_apps">تطبيقات Android Auto التي لا يمكن لـ AARE عرضها</string>
+    <string name="setup_app_group_aare">F-Auto</string>
+    <string name="setup_section_unsupported_apps">تطبيقات Android Auto التي لا يمكن لـ F-Auto عرضها</string>
     <string name="setup_hint_allowlist">التطبيقات المبنية بإصدارات حديثة من مكتبة السيارات الخاصة بـ Google لا تقبل إلا المضيفين في قائمتها المسموحة؛ راجع ملف README.</string>
     <string name="setup_app_entry_phone">الهاتف</string>
     <string name="setup_app_entry_settings">الإعدادات</string>
     <string name="setup_app_entry_notifications">الإشعارات</string>
     <string name="setup_section_app_order">الترتيب في السيارة</string>
     <string name="setup_section_connection_log">سجل الاتصال</string>
-    <string name="setup_about_text">AARE %1$s · GPL-3.0-or-later · غير مرتبط بشركة Google. Android Auto علامة تجارية مملوكة لشركة Google LLC.</string>
+    <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · غير مرتبط بشركة Google. Android Auto علامة تجارية مملوكة لشركة Google LLC.</string>
     <string name="setup_choice_style">النمط</string>
     <string name="setup_style_android_auto">Android Auto</string>
     <string name="setup_style_carplay">CarPlay</string>
@@ -120,7 +120,7 @@
     <string name="setup_switch_audio_next_connection">صوت الهاتف في السيارة (الاتصال التالي)</string>
 
     <string name="cert_section_title">شهادات الهاتف</string>
-    <string name="cert_hint">تتحقق وحدات التحكم من شهادة الهاتف. تقبل وحدات التحكم مفتوحة المصدر الشهادة المُولَّدة؛ أما السيارات التي تستخدم برنامج وحدة تحكم Google فلا تقبل إلا شهادة صادرة عن Google، وهو ما لا يمكن لـ AARE تضمينه. يمكنك استيراد شهادة لديك الحق في استخدامها (شهادة PEM + مفتاح PKCS#8، أو PKCS#12). يمكنك أيضًا تنزيل الشهادة المستخرجة من أحدث إصدار من تطبيق Android Auto (github.com/iscle/android-auto-certificates).</string>
+    <string name="cert_hint">تتحقق وحدات التحكم من شهادة الهاتف. تقبل وحدات التحكم مفتوحة المصدر الشهادة المُولَّدة؛ أما السيارات التي تستخدم برنامج وحدة تحكم Google فلا تقبل إلا شهادة صادرة عن Google، وهو ما لا يمكن لـ F-Auto تضمينه. يمكنك استيراد شهادة لديك الحق في استخدامها (شهادة PEM + مفتاح PKCS#8، أو PKCS#12). يمكنك أيضًا تنزيل الشهادة المستخرجة من أحدث إصدار من تطبيق Android Auto (github.com/iscle/android-auto-certificates).</string>
     <string name="cert_entry_subtitle">%1$s · حتى %2$s</string>
     <string name="cert_action_remove">إزالة</string>
     <string name="cert_action_import">استيراد شهادة…</string>
@@ -155,7 +155,7 @@
     <string name="msg_section_while_driving">أثناء القيادة</string>
     <string name="msg_toggle_dnd_title">عدم الإزعاج</string>
     <string name="msg_toggle_dnd_subtitle">إسكات الهاتف أثناء الاتصال؛ تبقى المكالمات والمحادثات ذات الأولوية تصل</string>
-    <string name="msg_check_dnd_access_title">السماح لـ AARE بتفعيل عدم الإزعاج</string>
+    <string name="msg_check_dnd_access_title">السماح لـ F-Auto بتفعيل عدم الإزعاج</string>
     <string name="msg_check_dnd_access_subtitle">يطلب نظام Android ذلك مرة واحدة</string>
     <string name="msg_toggle_autoreply_title">الرد التلقائي</string>
     <string name="msg_toggle_autoreply_subtitle">الرد على من يكتب، مرة واحدة لكل محادثة في كل رحلة (دون المجموعات)</string>
@@ -169,22 +169,22 @@
     <string name="audio_no_method">لم يتم إعداد طريقة حتى الآن: اختر واحدة أدناه.</string>
     <string name="audio_section_methods">الطرق، الأفضل أولًا</string>
     <string name="audio_policy_ready">جاهز. تُرسل الموسيقى وصوت التنقّل إلى السيارة بشكل منفصل، ويبقى الهاتف صامتًا.</string>
-    <string name="audio_policy_not_ready">كما في Android Auto: الموسيقى وصوت التنقّل منفصلان، ومكبر صوت الهاتف موقوف. يتطلب هاتفًا بصلاحيات root: ثبّت AARE كتطبيق نظام باستخدام وحدة Magisk (راجع ملف README).</string>
+    <string name="audio_policy_not_ready">كما في Android Auto: الموسيقى وصوت التنقّل منفصلان، ومكبر صوت الهاتف موقوف. يتطلب هاتفًا بصلاحيات root: ثبّت F-Auto كتطبيق نظام باستخدام وحدة Magisk (راجع ملف README).</string>
     <string name="audio_shizuku_ready">جاهز. كل ما يشغّله الهاتف يصل إلى السيارة، بما فيه صوت التنقّل؛ ويبقى الهاتف صامتًا.</string>
     <string name="audio_shizuku_needs_android12">يتطلب Android 12 أو إصدارًا أحدث.</string>
-    <string name="audio_shizuku_tap_allow">Shizuku قيد التشغيل: اضغط للسماح لـ AARE.</string>
+    <string name="audio_shizuku_tap_allow">Shizuku قيد التشغيل: اضغط للسماح لـ F-Auto.</string>
     <string name="audio_shizuku_install_hint">لا حاجة إلى root. ثبّت Shizuku، وشغّله (تصحيح الأخطاء اللاسلكي، مرة واحدة بعد كل إعادة تشغيل)، ثم عد إلى هنا.</string>
     <string name="audio_playback_ready">جاهز. الوسائط فقط: بلا صوت تنقّل، وبعض التطبيقات تستثني نفسها، ويستمر الهاتف في التشغيل أيضًا.</string>
     <string name="audio_playback_not_ready">يعمل في كل مكان، مع قيود: الوسائط فقط، بلا صوت تنقّل. يطلب نظام Android تسجيل الشاشة: اختر الشاشة بالكامل (تُستخدم أيضًا لشاشة الهاتف).</string>
-    <string name="audio_notice_setup_hint">افتح AARE على الهاتف وأعدّ صوت السيارة لسماع الهاتف في السيارة</string>
+    <string name="audio_notice_setup_hint">افتح F-Auto على الهاتف وأعدّ صوت السيارة لسماع الهاتف في السيارة</string>
 
     <string name="phone_section_title">شاشة الهاتف</string>
     <string name="phone_toggle_enable_title">شاشة الهاتف في السيارة</string>
-    <string name="phone_toggle_enable_subtitle">شاشة الهاتف نفسها، للتطبيقات التي لا يمكن لـ AARE استضافتها (Google Maps، Waze). تتوقف مؤقتًا أثناء قفل الهاتف، وأثناء القيادة إلا إذا كان تطبيق تنقّل يرشدك. لا تُعرض على خادم وحدة التحكم إلا إذا فُعِّلت هناك</string>
+    <string name="phone_toggle_enable_subtitle">شاشة الهاتف نفسها، للتطبيقات التي لا يمكن لـ F-Auto استضافتها (Google Maps، Waze). تتوقف مؤقتًا أثناء قفل الهاتف، وأثناء القيادة إلا إذا كان تطبيق تنقّل يرشدك. لا تُعرض على خادم وحدة التحكم إلا إذا فُعِّلت هناك</string>
     <string name="phone_check_touch_title">اللمس على شاشة الهاتف</string>
-    <string name="phone_check_touch_subtitle">فعِّل AARE في إمكانية الوصول. قد تحتاج التطبيقات المثبَّتة يدويًا أولًا إلى "السماح بالإعدادات المقيَّدة" في معلومات تطبيق AARE</string>
+    <string name="phone_check_touch_subtitle">فعِّل F-Auto في إمكانية الوصول. قد تحتاج التطبيقات المثبَّتة يدويًا أولًا إلى "السماح بالإعدادات المقيَّدة" في معلومات تطبيق F-Auto</string>
     <string name="phone_hint_touch_capture">تستخدم الصورة إذن تسجيل الشاشة (صفحة صوت السيارة، اختر الشاشة بالكامل).</string>
-    <string name="phone_app_row_subtitle">شاشة الهاتف نفسها، للتطبيقات التي لا يمكن لـ AARE استضافتها</string>
+    <string name="phone_app_row_subtitle">شاشة الهاتف نفسها، للتطبيقات التي لا يمكن لـ F-Auto استضافتها</string>
 
     <string name="assistant_settings_title">المساعد الصوتي</string>
     <string name="assistant_page_subtitle">ما يفتحه زر الصوت</string>
@@ -205,8 +205,8 @@
     <string name="notif_trust_warning">لا تثق إلا بوحدة تحكم متصل بها الآن فعلًا</string>
     <string name="notif_untrusted_message">SHA-256 %1$s... %2$s، ثم أعد الاتصال.</string>
     <string name="notif_trust_reconnect_suffix">%1$s، ثم أعد الاتصال.</string>
-    <string name="notif_cert_changed_message">تغيّرت شهادة وحدة التحكم: اضغط وثوق في الإشعار أو في AARE فقط إذا كان برنامجها قد تم تحديثه، ثم أعد الاتصال</string>
-    <string name="notif_cert_untrusted_message">شهادة وحدة التحكم غير موثوقة حتى الآن: اضغط وثوق في الإشعار أو في AARE، ثم أعد الاتصال</string>
+    <string name="notif_cert_changed_message">تغيّرت شهادة وحدة التحكم: اضغط وثوق في الإشعار أو في F-Auto فقط إذا كان برنامجها قد تم تحديثه، ثم أعد الاتصال</string>
+    <string name="notif_cert_untrusted_message">شهادة وحدة التحكم غير موثوقة حتى الآن: اضغط وثوق في الإشعار أو في F-Auto، ثم أعد الاتصال</string>
     <string name="notif_car_nearby_title">سيارة قريبة</string>
     <string name="notif_car_nearby_text">اضغط للاتصال لاسلكيًا</string>
     <string name="notif_status_connecting_to">جارٍ الاتصال بـ %1$s</string>
@@ -223,9 +223,9 @@
     <string name="notif_navigation_title">التنقّل</string>
     <string name="notif_navigation_no_app_text">لا يوجد تطبيق تنقّل في السيارة</string>
     <string name="notif_assistant_title">المساعد</string>
-    <string name="notif_assistant_choose_text">اختر مساعدًا صوتيًا في إعدادات AARE على الهاتف</string>
+    <string name="notif_assistant_choose_text">اختر مساعدًا صوتيًا في إعدادات F-Auto على الهاتف</string>
     <string name="notif_assistant_no_car_screen">لا تملك %1$s شاشة سيارة: فُتحت على الهاتف</string>
-    <string name="notif_assistant_cant_open">تعذّر فتح %1$s. اختر مساعدًا آخر في إعدادات AARE</string>
+    <string name="notif_assistant_cant_open">تعذّر فتح %1$s. اختر مساعدًا آخر في إعدادات F-Auto</string>
     <string name="notif_parked_only_title">غير متاح أثناء القيادة</string>
     <string name="notif_parked_only_text">أوقف السيارة لاستخدام هذا</string>
     <string name="notif_empty">لا إشعارات</string>
@@ -263,7 +263,7 @@
     <string name="media_action_play">تشغيل</string>
     <string name="media_queue_empty">قائمة الانتظار فارغة</string>
 
-    <string name="msg_no_access">امنح AARE إذن الوصول إلى الإشعارات على الهاتف لرؤية الرسائل هنا</string>
+    <string name="msg_no_access">امنح F-Auto إذن الوصول إلى الإشعارات على الهاتف لرؤية الرسائل هنا</string>
     <string name="msg_listener_not_ready">لا شيء لعرضه هنا حتى الآن</string>
     <string name="msg_reply_sent">تم إرسال الرد</string>
     <string name="msg_reply_rejected">لم يقبل %1$s الرد</string>
@@ -282,7 +282,7 @@
     <string name="phone_tab_recents">الأخيرة</string>
     <string name="phone_tab_contacts">جهات الاتصال</string>
     <string name="phone_tab_keypad">لوحة الاتصال</string>
-    <string name="phone_permissions_placeholder">اسمح بالمكالمات وسجل المكالمات وجهات الاتصال في AARE على الهاتف (إنهاء الإعداد).</string>
+    <string name="phone_permissions_placeholder">اسمح بالمكالمات وسجل المكالمات وجهات الاتصال في F-Auto على الهاتف (إنهاء الإعداد).</string>
     <string name="phone_notice_calling_title">جارٍ الاتصال</string>
     <string name="phone_no_recent_calls">لا مكالمات أخيرة</string>
     <string name="phone_no_contacts">لا جهات اتصال لها رقم هاتف</string>
@@ -297,6 +297,25 @@
     <string name="phone_in_call_elapsed">%1$s · %2$s</string>
     <string name="dash_event_today">اليوم</string>
     <string name="dash_latest_label">الأحدث</string>
+    <string name="dash_greeting_morning">صباح الخير</string>
+    <string name="dash_greeting_afternoon">مساء الخير</string>
+    <string name="dash_greeting_evening">مساء الخير</string>
+    <string name="dash_continue">متابعة</string>
+    <string name="dash_suggested">مقترحات</string>
+    <string name="dash_navigate">التنقل</string>
+    <string name="dash_calls">المكالمات</string>
+    <string name="dash_messages">الرسائل</string>
+    <string name="dash_no_messages">لا رسائل جديدة</string>
+    <string name="dash_no_route">لا يوجد مسار نشط</string>
+    <string name="dash_on_route">على المسار</string>
+    <string name="dash_maps">الخرائط</string>
+    <string name="dash_work">العمل</string>
+    <string name="dash_hide_rail">إخفاء الشريط الجانبي</string>
+    <string name="dash_show_rail">إظهار الشريط الجانبي</string>
+    <string name="setup_tab_cars">سياراتي</string>
+    <string name="setup_customize_title">تخصيص</string>
+    <string name="setup_layout_full">كامل</string>
+    <string name="setup_quick_map_music_title">خريطة + موسيقى</string>
     <string name="cluster_arrival_time">الوصول %1$s</string>
 
     <string name="kbd_symbols_label">\?123</string>
@@ -306,9 +325,11 @@
 
     <!-- standalone: launching ordinary phone apps on the car screen (root/Shizuku, parked only) -->
     <string name="standalone_section_title">تطبيقات على شاشة السيارة (متقدم)</string>
-    <string name="standalone_section_warning">هذه ليست تطبيقات Android Auto: يعرض AARE شاشة الهاتف العادية، فقط أثناء التوقف، ويحتاج إلى root أو Shizuku. استخدمها على مسؤوليتك الخاصة.</string>
+    <string name="standalone_section_warning">هذه ليست تطبيقات Android Auto: يشغّل F-Auto شاشة الهاتف العادية على شاشة السيارة ويحتاج إلى root أو Shizuku. استخدمها على مسؤوليتك الخاصة.</string>
     <string name="standalone_toggle_title">تشغيل تطبيقات الهاتف على شاشة السيارة</string>
-    <string name="standalone_toggle_subtitle">اختر التطبيقات أدناه. تظهر فقط عند التوقف.</string>
+    <string name="standalone_toggle_subtitle">اختر التطبيقات أدناه. تظهر فقط عند التوقف، ما عدا تطبيقات الملاحة.</string>
+    <string name="standalone_nav_hint">خرائط Google وWaze وتطبيقات الملاحة الأخرى تستمر أثناء القيادة وتأخذ تبويب الخرائط وبطاقة الخريطة في لوحة القيادة. ما عداها يتوقف مؤقتًا أثناء حركة السيارة.</string>
+    <string name="standalone_nav_open">اضغط للفتح على شاشة السيارة</string>
     <string name="standalone_need_root">يحتاج إلى root أو Shizuku. أعدّ أحدهما في صفحة صوت السيارة، ثم عد إلى هنا.</string>
     <string name="standalone_not_native">ليس تطبيق Android Auto · استخدام أثناء التوقف</string>
     <string name="standalone_starting">جارٍ البدء…</string>
@@ -370,7 +391,7 @@
     <string name="car_data_gyroscope">الجيروسكوب</string>
     <string name="car_data_dtc">أكواد الأعطال</string>
     <string name="setup_toggle_force_h264_title">فرض ترميز H.264 للفيديو</string>
-    <string name="setup_toggle_force_h264_subtitle">بشكل افتراضي، يستخدم AARE أفضل ترميز مشترك بين السيارة والهاتف (H.265…). فعّل هذا الخيار إذا كانت صورة السيارة بها تشويش.</string>
+    <string name="setup_toggle_force_h264_subtitle">بشكل افتراضي، يستخدم F-Auto أفضل ترميز مشترك بين السيارة والهاتف (H.265…). فعّل هذا الخيار إذا كانت صورة السيارة بها تشويش.</string>
     <string name="common_ok">OK</string>
     <string name="common_try_again">إعادة المحاولة</string>
     <string name="common_something_went_wrong">حدث خطأ ما</string>
@@ -408,7 +429,7 @@
     <string name="media_error_skip_limit">تم الوصول إلى حد التخطي</string>
     <string name="media_error_setup">أكمل إعداد %1$s على هاتفك</string>
     <string name="media_error_end_of_playlist">نهاية قائمة التشغيل</string>
-    <string name="media_error_permission">لا يسمح %1$s لـ AARE بتصفحه</string>
+    <string name="media_error_permission">لا يسمح %1$s لـ F-Auto بتصفحه</string>
     <string name="media_error_io">مشكلة في الشبكة أو في التخزين</string>
     <string name="media_error_not_supported">غير مدعوم من %1$s</string>
     <string name="media_error_disconnected">انقطع الاتصال بـ %1$s</string>
@@ -422,6 +443,6 @@
     <string name="carapp_error_refused">%1$s رفض الاتصال</string>
     <string name="carapp_error_api_level">%1$s يحتاج إلى مستوى واجهة برمجة تطبيقات للسيارة %2$d؛ يدعم هذا المضيف %3$d</string>
     <string name="carapp_error_stopped">%1$s توقف</string>
-    <string name="carapp_error_google_only">%1$s يقبل فقط Android Auto من Google. يجب أن يسمح لـ AARE (راجع قائمة التطبيقات على الهاتف).</string>
+    <string name="carapp_error_google_only">%1$s يقبل فقط Android Auto من Google. يجب أن يسمح لـ F-Auto (راجع قائمة التطبيقات على الهاتف).</string>
     <string name="carapp_error_cant_start">تعذّر بدء %1$s: %2$s</string>
 </resources>
