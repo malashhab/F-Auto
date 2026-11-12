@@ -62,6 +62,18 @@ dongles), and runs navigation, media, messaging, calling and other apps on the c
 Download the latest APK from the [Releases](../../releases) page and install it, or build it
 yourself (below). It needs no Google Play Services and is not on the Play Store.
 
+### "App blocked to protect your device"
+
+F-Auto isn't on the Play Store and asks for sensitive permissions (notification access for message
+banners, calls, Bluetooth), so Android may warn or block the install. The APK is not malware, and you
+can read or build the source yourself. Try these in order:
+
+1. Tap **More details** → **Install anyway**.
+2. **Samsung:** Settings → Security and privacy → **Auto Blocker** → turn it off, install, turn it back on.
+3. **Play Protect:** Play Store → profile → Play Protect → Settings → turn off *Scan apps with Play
+   Protect*, install, turn it back on.
+4. **Install over USB** (skips the prompt): `adb install -r F-Auto-1.5.0-alpha.1.apk`
+
 ## Building
 
 Requirements: JDK 17–21, the Android SDK (set `sdk.dir` in a `local.properties` file, or let
