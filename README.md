@@ -82,9 +82,15 @@ the car or wireless adapter over Bluetooth, and connect.
 
 ## Screenshots
 
-Captured from the desktop head unit emulator (`./headunit.sh`), Dusk layout, Aurora theme:
+Phone app (Dusk layout, Galaxy S25 Ultra) and the car screen preview:
 
-![Dusk layout home screen](docs/screenshots/dusk-home.png)
+| Home | Customize | Settings |
+|---|---|---|
+| <img src="docs/screenshots/home.jpg" width="240"> | <img src="docs/screenshots/customize.jpg" width="240"> | <img src="docs/screenshots/settings.jpg" width="240"> |
+
+![Car screen, Dusk layout](docs/screenshots/car-screen.jpg)
+
+<img src="docs/screenshots/my-cars.jpg" width="240">
 
 ## Limitations
 
