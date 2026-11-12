@@ -95,15 +95,21 @@ the car or wireless adapter over Bluetooth, and connect.
 
 ## Screenshots
 
-Phone app (Dusk layout, Galaxy S25 Ultra) and the car screen preview:
+**On the car screen** (Dusk layout, captured from the desktop head unit emulator):
 
-| Home | Customize | Settings |
-|---|---|---|
-| <img src="docs/screenshots/home.jpg" width="240"> | <img src="docs/screenshots/customize.jpg" width="240"> | <img src="docs/screenshots/settings.jpg" width="240"> |
+![Car screen: home](docs/screenshots/car-home.png)
 
-![Car screen, Dusk layout](docs/screenshots/car-screen.jpg)
+| Maps | Apps |
+|---|---|
+| ![Car screen: maps](docs/screenshots/car-maps.png) | ![Car screen: apps](docs/screenshots/car-apps.png) |
 
-<img src="docs/screenshots/my-cars.jpg" width="240">
+**The phone app:**
+
+![Phone app overview](docs/screenshots/phone-overview.png)
+
+| Home | Customize | Settings | My cars |
+|---|---|---|---|
+| <img src="docs/screenshots/phone-home.png" width="200"> | <img src="docs/screenshots/phone-customize.png" width="200"> | <img src="docs/screenshots/phone-settings.png" width="200"> | <img src="docs/screenshots/phone-my-cars.png" width="200"> |
 
 ## Limitations
 
