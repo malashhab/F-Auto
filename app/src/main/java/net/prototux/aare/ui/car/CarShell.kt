@@ -141,8 +141,12 @@ internal fun Card(modifier: Modifier, onClick: (() -> Unit)? = null, content: @C
 internal fun NavCard(state: CarUiState, actions: CarActions, navMap: @Composable (CarAppEntry, Modifier) -> Unit, modifier: Modifier) {
     val nav = state.app(state.activeNavAppId)
     val guidance = state.phoneGuidance
+    // An app hosted on the car screen (a car navigation app, or a projected app like the patched
+    // Maps) shows its own map and guidance, so prefer it over the "navigating on the phone" card —
+    // even when that card arrived first, before the app list was built.
+    val hosted = nav != null && (nav.kind == CarAppKind.NAVIGATION || nav.kind == CarAppKind.PROJECTED)
     Card(modifier) {
-        if (guidance != null) {
+        if (guidance != null && !hosted) {
             GuidanceCard(guidance)
         } else if (nav != null) {
             navMap(nav, Modifier.fillMaxSize())

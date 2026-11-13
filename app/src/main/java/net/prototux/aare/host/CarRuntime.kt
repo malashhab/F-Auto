@@ -112,6 +112,12 @@ class CarRuntime(
     override var screenWidthDp by mutableIntStateOf(1280)
     override var screenHeightDp by mutableIntStateOf(720)
     override var densityDpi by mutableIntStateOf(160)
+    /**
+     * Render a projected app's live map on the dashboard's map card (not just a button). Only the
+     * real car screen sets this; the phone's small preview thumbnails leave it off so they don't each
+     * spin up a Maps projection session.
+     */
+    var showsLiveProjection = false
     @Volatile override var carLocation: Location? = null
     @Volatile override var carHeading: Float? = null
 
@@ -343,7 +349,9 @@ class CarRuntime(
         scope.launch {
             CarNotificationListener.guidance.collect { g ->
                 // A navigation app hosted on the car screen shows its own guidance.
-                val shown = g?.takeUnless { p -> ui.apps.any { it.kind == CarAppKind.NAVIGATION && it.packageName == p.packageName } }
+                // Suppress the "navigating on the phone" card for an app we host on the car screen
+                // (a car navigation app, or a projected app): its guidance shows in its own car UI.
+                val shown = g?.takeUnless { p -> ui.apps.any { (it.kind == CarAppKind.NAVIGATION || it.kind == CarAppKind.PROJECTED) && it.packageName == p.packageName } }
                 ui.phoneGuidance = shown
                 onPhoneGuidance?.invoke(shown)
             }
@@ -751,10 +759,25 @@ class CarRuntime(
                         }
                     },
                     navMap = { app, mod ->
-                        // A phone navigation app runs on one virtual display, so it can't be both
-                        // the card and the full screen: the card is a button to open it.
-                        if (app.kind == CarAppKind.STANDALONE || app.kind == CarAppKind.PROJECTED) StandaloneNavCard(app, mod) { actions.openApp(app) }
-                        else shownConnection(app.id)?.let { CarAppScreen(it, this, mod, compact = true) }
+                        when (app.kind) {
+                            // A phone app on one virtual display can't be both the card and the full
+                            // screen, so its card is a button to open it.
+                            CarAppKind.STANDALONE -> StandaloneNavCard(app, mod) { actions.openApp(app) }
+                            // A projected app renders onto a plain surface, so on the real car screen
+                            // show the live map right on the dashboard card (like Android Auto). The
+                            // small phone thumbnails use a button so they don't each bind a projection.
+                            CarAppKind.PROJECTED -> if (showsLiveProjection) {
+                                ProjectedAppCatalog.component(app.packageName)?.let { comp ->
+                                    ProjectedAppScreen(
+                                        app = ProjectedAppInfo(comp, app.label, app.icon),
+                                        densityDpi = densityDpi,
+                                        hostFactory = { ProjectedHost(context, it.service, object : ProjectedHost.Listener {}) },
+                                        modifier = mod,
+                                    )
+                                }
+                            } else StandaloneNavCard(app, mod) { actions.openApp(app) }
+                            else -> shownConnection(app.id)?.let { CarAppScreen(it, this, mod, compact = true) }
+                        }
                     },
                     overlay = { mod ->
                         val entry = ui.app(ui.assistantAppId)

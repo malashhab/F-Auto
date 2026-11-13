@@ -1458,7 +1458,7 @@ private fun Choices(title: String, options: List<Pair<String, String>>, selected
 // ---------------------------------------------------------------- apps
 
 /** Everything the car's launcher lists, as it groups it. */
-private class LauncherLists(val carApps: List<CarAppInfo>, val media: List<PhoneApp>, val messaging: List<PhoneApp>)
+private class LauncherLists(val carApps: List<CarAppInfo>, val projected: List<PhoneApp>, val media: List<PhoneApp>, val messaging: List<PhoneApp>)
 
 @Composable
 private fun AppsCard(settings: Settings) {
@@ -1472,9 +1472,13 @@ private fun AppsCard(settings: Settings) {
         value = withContext(Dispatchers.IO) {
             val car = CarAppCatalog.query(ctx)
             val carPkgs = car.mapTo(HashSet()) { it.packageName }
+            // Projected apps (patched Maps) are navigation apps; list them with the nav apps and
+            // keep them out of Messages (Maps uses notifications, so it matches the messaging filter).
+            val projected = net.prototux.aare.host.projected.ProjectedAppCatalog.query(ctx)
+                .map { PhoneApp(it.packageName, it.label, it.icon) }
             val media = AndroidAutoApps.mediaApps(ctx).filter { it.packageName !in carPkgs }
-            val shown = carPkgs + media.map { it.packageName }
-            LauncherLists(car, media, AndroidAutoApps.messagingApps(ctx).filter { it.packageName !in shown })
+            val shown = carPkgs + projected.map { it.packageName } + media.map { it.packageName }
+            LauncherLists(car, projected, media, AndroidAutoApps.messagingApps(ctx).filter { it.packageName !in shown })
         }
     }
     fun toggle(pkg: String, visible: Boolean) {
@@ -1490,9 +1494,12 @@ private fun AppsCard(settings: Settings) {
                 return@Section
             }
             AppGroup(stringResource(R.string.setup_app_group_nav))
-            if (l.carApps.isEmpty()) Text(stringResource(R.string.setup_app_list_no_nav), style = MaterialTheme.typography.bodyMedium)
+            if (l.carApps.isEmpty() && l.projected.isEmpty()) Text(stringResource(R.string.setup_app_list_no_nav), style = MaterialTheme.typography.bodyMedium)
             val navigationKind = stringResource(R.string.setup_app_kind_navigation)
             val genericKind = stringResource(R.string.setup_app_kind_generic)
+            l.projected.forEach { app ->
+                AppRow(app.icon, app.label, navigationKind, app.packageName !in hidden) { toggle(app.packageName, it) }
+            }
             l.carApps.forEach { app ->
                 val kind = if (app.isNavigation) navigationKind
                     else app.categories.firstOrNull()?.substringAfterLast('.')?.lowercase()?.replaceFirstChar { it.uppercase() } ?: genericKind
@@ -1541,6 +1548,7 @@ private fun AppsCard(settings: Settings) {
 private fun AppOrder(settings: Settings, l: LauncherLists, hidden: Set<String>, phoneScreen: Boolean, browser: Boolean) {
     // Keys as CarRuntime.orderKey: packages, or the built-in apps' ids.
     val all = buildList {
+        l.projected.forEach { add(Triple(it.packageName, it.label, it.icon)) }
         l.carApps.forEach { add(Triple(it.packageName, it.label, it.icon)) }
         l.media.forEach { add(Triple(it.packageName, it.label, it.icon)) }
         l.messaging.forEach { add(Triple(it.packageName, it.label, it.icon)) }

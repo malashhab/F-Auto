@@ -31,6 +31,7 @@ class CarPreviewActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         runtime = CarRuntime(this, lifecycleScope, Settings(this), MediaHub(this, lifecycleScope), primary = false)
+        runtime.showsLiveProjection = true
         val dm = resources.displayMetrics
         runtime.densityDpi = dm.densityDpi
         runtime.screenWidthDp = (dm.widthPixels / dm.density).toInt()
