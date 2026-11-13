@@ -190,6 +190,13 @@ class MainActivity : ComponentActivity() {
         // adb shell am start -n net.prototux.aare/.ui.MainActivity --ez car_preview true: opens the
         // car screen preview, to check a layout change from a computer.
         if (intent?.getBooleanExtra("car_preview", false) == true) startActivity(Intent(this, CarPreviewActivity::class.java))
+        // adb shell am start -n net.prototux.aare/.ui.MainActivity --ez project_maps true [--es project_pkg <pkg>]
+        // Smoke-tests the no-root Maps projection patch: binds the patched Maps and runs the real
+        // ProjectedHost handshake. Watch: adb logcat -s ProjectedHost:*  (look for "onSetup ok").
+        if (intent?.getBooleanExtra("project_maps", false) == true) {
+            val pkg = intent.getStringExtra("project_pkg") ?: "com.fauto1.android.apps.maps"
+            net.prototux.aare.host.projected.ProjectionProof.run(this, pkg)
+        }
         if (intent?.hasExtra("hu_server") != true) return false
         Settings(this).headUnitServer = intent.getBooleanExtra("hu_server", false)
         return true
