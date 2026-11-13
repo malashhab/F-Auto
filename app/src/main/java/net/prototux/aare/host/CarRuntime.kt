@@ -40,6 +40,10 @@ import net.prototux.aare.notify.CarNotificationListener
 import net.prototux.aare.notify.MessagingScreen
 import net.prototux.aare.launch.AppLauncher
 import net.prototux.aare.notify.PhoneGuidance
+import net.prototux.aare.host.projected.ProjectedAppCatalog
+import net.prototux.aare.host.projected.ProjectedAppInfo
+import net.prototux.aare.host.projected.ProjectedAppScreen
+import net.prototux.aare.host.projected.ProjectedHost
 import net.prototux.aare.ui.car.BrowserScreen
 import net.prototux.aare.ui.car.CarActions
 import net.prototux.aare.ui.car.CarAppEntry
@@ -418,6 +422,14 @@ class CarRuntime(
                     navigation = pkg in CarAppInfo.KNOWN_NAVIGATION_PACKAGES)
             }
         }
+        // Projection apps: a patched Google Maps whose car UI renders through the private
+        // ICarProjection protocol. No root/Shizuku needed — the patch opens Maps' own permission
+        // guard, so AARE binds it directly. A navigation app: it takes the Maps card and the
+        // dashboard map, and keeps running while driving.
+        for (p in ProjectedAppCatalog.query(context)) {
+            if (p.packageName in hidden || entries.any { it.packageName == p.packageName }) continue
+            entries += CarAppEntry(projectedId(p.packageName), p.packageName, p.label, p.icon, CarAppKind.PROJECTED, navigation = true)
+        }
         if (settings.browser) {
             entries += CarAppEntry(BROWSER_ID, context.packageName, context.getString(R.string.browser_app_label), builtinIcon(R.drawable.ic_car_browser), CarAppKind.BROWSER)
         }
@@ -626,6 +638,10 @@ class CarRuntime(
                     ui.activeNavAppId = app.id
                     settings.lastNavApp = app.packageName
                 }
+                CarAppKind.PROJECTED -> {
+                    ui.activeNavAppId = app.id
+                    settings.lastNavApp = app.packageName
+                }
                 else -> connection(app.id)?.connect()
             }
             ui.screen = CarScreen.App(app.id)
@@ -718,6 +734,14 @@ class CarRuntime(
                             CarAppKind.MESSAGING -> MessagingScreen(app, ui.drivingRestricted, this, mod)
                             CarAppKind.PHONE_SCREEN -> MirrorScreen(this, ui.drivingRestricted, mod)
                             CarAppKind.STANDALONE -> StandaloneAppScreen(this, ui.drivingRestricted, app.packageName, app.navigation, mod)
+                            CarAppKind.PROJECTED -> ProjectedAppCatalog.component(app.packageName)?.let { comp ->
+                                ProjectedAppScreen(
+                                    app = ProjectedAppInfo(comp, app.label, app.icon),
+                                    densityDpi = densityDpi,
+                                    hostFactory = { ProjectedHost(context, it.service, object : ProjectedHost.Listener {}) },
+                                    modifier = mod,
+                                )
+                            }
                             CarAppKind.BROWSER -> BrowserScreen(this, ui.drivingRestricted, settings.browserUrl, mod)
                             CarAppKind.CAR_DATA -> CarDataScreen(mod)
                             CarAppKind.PHONE -> PhoneScreen(this, ui.shellLayout == Settings.LAYOUT_DUSK, mod)
@@ -729,7 +753,7 @@ class CarRuntime(
                     navMap = { app, mod ->
                         // A phone navigation app runs on one virtual display, so it can't be both
                         // the card and the full screen: the card is a button to open it.
-                        if (app.kind == CarAppKind.STANDALONE) StandaloneNavCard(app, mod) { actions.openApp(app) }
+                        if (app.kind == CarAppKind.STANDALONE || app.kind == CarAppKind.PROJECTED) StandaloneNavCard(app, mod) { actions.openApp(app) }
                         else shownConnection(app.id)?.let { CarAppScreen(it, this, mod, compact = true) }
                     },
                     overlay = { mod ->
@@ -753,6 +777,7 @@ class CarRuntime(
         fun mediaId(pkg: String) = "media:$pkg"
         fun messagingId(pkg: String) = "messages:$pkg"
         fun standaloneId(pkg: String) = "standalone:$pkg"
+        fun projectedId(pkg: String) = "projected:$pkg"
         const val PHONE_SCREEN_ID = "phone-screen"
         const val BROWSER_ID = "browser"
         const val CAR_DATA_ID = "car-data"
