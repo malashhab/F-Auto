@@ -1,5 +1,7 @@
 package net.prototux.aare.host.projected
 
+import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Parcel
 import android.view.Surface
@@ -45,16 +47,38 @@ internal object ProjectedProtocol {
      * [DrawingSpec] carrying the render [surface], and the trailing present flags the modern
      * signature expects (intent, configuration, extras — all sent as "present but empty").
      */
-    fun writeProjectionStart(data: Parcel, surface: Surface, width: Int, height: Int, densityDpi: Int) {
+    fun writeProjectionStart(
+        data: Parcel, surface: Surface, width: Int, height: Int, densityDpi: Int,
+        intent: Intent, configuration: Configuration,
+    ) {
         data.writeInterfaceToken(PROJECTION)
         data.writeInt(DISPLAY_ID)
         data.writeInt(REGION_ID)
         data.writeInt(1) // DrawingSpec present
         writeDrawingSpec(data, surface, width, height, densityDpi)
-        data.writeInt(1) // Intent present (empty)
-        data.writeInt(1) // Configuration present (empty)
-        data.writeInt(1) // extras Bundle present (empty)
+        // Nullable parcelables: a present flag (1) THEN the object, or 0 for null. The app's
+        // onProjectionStart reads a real Intent (getComponent / getBundleExtra) and Configuration
+        // (it drives the projected display's render config); sending only the flag left both
+        // malformed, which crashed the app's renderer.
+        data.writeInt(1); intent.writeToParcel(data, 0)
+        data.writeInt(1); configuration.writeToParcel(data, 0)
+        data.writeInt(0) // extras Bundle: null
     }
+
+    /** A projected-display [Configuration] consistent with the surface, so the app lays out for it. */
+    fun projectionConfiguration(width: Int, height: Int, densityDpi: Int): Configuration =
+        Configuration().apply {
+            this.densityDpi = densityDpi
+            val scale = 160f / densityDpi
+            screenWidthDp = (width * scale).toInt()
+            screenHeightDp = (height * scale).toInt()
+            smallestScreenWidthDp = minOf(screenWidthDp, screenHeightDp)
+            orientation = if (width >= height) Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
+            // A car head unit: not a touchscreen-less TV, but a finger-driven display.
+            touchscreen = Configuration.TOUCHSCREEN_FINGER
+            screenLayout = Configuration.SCREENLAYOUT_SIZE_LARGE or Configuration.SCREENLAYOUT_LONG_YES
+            uiMode = Configuration.UI_MODE_TYPE_CAR
+        }
 
     /**
      * `com.google.android.gms.car.DrawingSpec`: the surface and geometry the app renders into.

@@ -143,7 +143,9 @@ class ProjectedHost(
 
     private fun transactProjectionStart(binder: IBinder, surface: Surface): Boolean =
         transact("onProjectionStart", binder, ProjectedProtocol.TX_ON_PROJECTION_START) { data ->
-            ProjectedProtocol.writeProjectionStart(data, surface, width, height, densityDpi)
+            val intent = Intent().setComponent(component)
+            val config = ProjectedProtocol.projectionConfiguration(width, height, densityDpi)
+            ProjectedProtocol.writeProjectionStart(data, surface, width, height, densityDpi, intent, config)
         }
 
     /** onProjectionResume (tx 4): the app stays stopped after onProjectionStart until this. */
