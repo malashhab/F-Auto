@@ -57,6 +57,7 @@ import net.prototux.aare.ui.car.CarUiState
 import net.prototux.aare.ui.car.NotificationsScreen
 import net.prototux.aare.ui.car.NowPlaying
 import net.prototux.aare.ui.car.CarDataScreen
+import net.prototux.aare.ui.car.OfflineMapScreen
 import net.prototux.aare.ui.car.PhoneScreen
 import net.prototux.aare.ui.car.StandaloneAppScreen
 import net.prototux.aare.ui.car.StandaloneNavCard
@@ -444,6 +445,12 @@ class CarRuntime(
         if (settings.carDataApp) {
             entries += CarAppEntry(CAR_DATA_ID, context.packageName, context.getString(R.string.car_data_app_label), builtinIcon(R.drawable.ic_car_data), CarAppKind.CAR_DATA)
         }
+        // Offline OpenStreetMap, a built-in navigation option (renders downloaded mapsforge .map
+        // country files). Selectable on the dashboard alongside HudHud / projected Maps.
+        if (settings.offlineMapApp) {
+            entries += CarAppEntry(OFFLINE_MAP_ID, context.packageName, context.getString(R.string.offline_map_label),
+                builtinIcon(R.drawable.ic_car_map), CarAppKind.OFFLINE_MAP, navigation = true)
+        }
         for (m in messaging) {
             if (m.packageName in hidden || entries.any { it.packageName == m.packageName }) continue
             entries += CarAppEntry(messagingId(m.packageName), m.packageName, m.label, m.icon, CarAppKind.MESSAGING)
@@ -650,6 +657,10 @@ class CarRuntime(
                     ui.activeNavAppId = app.id
                     settings.lastNavApp = app.packageName
                 }
+                CarAppKind.OFFLINE_MAP -> {
+                    ui.activeNavAppId = app.id
+                    settings.lastNavApp = app.packageName
+                }
                 else -> connection(app.id)?.connect()
             }
             ui.screen = CarScreen.App(app.id)
@@ -752,6 +763,7 @@ class CarRuntime(
                             }
                             CarAppKind.BROWSER -> BrowserScreen(this, ui.drivingRestricted, settings.browserUrl, mod)
                             CarAppKind.CAR_DATA -> CarDataScreen(mod)
+                            CarAppKind.OFFLINE_MAP -> OfflineMapScreen(mod)
                             CarAppKind.PHONE -> PhoneScreen(this, ui.shellLayout == Settings.LAYOUT_DUSK, mod)
                             CarAppKind.SETTINGS -> CarSettingsScreen(settings, mod)
                             CarAppKind.NOTIFICATIONS -> NotificationsScreen(ui, mod)
@@ -776,6 +788,11 @@ class CarRuntime(
                                     )
                                 }
                             } else StandaloneNavCard(app, mod) { actions.openApp(app) }
+                            // Offline map is cheap to draw (no projection bind), but a full mapsforge
+                            // view in every phone thumbnail is heavy, so only the live car screen shows
+                            // it on the dashboard card; thumbnails get a button.
+                            CarAppKind.OFFLINE_MAP -> if (showsLiveProjection) OfflineMapScreen(mod)
+                                else StandaloneNavCard(app, mod) { actions.openApp(app) }
                             else -> shownConnection(app.id)?.let { CarAppScreen(it, this, mod, compact = true) }
                         }
                     },
@@ -804,6 +821,7 @@ class CarRuntime(
         const val PHONE_SCREEN_ID = "phone-screen"
         const val BROWSER_ID = "browser"
         const val CAR_DATA_ID = "car-data"
+        const val OFFLINE_MAP_ID = "offline-map"
         const val PHONE_ID = "phone"
         const val SETTINGS_ID = "car-settings"
         const val NOTIFICATIONS_ID = "notifications"

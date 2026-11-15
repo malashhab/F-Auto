@@ -356,9 +356,12 @@ class CarSession(
     /** Matches the head unit's advertised video codecs against what this phone can hardware-encode. */
     private fun pickVideoCodec(configs: List<VideoConfiguration>): VideoCodecKind {
         val advertised = configs.map(::configCodec).toSet()
-        val kind = matchVideoCodec(advertised, settings.forceH264) { VideoEncoder.hardwareEncodes(it) }
+        // A per-vehicle override (a user rule, or a built-in for a known-quirky head unit like MG's
+        // Desay SV) pins H.264 over the global setting.
+        val forceH264 = vehicleOverride?.forceH264 ?: settings.forceH264
+        val kind = matchVideoCodec(advertised, forceH264) { VideoEncoder.hardwareEncodes(it) }
         Log.i(TAG, "video codec: ${kind.label} (car offers ${advertised.joinToString { it.name.removePrefix("MEDIA_CODEC_VIDEO_") }}" +
-            (if (settings.forceH264) ", H.264 forced" else "") + ")")
+            (if (forceH264) ", H.264 forced" + (if (vehicleOverride?.forceH264 == true) " for this car" else "") else "") + ")")
         return kind
     }
 

@@ -269,6 +269,14 @@ class Settings(context: Context) {
     var carDataApp: Boolean
         get() = prefs.getBoolean("car_data_app", false)
         set(v) = prefs.edit { putBoolean("car_data_app", v) }
+    /** Offer the built-in offline OpenStreetMap as a navigation option on the car screen. */
+    var offlineMapApp: Boolean
+        get() = prefs.getBoolean("offline_map_app", true)
+        set(v) = prefs.edit { putBoolean("offline_map_app", v) }
+    /** A user-set next-service / oil-change reminder, as an epoch-millis date (0 = off). */
+    var serviceDueDate: Long
+        get() = prefs.getLong("service_due_date", 0L)
+        set(v) = prefs.edit { putLong("service_due_date", v) }
     /** Where the user dragged the in-call bar on the car screen (px offset from the top centre). */
     var callBarOffsetX: Float
         get() = prefs.getFloat("call_bar_x", 0f)
@@ -413,6 +421,10 @@ class Settings(context: Context) {
         const val LAYOUT_CLASSIC = "classic"
         /** [carLayout]: the restructured layout from `CarUI/dusk.html`. */
         const val LAYOUT_DUSK = "dusk_layout"
+        /** [carLayout]: the CarPlay-style layout from `CarUI/carplay-style.html` — a left dock of recents + home button, a paged app grid, and a split map/music dashboard. */
+        const val LAYOUT_CARPLAY = "carplay"
+        /** [carLayout]: the StradaOS-style layout — a My-vehicle / map / audio three-card dashboard over a round app row. */
+        const val LAYOUT_STRADA = "strada"
         const val WALLPAPER_CUSTOM = "custom"
         /** The user's wallpaper photo, in the app's files. */
         const val WALLPAPER_FILE = "wallpaper.jpg"

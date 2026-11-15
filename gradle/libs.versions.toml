@@ -14,6 +14,7 @@ junit = "4.13.2"
 shizuku = "13.1.5"
 hiddenApiBypass = "6.2"
 libxposed = "102.0.0"
+mapsforge = "0.25.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,8 @@ shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuk
 shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
 hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenApiBypass" }
 libxposed-api = { group = "io.github.libxposed", name = "api", version.ref = "libxposed" }
+mapsforge-map-android = { group = "org.mapsforge", name = "mapsforge-map-android", version.ref = "mapsforge" }
+mapsforge-themes = { group = "org.mapsforge", name = "mapsforge-themes", version.ref = "mapsforge" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

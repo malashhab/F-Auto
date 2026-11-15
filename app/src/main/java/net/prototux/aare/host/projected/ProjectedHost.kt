@@ -48,6 +48,10 @@ class ProjectedHost(
     private var densityDpi = 0
     private var motionDownTime = 0L
 
+    /** The projected display's render size (pixels). Touches must be scaled into this space. */
+    val displayWidth get() = width
+    val displayHeight get() = height
+
     // ---- host-side Binder stubs the app calls back into ----
 
     /** ICarProjectionCallback: the app signals readiness and connection state here; we just ack. */
@@ -171,16 +175,26 @@ class ProjectedHost(
 
     // ---- input forwarding ----
 
-    /** Forwards a touch event (tx 7). Coordinates must already be in the projected display's space. */
+    /**
+     * Forwards a touch event (tx 7). Coordinates must already be in the projected display's space.
+     * A private copy is taken synchronously and recycled on the worker thread after it is written,
+     * so the caller keeps ownership of [event] (the framework reuses it once onTouch returns, and
+     * the parcel write happens later on the worker thread).
+     */
     fun sendMotion(event: MotionEvent) {
         val binder = service ?: return
         if (event.action == MotionEvent.ACTION_DOWN) motionDownTime = event.downTime
+        val copy = MotionEvent.obtain(event)
         handler.post {
-            transact("onMotionEvent", binder, ProjectedProtocol.TX_ON_MOTION_EVENT, oneWay = true) { data ->
-                data.writeInterfaceToken(ProjectedProtocol.PROJECTION)
-                data.writeInt(ProjectedProtocol.DISPLAY_ID)
-                data.writeInt(1)
-                event.writeToParcel(data, 0)
+            try {
+                transact("onMotionEvent", binder, ProjectedProtocol.TX_ON_MOTION_EVENT, oneWay = true) { data ->
+                    data.writeInterfaceToken(ProjectedProtocol.PROJECTION)
+                    data.writeInt(ProjectedProtocol.DISPLAY_ID)
+                    data.writeInt(1)
+                    copy.writeToParcel(data, 0)
+                }
+            } finally {
+                copy.recycle()
             }
         }
     }

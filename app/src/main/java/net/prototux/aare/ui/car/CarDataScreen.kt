@@ -2,11 +2,14 @@ package net.prototux.aare.ui.car
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,19 +38,35 @@ internal fun CarDataScreen(modifier: Modifier) {
     val car by CarData.state.collectAsState()
     val proj by ProjectionService.state.collectAsState()
     val rows = carDataLines(car, proj)
-    if (rows.isEmpty()) {
-        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(stringResource(R.string.car_data_not_connected), style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        return
-    }
-    LazyColumn(modifier.fillMaxSize(), contentPadding = PaddingValues(28.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(rows) { (label, value) ->
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(label, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                Spacer(Modifier.width(16.dp))
-                Text(value, style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Monospace))
+    // The analog speedometer (ported from StradaOS): the car's own speed over AAP when the head unit
+    // reports it, else the phone's GPS, so it still works in the preview and in cars that send no speed.
+    val gpsSpeed by rememberGpsSpeedKmh()
+    val speedKmh = car.speed?.value?.metersPerSecond?.let { it * 3.6f } ?: gpsSpeed
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val settings = remember { net.prototux.aare.Settings(ctx) }
+    Column(modifier.fillMaxSize()) {
+        net.prototux.aare.ui.ServiceReminderBanner(settings, Modifier.padding(horizontal = 28.dp, vertical = 8.dp))
+        SpeedGauge(
+            speedKmh = speedKmh,
+            accent = MaterialTheme.colorScheme.primary,
+            ring = MaterialTheme.colorScheme.onSurface,
+            soft = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth().height(220.dp).padding(top = 20.dp),
+        )
+        if (rows.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(stringResource(R.string.car_data_not_connected), style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        } else {
+            LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(28.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(rows) { (label, value) ->
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(label, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                        Spacer(Modifier.width(16.dp))
+                        Text(value, style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Monospace))
+                    }
+                }
             }
         }
     }

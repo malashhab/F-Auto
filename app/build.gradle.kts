@@ -121,6 +121,10 @@ dependencies {
     implementation(libs.shizuku.api)
     implementation(libs.shizuku.provider)
     implementation(libs.hiddenapibypass)
+    // Offline OpenStreetMap rendering (the "StradaOS Offline Maps" nav option): reads the same
+    // mapsforge .map country files StradaOS downloads, via the maintained mapsforge library.
+    implementation(libs.mapsforge.map.android)
+    implementation(libs.mapsforge.themes)
     testImplementation(libs.junit)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

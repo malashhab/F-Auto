@@ -1,5 +1,6 @@
 package net.prototux.aare.car
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -25,4 +26,17 @@ class VehicleOverridesTest {
 
     @Test fun aMismatchFails() =
         assertFalse(rule(make = "Audi").matches("Ford", "Focus", "SYNC"))
+
+    /** The built-in MG/SAIC (Desay SV) patterns match the real head-unit identity from the logs. */
+    @Test fun mgSaicDesayHeadUnitMatches() {
+        val make = "Huizhou Desay SV Automotive Co., Ltd."
+        val model = "NV6064/58"
+        val name = "SAIC MOTOR Overseas Intelligent Mobility Technology Co., Ltd. MG $make $model"
+        assertTrue(rule(name = "SAIC MOTOR").matches(make, model, name))
+        assertTrue(rule(name = "NV6064").matches(make, model, name))
+    }
+
+    /** The forceH264 override flag carries through a rule. */
+    @Test fun forceH264OverrideCarries() =
+        assertEquals(true, VehicleRule(null, null, "NV6064", VehicleOverride(forceH264 = true)).override.forceH264)
 }

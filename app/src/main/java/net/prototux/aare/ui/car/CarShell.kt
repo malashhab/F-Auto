@@ -100,10 +100,11 @@ fun CarShell(
     overlay: @Composable (Modifier) -> Unit = {},
     /** Insets the UI into the head unit's visible area (the codec frame minus its margins). */
     modifier: Modifier = Modifier,
-) = if (state.shellLayout == net.prototux.aare.Settings.LAYOUT_DUSK) {
-    DuskUIShell(state, actions, appContent, navMap, overlay, modifier)
-} else {
-    HybridShell(state, actions, appContent, navMap, overlay, modifier)
+) = when (state.shellLayout) {
+    net.prototux.aare.Settings.LAYOUT_DUSK -> DuskUIShell(state, actions, appContent, navMap, overlay, modifier)
+    net.prototux.aare.Settings.LAYOUT_CARPLAY -> CarPlayShell(state, actions, appContent, navMap, overlay, modifier)
+    net.prototux.aare.Settings.LAYOUT_STRADA -> StradaShell(state, actions, appContent, navMap, overlay, modifier)
+    else -> HybridShell(state, actions, appContent, navMap, overlay, modifier)
 }
 
 @Composable
@@ -144,7 +145,7 @@ internal fun NavCard(state: CarUiState, actions: CarActions, navMap: @Composable
     // An app hosted on the car screen (a car navigation app, or a projected app like the patched
     // Maps) shows its own map and guidance, so prefer it over the "navigating on the phone" card —
     // even when that card arrived first, before the app list was built.
-    val hosted = nav != null && (nav.kind == CarAppKind.NAVIGATION || nav.kind == CarAppKind.PROJECTED)
+    val hosted = nav != null && (nav.kind == CarAppKind.NAVIGATION || nav.kind == CarAppKind.PROJECTED || nav.kind == CarAppKind.OFFLINE_MAP)
     Card(modifier) {
         if (guidance != null && !hosted) {
             GuidanceCard(guidance)

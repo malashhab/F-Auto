@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Offline Maps" in the car launcher: a location pin on a round tile. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp" android:height="96dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <path android:fillColor="#FF2E9E6B" android:pathData="M24,0a24,24 0 1 1 0,48a24,24 0 1 1 0,-48z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M24,12c-5,0 -9,4 -9,9c0,6.5 9,15 9,15c0,0 9,-8.5 9,-15c0,-5 -4,-9 -9,-9z" />
+    <path android:fillColor="#FF2E9E6B" android:pathData="M24,17.5a3.5,3.5 0 1 0 0,7a3.5,3.5 0 1 0 0,-7z" />
+</vector>

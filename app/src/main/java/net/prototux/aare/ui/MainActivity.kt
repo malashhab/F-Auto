@@ -69,6 +69,8 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.DirectionsCar
+import androidx.compose.material.icons.rounded.Map
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
@@ -212,6 +214,7 @@ private enum class Page(val titleRes: Int, val subtitleRes: Int, val icon: Image
     AUDIO(R.string.audio_settings_title, R.string.audio_page_subtitle, Icons.AutoMirrored.Rounded.VolumeUp, Color(0xFFE0802A)),
     CONNECTION(R.string.setup_page_connection_title, R.string.setup_page_connection_subtitle, Icons.Rounded.Bluetooth, Color(0xFF2B7DE0)),
     CAR_DATA(R.string.setup_page_car_data_title, R.string.setup_page_car_data_subtitle, Icons.Rounded.DirectionsCar, Color(0xFFC2447A)),
+    OFFLINE_MAPS(R.string.setup_page_offline_maps_title, R.string.setup_page_offline_maps_subtitle, Icons.Rounded.Map, Color(0xFF2E9E6B)),
     ADVANCED(R.string.setup_page_advanced_title, R.string.setup_page_advanced_subtitle, Icons.Rounded.Tune, Color(0xFF5A6380)),
 }
 
@@ -292,6 +295,7 @@ private fun Home() {
                         Page.AUDIO -> item { AudioSettings(settings, state, refresh) { refresh++ } }
                         Page.CONNECTION -> item { ConnectionSettings(settings, refresh) }
                         Page.CAR_DATA -> item { CarDataCard() }
+                        Page.OFFLINE_MAPS -> item { OfflineMapsCard(settings) }
                         Page.ADVANCED -> {
                             item { HeadUnitServerSettings(settings) }
                             item { CertificatesCard(certs, state) }
@@ -529,7 +533,8 @@ private fun CustomizeTab(settings: Settings, previewRuntime: CarRuntime, carStyl
     var railAutoHide by remember { mutableStateOf(settings.railAutoHide) }
     var railRight by remember { mutableStateOf(settings.railPosition == Settings.RAIL_RIGHT) }
     var musicSize by remember { mutableFloatStateOf(settings.musicWidgetSize) }
-    var duskLayout by remember { mutableStateOf(settings.carLayout == Settings.LAYOUT_DUSK) }
+    var layout by remember { mutableStateOf(settings.carLayout) }
+    val duskLayout = layout == Settings.LAYOUT_DUSK
     val ctx = LocalContext.current
     LazyColumn(
         Modifier.fillMaxSize().systemBarsPadding(),
@@ -553,12 +558,16 @@ private fun CustomizeTab(settings: Settings, previewRuntime: CarRuntime, carStyl
             }
         }
         item { ThemeSwatchRow(style) { style = it; settings.carStyle = it; onStyleChange(it) } }
+        item { VehiclePhotoCard() }
         // The layout decides which of the controls below do anything, so it belongs here with them
         // rather than only under Settings > Car screen.
         item {
-            Segmented2(stringResource(R.string.setup_choice_layout), stringResource(R.string.setup_layout_classic), stringResource(R.string.setup_layout_dusk), duskLayout) {
-                duskLayout = it; settings.carLayout = if (it) Settings.LAYOUT_DUSK else Settings.LAYOUT_CLASSIC
-            }
+            Choices(stringResource(R.string.setup_choice_layout), listOf(
+                Settings.LAYOUT_CLASSIC to stringResource(R.string.setup_layout_classic),
+                Settings.LAYOUT_DUSK to stringResource(R.string.setup_layout_dusk),
+                Settings.LAYOUT_CARPLAY to stringResource(R.string.setup_layout_carplay),
+                Settings.LAYOUT_STRADA to stringResource(R.string.setup_layout_strada),
+            ), layout) { layout = it; settings.carLayout = it }
         }
         item {
             Segmented2(stringResource(R.string.setup_choice_layout_home), stringResource(R.string.setup_layout_full), stringResource(R.string.setup_quick_map_music_title), mapMusic) {
@@ -700,6 +709,10 @@ private fun CarsTab(settings: Settings, state: ProjectionService.State, previewR
                     Text(stringResource(R.string.setup_status_disconnected_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
+            // The commonest reason the head unit stays blank: Google's own Android Auto is still
+            // enabled and claims the car connection first. Only shown when it's actually installed
+            // and enabled, so it isn't a false alarm.
+            item { AndroidAutoConflictCard() }
         }
         val cars = settings.knownCars
         if (cars.isNotEmpty()) item {
@@ -720,6 +733,45 @@ private fun CarsTab(settings: Settings, state: ProjectionService.State, previewR
                 }
             }
         }
+    }
+}
+
+/**
+ * Shown on the "My cars" tab while disconnected, but only when Google's Android Auto
+ * (`com.google.android.projection.gearhead`) is installed and enabled: it claims the car's USB
+ * accessory / wireless projection before F-Auto, which is the single most common reason the head
+ * unit stays blank or keeps reconnecting. The button opens its App info so the user can disable or
+ * force-stop it (F-Auto can't, and shouldn't, do that for them).
+ */
+@Composable
+private fun AndroidAutoConflictCard() {
+    val ctx = LocalContext.current
+    val aaPkg = "com.google.android.projection.gearhead"
+    // Checked once per entry to this screen, not every recomposition.
+    val enabled = remember {
+        try { ctx.packageManager.getApplicationInfo(aaPkg, 0).enabled } catch (e: Exception) { false }
+    }
+    if (!enabled) return
+    val warn = Color(0xFFFFB547)
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp))
+            .background(warn.copy(alpha = 0.12f)).border(1.dp, warn.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
+            .padding(20.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Rounded.Warning, null, tint = warn)
+            Spacer(Modifier.width(12.dp))
+            Text(stringResource(R.string.setup_aa_conflict_title), style = MaterialTheme.typography.titleMedium)
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.setup_aa_conflict_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(4.dp))
+        TextButton(onClick = {
+            try {
+                ctx.startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", aaPkg, null))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (e: Exception) { /* settings app refused the deep link; nothing to do */ }
+        }) { Text(stringResource(R.string.setup_aa_conflict_action)) }
     }
 }
 
@@ -1262,6 +1314,8 @@ private fun CarScreenSettings(settings: Settings, refresh: Int, onStyleChange: (
             Choices(stringResource(R.string.setup_choice_layout), listOf(
                 Settings.LAYOUT_CLASSIC to stringResource(R.string.setup_layout_classic),
                 Settings.LAYOUT_DUSK to stringResource(R.string.setup_layout_dusk),
+                Settings.LAYOUT_CARPLAY to stringResource(R.string.setup_layout_carplay),
+                Settings.LAYOUT_STRADA to stringResource(R.string.setup_layout_strada),
             ), layout) {
                 layout = it; settings.carLayout = it
             }
@@ -1901,6 +1955,8 @@ private fun CarDataCard() {
             Text(stringResource(R.string.car_data_not_connected), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
+    Spacer(Modifier.height(16.dp))
+    Section(stringResource(R.string.service_reminder_title)) { ServiceReminderSection(settings) }
     if (!car.connected) return
     Spacer(Modifier.height(16.dp))
     val on = stringResource(R.string.car_data_on); val off = stringResource(R.string.car_data_off)

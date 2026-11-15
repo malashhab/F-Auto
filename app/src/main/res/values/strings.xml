@@ -99,6 +99,9 @@
     <string name="greeting_evening">Good evening</string>
     <string name="setup_status_certificate">certificate: %1$s</string>
     <string name="setup_status_disconnected_hint">Plug the phone into the car\'s Android Auto USB port, or connect to a paired car wirelessly.</string>
+    <string name="setup_aa_conflict_title">Turn off the phone\'s built-in Android Auto</string>
+    <string name="setup_aa_conflict_hint">Google\'s Android Auto is installed and enabled on this phone. It grabs the car connection before F-Auto, so the head unit may stay blank or keep reconnecting. Disable (or force-stop) it on the phone, then reconnect.</string>
+    <string name="setup_aa_conflict_action">Open Android Auto settings</string>
     <string name="setup_status_last_error">Last error: %1$s</string>
     <string name="setup_trust_new_cert">Trust this head unit\'s new certificate</string>
     <string name="setup_trust_head_unit">Trust this head unit</string>
@@ -226,6 +229,17 @@
     <string name="setup_choice_layout">Layout</string>
     <string name="setup_layout_classic">Classic</string>
     <string name="setup_layout_dusk">Dusk</string>
+    <string name="setup_layout_carplay">CarPlay</string>
+    <string name="setup_layout_strada">Strada</string>
+    <!-- Strada layout -->
+    <string name="strada_my_vehicle">My vehicle</string>
+    <string name="strada_add_photo_hint">Add a photo of your vehicle in Customize</string>
+    <string name="strada_speed">Speed</string>
+    <string name="strada_kmh">km/h</string>
+    <string name="strada_service">Service</string>
+    <string name="strada_service_days">%1$d days</string>
+    <string name="strada_audio">AUDIO</string>
+    <string name="strada_bluetooth">Bluetooth</string>
     <string name="setup_category_display">Display</string>
     <string name="setup_category_theme">Theme</string>
     <string name="setup_category_sound">Sound</string>
@@ -410,6 +424,38 @@
     <string name="dash_menu_home">Home</string>
     <string name="dash_menu_exit_to_car">Exit to car</string>
 
+    <!-- Offline OpenStreetMap navigation option (mapsforge .map country files, like StradaOS) -->
+    <string name="offline_map_label">Offline Maps</string>
+    <string name="offline_map_none">No offline map yet. Download a country map in Settings → Offline maps.</string>
+    <string name="setup_page_offline_maps_title">Offline maps</string>
+    <string name="setup_page_offline_maps_subtitle">Download OpenStreetMap country maps for offline navigation</string>
+    <string name="offline_map_offer_title">Offer offline maps</string>
+    <string name="offline_map_offer_subtitle">Show offline OpenStreetMap as a navigation option on the car screen</string>
+    <string name="offline_map_downloaded">Downloaded maps</string>
+    <string name="offline_map_delete">Delete</string>
+    <string name="offline_map_download">Download</string>
+    <string name="offline_map_pause">Pause</string>
+    <string name="offline_map_cancel">Cancel</string>
+    <string name="offline_map_browse_hint">Pick a continent, then a country.</string>
+    <string name="offline_map_back">Back</string>
+    <string name="offline_map_loading">Loading…</string>
+    <string name="offline_map_source">Maps from download.mapsforge.org (OpenStreetMap, ODbL).</string>
+    <!-- Service / oil-change reminder -->
+    <string name="service_reminder_title">Service reminder</string>
+    <string name="service_reminder_none">No service reminder set.</string>
+    <string name="service_reminder_set">Set date</string>
+    <string name="service_reminder_change">Change date</string>
+    <string name="service_reminder_clear">Clear</string>
+    <string name="service_reminder_due_in">Next service %1$s · in %2$d days</string>
+    <string name="service_reminder_due_today">Service due today (%1$s)</string>
+    <string name="service_reminder_overdue">Service overdue by %1$d days (since %2$s)</string>
+    <!-- Vehicle photo (background removed) -->
+    <string name="vehicle_photo_title">Vehicle photo</string>
+    <string name="vehicle_photo_hint">Add a photo of your car — the background is removed automatically.</string>
+    <string name="vehicle_photo_add">Add photo</string>
+    <string name="vehicle_photo_change">Change photo</string>
+    <string name="vehicle_photo_remove">Remove</string>
+    <string name="vehicle_photo_processing">Removing background…</string>
     <!-- nav: navigation feature (dashboard card and templates) -->
     <string name="nav_dashboard_no_app_title">No navigation app</string>
     <string name="nav_dashboard_where_to">Where to?</string>

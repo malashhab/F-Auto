@@ -227,6 +227,10 @@ class ProjectionService : Service() {
      */
     private fun connectWireless(address: String, forceOfficial: Boolean? = null) {
         if (session != null || wirelessJob?.isActive == true) return
+        // While a USB accessory is plugged in, the cable wins and wireless stands down — otherwise the
+        // two transports interleave and fight (see the Honda/MG logs: a flapping USB session leaves gaps
+        // the Bluetooth retries jump into, and each tears the other down).
+        if (usbAttached()) { log("wireless: USB is plugged in; staying on the cable"); return }
         val adapter = getSystemService(android.bluetooth.BluetoothManager::class.java)?.adapter ?: return
         val device = runCatching { adapter.getRemoteDevice(address) }.getOrNull() ?: return
         val deviceLabel = runCatching { device.name }.getOrNull().orEmpty()
@@ -339,6 +343,9 @@ class ProjectionService : Service() {
     private fun probeConnectedWireless() {
         if (!settings.wireless || wirelessJob?.isActive == true) { scheduleIdleStop(); return }
         if (session != null) { log("wireless: already connected; unplug USB first to connect wirelessly"); scheduleIdleStop(); return }
+        // A USB cable is the chosen path: don't also probe Bluetooth. Without this the two race while a
+        // USB session keeps flapping (connect → "read failed" → retry), each closing the other's link.
+        if (usbAttached()) { log("wireless: USB is plugged in; staying on the cable (unplug to connect wirelessly)"); scheduleIdleStop(); return }
         val connector = WirelessConnector(this, DiagAapLog)
         if (connector.missingPermissions().isNotEmpty()) { scheduleIdleStop(); return }
         val device = runCatching { connector.findConnectedHeadUnits() }.getOrDefault(emptyList()).firstOrNull()
@@ -354,6 +361,10 @@ class ProjectionService : Service() {
     private fun scheduleIdleStop() {
         main.postDelayed({ if (idle()) stopEverything() }, 3_000)
     }
+
+    /** True while an Android Auto USB accessory is physically attached: the cable is the chosen path. */
+    private fun usbAttached(): Boolean =
+        runCatching { getSystemService(UsbManager::class.java)?.accessoryList?.any { isAndroidAuto(it) } == true }.getOrDefault(false)
 
     private fun openUsb(accessory: UsbAccessory) {
         usbAccessory = accessory
