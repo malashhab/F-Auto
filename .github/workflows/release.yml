@@ -1,7 +1,5 @@
 # Publishes a GitHub release when a version tag (v1.2.3) is pushed:
-#   - the Android app (aare-<version>.apk),
-#   - the Magisk module that installs it as a privileged app (aare-<version>-magisk.zip),
-#   - the desktop head unit (aare-headunit-<version>.zip),
+#   - the Android app (F-Auto-<version>.apk),
 #   - SHA256SUMS.
 #
 # The APK is signed with the key in these repository secrets:
@@ -58,7 +56,7 @@ jobs:
           ./gradlew --no-daemon :app:assembleRelease -PversionName="$VERSION" -PversionCode="$VERSION_CODE"
           rm -f "$AARE_KEYSTORE"
           mkdir -p out
-          cp app/build/outputs/apk/release/app-release.apk "out/aare-$VERSION.apk"
+          cp app/build/outputs/apk/release/app-release.apk "out/F-Auto-$VERSION.apk"
 
       - name: Debug APK (no signing key in the secrets)
         if: env.HAS_KEY != 'true'
@@ -69,23 +67,15 @@ jobs:
           echo "::warning::AARE_KEYSTORE_BASE64 is not set: publishing a debug-signed APK"
           ./gradlew --no-daemon :app:assembleDebug -PversionName="$VERSION" -PversionCode="$VERSION_CODE"
           mkdir -p out
-          cp app/build/outputs/apk/debug/app-debug.apk "out/aare-$VERSION-debug.apk"
-
-      - name: Magisk module and desktop head unit
-        run: |
-          APK=$(ls out/aare-*.apk)
-          AARE_VERSION="$VERSION" tools/magisk/build-module.sh "$APK"
-          cp build/aare-magisk.zip "out/aare-$VERSION-magisk.zip"
-          ./gradlew --no-daemon :headunit:installDist
-          (cd headunit/build/install && zip -qr "$GITHUB_WORKSPACE/out/aare-headunit-$VERSION.zip" aare-headunit)
+          cp app/build/outputs/apk/debug/app-debug.apk "out/F-Auto-$VERSION.apk"
 
       - name: Publish
         run: |
           cd out
           sha256sum -- * > SHA256SUMS
           cat SHA256SUMS
-          APK=$(ls aare-*.apk)
-          SIGNED=$([ "$HAS_KEY" = true ] && echo "signed with AARE's release key" || echo "debug-signed")
+          APK=$(ls F-Auto-*.apk)
+          SIGNED=$([ "$HAS_KEY" = true ] && echo "signed with the release key" || echo "debug-signed")
           # The tag's annotation (the changelog) heads the notes, then the downloads table.
           git -C "$GITHUB_WORKSPACE" tag -l --format='%(contents)' "$GITHUB_REF_NAME" > ../notes.md
           printf '\n' >> ../notes.md
@@ -95,10 +85,8 @@ jobs:
           | File | What |
           |---|---|
           | \`$APK\` | the Android app ($SIGNED): \`adb install -r $APK\` or open it on the phone |
-          | \`aare-$VERSION-magisk.zip\` | rooted phones: installs AARE as a privileged app, for car audio like Android Auto |
-          | \`aare-headunit-$VERSION.zip\` | the desktop head unit, to try AARE without a car (needs Java 17+, ffmpeg and adb) |
           | \`SHA256SUMS\` | checksums |
 
           See the [README](https://github.com/$GITHUB_REPOSITORY#readme) for setup and compatibility.
           NOTES
-          gh release create "$GITHUB_REF_NAME" --title "AARE $VERSION" $([ "$PRERELEASE" = true ] && echo --prerelease) --notes-file ../notes.md --generate-notes -- *
+          gh release create "$GITHUB_REF_NAME" --title "F-Auto $VERSION" $([ "$PRERELEASE" = true ] && echo --prerelease) --notes-file ../notes.md --generate-notes -- *
