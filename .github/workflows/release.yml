@@ -13,7 +13,7 @@ name: Release
 
 on:
   push:
-    tags: ["v*", "!v*-alpha*", "!v*-beta*"]   # alpha/beta pre-releases are published by hand
+    tags: ["v*"]   # vX.Y.Z publishes a release; vX.Y.Z-alpha / -beta a GitHub pre-release
 
 jobs:
   release:
@@ -38,6 +38,7 @@ jobs:
           IFS=. read -r MAJOR MINOR PATCH <<< "${VERSION%%-*}"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "VERSION_CODE=$(( ${MAJOR:-0} * 10000 + ${MINOR:-0} * 100 + ${PATCH:-0} ))" >> "$GITHUB_ENV"
+          case "$VERSION" in *-*) echo "PRERELEASE=true" >> "$GITHUB_ENV" ;; *) echo "PRERELEASE=false" >> "$GITHUB_ENV" ;; esac
 
       - name: Protocol and head unit tests
         run: ./gradlew --no-daemon :aap:test :headunit:test
@@ -85,7 +86,10 @@ jobs:
           cat SHA256SUMS
           APK=$(ls aare-*.apk)
           SIGNED=$([ "$HAS_KEY" = true ] && echo "signed with AARE's release key" || echo "debug-signed")
-          cat > ../notes.md <<NOTES
+          # The tag's annotation (the changelog) heads the notes, then the downloads table.
+          git -C "$GITHUB_WORKSPACE" tag -l --format='%(contents)' "$GITHUB_REF_NAME" > ../notes.md
+          printf '\n' >> ../notes.md
+          cat >> ../notes.md <<NOTES
           ## Downloads
 
           | File | What |
@@ -97,4 +101,4 @@ jobs:
 
           See the [README](https://github.com/$GITHUB_REPOSITORY#readme) for setup and compatibility.
           NOTES
-          gh release create "$GITHUB_REF_NAME" --title "AARE $VERSION" --notes-file ../notes.md --generate-notes -- *
+          gh release create "$GITHUB_REF_NAME" --title "AARE $VERSION" $([ "$PRERELEASE" = true ] && echo --prerelease) --notes-file ../notes.md --generate-notes -- *
