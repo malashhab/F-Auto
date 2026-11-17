@@ -46,6 +46,11 @@ data class CarAppInfo(
             "com.mapswithme.maps.pro",      // MAPS.ME
             "cz.seznam.mapy",               // Mapy.cz
             "com.citymapper.app.release",   // Citymapper
+            "app.organicmaps",              // Organic Maps
+            "app.comaps",                   // CoMaps
+            "com.generalmagic.magicearth",  // Magic Earth
+            "com.huawei.maps.app",          // Petal Maps
+            "com.mapfactor.navigator",      // MapFactor Navigator
         )
     }
 }
@@ -59,6 +64,10 @@ object CarAppCatalog {
         val flags = PackageManager.GET_META_DATA or PackageManager.GET_RESOLVED_FILTER
         val found = if (Build.VERSION.SDK_INT >= 33) pm.queryIntentServices(intent, PackageManager.ResolveInfoFlags.of(flags.toLong()))
             else @Suppress("DEPRECATION") pm.queryIntentServices(intent, flags)
+        // Services per package: the app's own name is the label, as in Android Auto, unless one app
+        // has several car services to tell apart. Service labels alone can mislead: YouTube Music's
+        // is "SETTINGS".
+        val servicesPerPackage = found.mapNotNull { it.serviceInfo?.packageName }.groupingBy { it }.eachCount()
         return found.mapNotNull { ri ->
             val si = ri.serviceInfo ?: return@mapNotNull null
             if (si.packageName == context.packageName) return@mapNotNull null
@@ -70,7 +79,8 @@ object CarAppCatalog {
                 ?: si.metaData?.getInt(CarAppInfo.MIN_API_KEY, 0) ?: 0
             CarAppInfo(
                 service = ComponentName(si.packageName, si.name),
-                label = (si.loadLabel(pm).takeIf { it.isNotBlank() } ?: appInfo.loadLabel(pm)).toString(),
+                label = (if ((servicesPerPackage[si.packageName] ?: 1) > 1) si.loadLabel(pm).takeIf { it.isNotBlank() } else null)
+                    ?.toString() ?: appInfo.loadLabel(pm).toString(),
                 icon = runCatching { si.loadIcon(pm).toBitmap(iconSizePx, iconSizePx) }.getOrNull(),
                 categories = categories,
                 minApiLevel = minApi,

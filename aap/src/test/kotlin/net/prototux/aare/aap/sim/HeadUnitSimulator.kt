@@ -126,6 +126,8 @@ class HeadUnitSimulator(
     val navStates = LinkedBlockingQueue<NavigationState>()
     /** False plays a head unit that never answers the phone's bye-bye. */
     @Volatile var answerByeBye = true
+    /** False plays a head unit that never answers the phone's video focus requests. */
+    @Volatile var answerFocus = true
 
     fun start() {
         Thread({
@@ -220,7 +222,7 @@ class HeadUnitSimulator(
             MediaMsg.VIDEO_FOCUS_REQUEST -> {
                 focusRequests.incrementAndGet()
                 val r = VideoFocusRequestNotification.parseFrom(m.bodyBytes())
-                send(video, MediaMsg.VIDEO_FOCUS_NOTIFICATION, VideoFocusNotification.newBuilder()
+                if (answerFocus) send(video, MediaMsg.VIDEO_FOCUS_NOTIFICATION, VideoFocusNotification.newBuilder()
                     .setFocus(if (r.mode == VideoFocusMode.VIDEO_FOCUS_NATIVE) VideoFocusMode.VIDEO_FOCUS_NATIVE else VideoFocusMode.VIDEO_FOCUS_PROJECTED)
                     .setUnsolicited(false).build())
             }

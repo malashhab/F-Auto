@@ -20,8 +20,10 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.concurrent.atomic.AtomicBoolean
 import java.nio.channels.Channels
 import java.nio.channels.Pipe
 import java.util.concurrent.CountDownLatch
@@ -300,6 +302,42 @@ class WirelessBootstrapTest {
         val e = failure as WirelessBootstrapException
         assertTrue(e.message.orEmpty(), e.message.orEmpty().contains("before sending its WifiStartRequest"))
         assertTrue(e.whileNegotiating)
+    }
+
+    @Test(timeout = 10_000)
+    fun brokenPipeWhileAnsweringIsAHandshakeFailure() {
+        // A smartBox adapter: sends its version request, gets the official-phone answer, sends the
+        // start request and hangs up while we answer it. That write fails with "Broken pipe", which
+        // must count as a handshake failure (so the other handshake gets tried), not a dead end.
+        val broken = AtomicBoolean(false)
+        val out = object : OutputStream() {
+            override fun write(b: Int) { if (broken.get()) throw IOException("Broken pipe"); phoneToHu.output.write(b) }
+            override fun write(b: ByteArray, off: Int, len: Int) { if (broken.get()) throw IOException("Broken pipe"); phoneToHu.output.write(b, off, len) }
+            override fun flush() = phoneToHu.output.flush()
+        }
+        val b = WirelessBootstrap(huToPhone.input, out, Phone { JoinResult.Joined() }, quiet, WirelessBootstrap.Options(
+            messageTimeoutMs = 3_000, keepaliveIntervalMs = 0, frameGapMs = 0, pingIntervalMs = 0, officialPhoneOrder = true))
+        bootstrap = b
+        thread(name = "phone") { try { b.run() } catch (t: Throwable) { failure = t } finally { finished.countDown() } }
+
+        hu.send(WppMessageId.VERSION_REQUEST, versionRequest())
+        hu.expect(WppMessageId.VERSION_RESPONSE)
+        broken.set(true)
+        hu.send(WppMessageId.START_REQUEST, startRequest())
+        awaitEnd()
+        val e = failure as WirelessBootstrapException
+        assertTrue(e.message.orEmpty(), e.message.orEmpty().contains("Broken pipe"))
+        assertTrue("a hang-up mid-negotiation", e.whileNegotiating)
+        assertTrue("the head unit had answered first", e.heardFromHeadUnit)
+    }
+
+    @Test(timeout = 10_000)
+    fun silenceIsNotHeardFromTheHeadUnit() {
+        start(Phone { JoinResult.Joined() }, WirelessBootstrap.Options(messageTimeoutMs = 300, keepaliveIntervalMs = 0, frameGapMs = 0))
+        awaitEnd()
+        val e = failure as WirelessBootstrapException
+        assertTrue(e.whileNegotiating)
+        assertFalse("a silent car is a car not ready yet", e.heardFromHeadUnit)
     }
 
     @Test(timeout = 10_000)

@@ -98,7 +98,7 @@ internal fun StradaShell(
     val scheme = (if (state.night) darkColorScheme() else lightColorScheme()).copy(
         primary = c.accent, onPrimary = c.onAccent, surface = c.card, onSurface = c.text, background = c.bg,
     )
-    MaterialTheme(colorScheme = scheme) {
+    net.prototux.aare.ui.theme.CarColors(scheme) {
         Box(Modifier.fillMaxSize().background(c.bg).padding(16.dp).then(modifier)) {
             Column(Modifier.fillMaxSize()) {
                 StradaTopBar(state, c)

@@ -267,9 +267,9 @@ internal fun HybridShell(
     val darkBars = remember(state.shellStyle) { barPaletteFor(state.shellStyle).forClassic() }
     val barPalette = if (state.darkBar) darkBars else palette
     val bars: @Composable (@Composable () -> Unit) -> Unit = { content ->
-        if (barPalette === palette) content() else MaterialTheme(colorScheme = colorSchemeFor(barPalette), content = content)
+        if (barPalette === palette) content() else net.prototux.aare.ui.theme.CarColors(colorSchemeFor(barPalette), content)
     }
-    MaterialTheme(colorScheme = colorSchemeFor(palette)) {
+    net.prototux.aare.ui.theme.CarColors(colorSchemeFor(palette)) {
         CompositionLocalProvider(LocalCarDimens provides LocalCarDimens.current.copy(cardRadius = 26.dp, gutter = 14.dp)) {
             Box(Modifier.fillMaxSize().background(palette.bg)) {
                 Row(Modifier.fillMaxSize().then(modifier)) {
@@ -325,10 +325,12 @@ private fun HybridRail(state: CarUiState, actions: CarActions, palette: HybridPa
             Text(today("EEEd"), style = RailLabel, color = palette.muted, maxLines = 1)
             Spacer(Modifier.height(8.dp))
             // The tabs share the height there is: up to 88 dp each, and on a short screen they
-            // shrink (dropping their labels first) instead of running off the rail.
+            // shrink (dropping their labels first). Below 48 dp each they would be squeezed, with
+            // taps landing on the neighbouring tab, so the column scrolls instead.
             BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                val tab = (maxHeight / 6).coerceIn(48.dp, 88.dp)
-                Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+                val (tab, fits) = railTabs(maxHeight, count = 6, min = 48.dp, max = 88.dp)
+                val column = if (fits) Modifier.fillMaxSize() else Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                Column(column, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = if (fits) Arrangement.SpaceEvenly else Arrangement.Top) {
                     HybridTab("home", stringResource(R.string.dash_menu_home), state.screen == CarScreen.Dashboard, palette, tints?.getOrNull(0), tab) { actions.goHome() }
                     HybridTab("nav", nav?.label ?: stringResource(R.string.dash_maps), on(nav), palette, tints?.getOrNull(1), tab) { nav?.let(actions::openApp) ?: actions.openLauncher() }
                     HybridTab("media", media?.label ?: stringResource(R.string.media_fallback_label), on(media), palette, tints?.getOrNull(2), tab) { media?.let(actions::openApp) ?: actions.openLauncher() }
@@ -361,6 +363,8 @@ private fun HybridTab(kind: String, label: String, selected: Boolean, palette: H
     Box(
         Modifier.size(width = 98.dp, height = height).padding(vertical = 3.dp).clip(shape)
             .then(if (fill != null) Modifier.background(fill) else Modifier)
+            // A rotary knob's focus must be visible on the rail too, not only on the cards.
+            .carFocusHighlight(shape)
             .clickable(onClickLabel = label, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -499,16 +503,38 @@ private fun HybridDashboard(state: CarUiState, actions: CarActions, navMap: @Com
         }
         // One Row for both views, the map first in each: toggling changes its width, not its
         // place in the composition, so the live map surface isn't torn down and rebuilt.
-        Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            NavCard(state, actions, navMap, Modifier.weight(if (mapMusic) 1.8f else 1.55f).fillMaxHeight())
-            if (mapMusic) {
-                MediaCard(state, actions, compact = false, modifier = Modifier.weight(1f).fillMaxHeight())
+        BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+            if (maxHeight > maxWidth) {
+                // Portrait (a tall center display): stacked. Side by side, the side column came out
+                // so narrow that "Messages" broke into "Messa / ges".
+                Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    NavCard(state, actions, navMap, Modifier.weight(if (mapMusic) 1.8f else 1.3f).fillMaxWidth())
+                    MediaCard(state, actions, compact = false, modifier = Modifier.weight(1f).fillMaxWidth())
+                    if (!mapMusic) {
+                        Row(Modifier.weight(0.6f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                            HybridSuggested(state, actions, palette, Modifier.weight(1f).fillMaxHeight())
+                            RecentCard(state, actions, palette, Modifier.weight(1f).fillMaxHeight())
+                        }
+                    }
+                }
             } else {
-                Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    MediaCard(state, actions, compact = false, modifier = Modifier.weight(1.3f).fillMaxWidth())
-                    Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                        HybridSuggested(state, actions, palette, Modifier.weight(1f).fillMaxHeight())
-                        RecentCard(state, actions, palette, Modifier.weight(1f).fillMaxHeight())
+                // The Suggested and Messages cards share the side column: below 300 dp each is too
+                // narrow for its own title (800x480 screens showed "Suggest" and "Messag"), so the
+                // music card takes the whole column instead.
+                val sideColumn = (maxWidth - 14.dp) / 2.55f
+                val smallCards = sideColumn >= 300.dp
+                Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    NavCard(state, actions, navMap, Modifier.weight(if (mapMusic) 1.8f else 1.55f).fillMaxHeight())
+                    if (mapMusic || !smallCards) {
+                        MediaCard(state, actions, compact = false, modifier = Modifier.weight(1f).fillMaxHeight())
+                    } else {
+                        Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                            MediaCard(state, actions, compact = false, modifier = Modifier.weight(1.3f).fillMaxWidth())
+                            Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                                HybridSuggested(state, actions, palette, Modifier.weight(1f).fillMaxHeight())
+                                RecentCard(state, actions, palette, Modifier.weight(1f).fillMaxHeight())
+                            }
+                        }
                     }
                 }
             }

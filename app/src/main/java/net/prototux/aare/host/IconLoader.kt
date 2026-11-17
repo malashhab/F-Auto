@@ -2,6 +2,7 @@ package net.prototux.aare.host
 
 import android.content.Context
 import android.content.res.Configuration
+import android.util.Log
 import android.util.LruCache
 import androidx.car.app.model.CarIcon
 import androidx.compose.ui.graphics.ImageBitmap
@@ -23,6 +24,8 @@ class IconLoader(private val context: Context, private val env: HostEnvironment)
     }
     /** Package contexts by "package:night:dpi" (creating one parses the APK's resource table). */
     private val packageContexts = HashMap<String, Context>()
+    /** Icons that failed to load, so the reason is logged once and not on every template refresh. */
+    private val failed = HashSet<String>()
 
     /** [owner] is the package that supplied [icon]; without it URI icons are not loaded. */
     fun load(icon: CarIcon, sizePx: Int, owner: String?): ImageBitmap? {
@@ -44,6 +47,9 @@ class IconLoader(private val context: Context, private val env: HostEnvironment)
                 }
                 ic.loadDrawable(context)
             }
+        }.onFailure { e ->
+            // Once per icon: an icon that can't be drawn leaves an empty button, say why in logcat.
+            if (synchronized(failed) { failed.add(key) }) Log.w(TAG, "can't load car icon $key from $owner: $e")
         }.getOrNull() ?: return null
         val w = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else sizePx
         val h = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else sizePx
@@ -66,7 +72,16 @@ class IconLoader(private val context: Context, private val env: HostEnvironment)
                 (if (night) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO)
         }
         val ctx = context.createPackageContext(pkg, 0).createConfigurationContext(cfg)
+        // With the app's own theme, not the platform default a package context starts with: apps
+        // color their vector icons with their own theme attributes (?attr/...), which don't resolve
+        // without it. The icon then fails to inflate and its button is drawn empty.
+        val theme = runCatching { context.packageManager.getApplicationInfo(pkg, 0).theme }.getOrDefault(0)
+        if (theme != 0) runCatching { ctx.setTheme(theme) }
         synchronized(packageContexts) { packageContexts[key] = ctx }
         return ctx
+    }
+
+    private companion object {
+        const val TAG = "AareIcons"
     }
 }

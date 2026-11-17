@@ -360,15 +360,24 @@ class CarSession(
         // Desay SV) pins H.264 over the global setting.
         val forceH264 = vehicleOverride?.forceH264 ?: settings.forceH264
         val kind = matchVideoCodec(advertised, forceH264) { VideoEncoder.hardwareEncodes(it) }
-        Log.i(TAG, "video codec: ${kind.label} (car offers ${advertised.joinToString { it.name.removePrefix("MEDIA_CODEC_VIDEO_") }}" +
-            (if (forceH264) ", H.264 forced" + (if (vehicleOverride?.forceH264 == true) " for this car" else "") else "") + ")")
+        val line = "video codec: ${kind.label} (car offers ${advertised.joinToString { it.name.removePrefix("MEDIA_CODEC_VIDEO_") }}" +
+            (if (forceH264) ", H.264 forced" + (if (vehicleOverride?.forceH264 == true) " for this car" else "") else "") + ")"
+        Log.i(TAG, line)
+        DiagLog.add(line)
         return kind
     }
 
     private fun videoListener(rightHandDrive: Boolean) = object : VideoChannel.Listener {
-        override fun chooseConfiguration(configs: List<VideoConfiguration>, preferred: List<Int>): Int =
-            chooseVideo(configs, preferred, vehicleOverride?.maxHeight ?: settings.maxVideoHeight,
+        override fun chooseConfiguration(configs: List<VideoConfiguration>, preferred: List<Int>): Int {
+            val index = chooseVideo(configs, preferred, vehicleOverride?.maxHeight ?: settings.maxVideoHeight,
                 vehicleOverride?.prefer60fps ?: settings.prefer60fps, videoType(videoCodec))
+            DiagLog.add("video: car offers " + configs.mapIndexed { i, c ->
+                val (w, h) = resolution(c.codecResolution)
+                "${w}x$h@${if (c.frameRate == VideoFrameRateType.VIDEO_FPS_60) 60 else 30}" +
+                    (if (c.density > 0) " ${c.density}dpi" else "") + (if (i in preferred) "*" else "")
+            }.joinToString() + "; using #$index")
+            return index
+        }
 
         override fun onVideoStart(index: Int, config: VideoConfiguration) {
             main.post {
@@ -384,8 +393,14 @@ class CarSession(
             }
         }
 
+        override fun onFocusSilent(assumed: Boolean) {
+            DiagLog.add(if (assumed) "video focus: the car never answered; assuming the projection is shown and sending video"
+                else "video focus: no answer from the car yet, asking again")
+        }
+
         override fun onVideoFocus(projected: Boolean) {
             Log.i(TAG, "video focus: ${if (projected) "projected" else "native"}")
+            DiagLog.add("video focus: ${if (projected) "projected (car shows F-Auto)" else "native (car shows its own screen)"}")
             main.post {
                 encoder?.setSuspended(!projected)
                 if (projected) encoder?.requestKeyFrame()
@@ -444,6 +459,7 @@ class CarSession(
         lateinit var enc: VideoEncoder
         enc = VideoEncoder(w, h, fps, kind = videoCodec, sink = object : VideoEncoder.Sink {
             private var frames = 0
+            private var firstFocusedFrameLogged = false
             // Per stream: a restart (new config, encoder error) starts again from the full bitrate.
             private val abr = BitrateController(VideoEncoder.defaultBitrate(w, h, fps)) { encoder?.setBitrate(it) }
             override fun onCodecConfig(data: ByteArray, offset: Int, length: Int) {
@@ -454,6 +470,11 @@ class CarSession(
                 frames++
                 if (frames == 1 || keyFrame && frames < 100 || frames % 600 == 0) {
                     Log.i(TAG, "video frame $frames (${if (keyFrame) "key, " else ""}$length bytes), focused=${ch.focused}, dropped=${ch.droppedFrames}")
+                }
+                // Once per stream in the user's log: shows the encoder works, and whether the car let us show it.
+                if (!firstFocusedFrameLogged && ch.focused) {
+                    firstFocusedFrameLogged = true
+                    DiagLog.add("video: streaming to the car (frame $frames, ${length / 1024} kB, ${ch.droppedFrames} held back before focus)")
                 }
                 ch.sendFrame(data, offset, length, ptsUs, keyFrame) { encoder?.recycle(it) }
                 abr.onFrame(ch)
@@ -477,6 +498,8 @@ class CarSession(
         })
         enc.start()
         encoder = enc
+        DiagLog.add("video: $videoDescription, encoder ${enc.codecName}, touch panel " +
+            (touchSize?.let { "${it.first}x${it.second}" } ?: "none"))
 
         runtime.densityDpi = dpi
         runtime.screenWidthDp = layout.contentWidth * 160 / dpi
@@ -555,8 +578,9 @@ class CarSession(
             KeyEvent.KEYCODE_MEDIA_PAUSE, KeyEvent.KEYCODE_MEDIA_STOP -> if (!down) media.pause()
             KeyEvent.KEYCODE_MEDIA_NEXT -> if (!down) media.next()
             KeyEvent.KEYCODE_MEDIA_PREVIOUS -> if (!down) media.previous()
-            KEYCODE_MEDIA -> if (!down) runtime.ui.app(runtime.ui.activeMediaAppId)?.let(runtime.actions::openApp)
-            KEYCODE_NAVIGATION, KEYCODE_TURN_CARD -> if (!down) runtime.ui.app(runtime.ui.activeNavAppId)?.let(runtime.actions::openApp)
+            // No media/navigation app chosen yet: the app list, like the rail's tabs (the key did nothing).
+            KEYCODE_MEDIA -> if (!down) runtime.ui.app(runtime.ui.activeMediaAppId)?.let(runtime.actions::openApp) ?: runtime.actions.openLauncher()
+            KEYCODE_NAVIGATION, KEYCODE_TURN_CARD -> if (!down) runtime.ui.app(runtime.ui.activeNavAppId)?.let(runtime.actions::openApp) ?: runtime.actions.openLauncher()
             // The car's dedicated Phone button opens the phone app; the Call/Endcall keys answer and hang up.
             KEYCODE_TEL -> if (!down) runtime.ui.app(CarRuntime.PHONE_ID)?.let(runtime.actions::openApp)
             KeyEvent.KEYCODE_CALL -> if (!down) { if (runtime.ui.call?.ringing == true) runtime.actions.answerCall() else runtime.ui.app(CarRuntime.PHONE_ID)?.let(runtime.actions::openApp) }

@@ -385,6 +385,15 @@ private class DesktopHeadUnit(val opts: Map<String, String>) {
                     what == "drive" -> unit.setDriving(true).also { driving = true }
                     what.startsWith("reverse:") -> unit.reverse(what.removePrefix("reverse:").toDouble())
                 }
+                // Headless: what the screen shows once the input took effect, named after the step
+                // ("shot@S" only captures). The periodic snapshots only come with new frames, and a
+                // still screen may send none.
+                val dir = headlessDir ?: return@thread
+                Thread.sleep(1_500)
+                val img = screen.image as? java.awt.image.RenderedImage ?: return@thread
+                val name = "step-%05.1f-%s.png".format(java.util.Locale.ROOT, at.toDouble(), what.replace(Regex("[^A-Za-z0-9]+"), "_"))
+                javax.imageio.ImageIO.write(img, "png", File(dir, name))
+                println("step snapshot $name")
             }
         }
     }

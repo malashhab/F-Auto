@@ -133,7 +133,7 @@ internal fun CarPlayShell(
     modifier: Modifier = Modifier,
 ) {
     val onRight = state.railOnRight
-    MaterialTheme(colorScheme = colorSchemeFor(DuskPaletteForCp)) {
+    net.prototux.aare.ui.theme.CarColors(colorSchemeFor(DuskPaletteForCp)) {
         CompositionLocalProvider(LocalCarDimens provides LocalCarDimens.current.copy(cardRadius = 30.dp, gutter = 14.dp)) {
             Box(Modifier.fillMaxSize().cpBackground().padding(14.dp).then(modifier)) {
                 Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {

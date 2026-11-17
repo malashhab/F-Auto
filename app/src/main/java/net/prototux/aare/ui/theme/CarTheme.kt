@@ -111,12 +111,23 @@ private val CarShapes = Shapes(
 
 @Composable
 fun CarTheme(night: Boolean, content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = if (night) NightColors else DayColors,
-        typography = CarType,
-        shapes = CarShapes,
-        content = content,
-    )
+    val scheme = if (night) NightColors else DayColors
+    MaterialTheme(colorScheme = scheme, typography = CarType, shapes = CarShapes) {
+        androidx.compose.runtime.CompositionLocalProvider(androidx.compose.material3.LocalContentColor provides scheme.onSurface, content = content)
+    }
+}
+
+/**
+ * [colorScheme] for the car screen, keeping the type and shapes: plain Text and Icon default to its
+ * onSurface. MaterialTheme alone doesn't set the content color (only a Surface does), and the car
+ * screen draws its cards with plain backgrounds, so text without an explicit color came out black:
+ * invisible on the dark themes ("No navigation app", the song title on the music card, car app text).
+ */
+@Composable
+fun CarColors(colorScheme: androidx.compose.material3.ColorScheme, content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = colorScheme) {
+        androidx.compose.runtime.CompositionLocalProvider(androidx.compose.material3.LocalContentColor provides colorScheme.onSurface, content = content)
+    }
 }
 
 /** Phone UI theme: same palette, normal phone type scale. */

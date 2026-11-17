@@ -183,6 +183,12 @@ class VideoChannel(
 
         /** The head unit changed the UI layout (insets, margins, theme) of the running stream. */
         fun onUiConfig(config: UiConfig) {}
+
+        /**
+         * The head unit said nothing about video focus after our request: [assumed] false the first
+         * time (the request was repeated), true when projection is now assumed and frames flow.
+         */
+        fun onFocusSilent(assumed: Boolean) {}
     }
 
     val configs: List<VideoConfiguration> = service.mediaSinkService.videoConfigsList
@@ -231,17 +237,48 @@ class VideoChannel(
         // it follows START: the head unit must not be asked to show a stream it hasn't started.
         send(MediaMsg.VIDEO_FOCUS_REQUEST, VideoFocusRequestNotification.newBuilder()
             .setMode(VideoFocusMode.VIDEO_FOCUS_PROJECTED).setReason(VideoFocusReason.UNKNOWN).build(), dataPriority)
+        watchFocusAnswer()
+    }
+
+    /** Any focus word from the head unit since the stream started (see [watchFocusAnswer]). */
+    @Volatile private var focusAnswered = false
+
+    /**
+     * Frames only flow once the head unit grants focus, and some never answer the request (retrofit
+     * boxes, some aftermarket units): the car screen then stays black for the whole session. Ask
+     * once more, and if the head unit still says nothing, assume the projection is shown, the way a
+     * head unit that never sends focus messages behaves. A head unit that answers NATIVE (it shows
+     * its own screen first) has answered, and is left alone.
+     */
+    private fun watchFocusAnswer() {
+        if (focusAnswered) return
+        val stream = mediaSession
+        fun silent() = !focusAnswered && started && mediaSession == stream && !session.isClosed
+        session.schedule({
+            if (silent()) {
+                listener.onFocusSilent(assumed = false)
+                requestProjectedFocus()
+            }
+        }, FOCUS_REPEAT_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
+        session.schedule({
+            if (silent()) {
+                listener.onFocusSilent(assumed = true)
+                setFocus(VideoFocusMode.VIDEO_FOCUS_PROJECTED)
+            }
+        }, FOCUS_ASSUME_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
     }
 
     override fun onOtherMessage(msg: AapMessage) {
         when (msg.id) {
             MediaMsg.VIDEO_FOCUS_NOTIFICATION -> {
                 val n = VideoFocusNotification.parseFrom(msg.bodyBytes())
+                focusAnswered = true
                 setFocus(n.focus)
             }
             MediaMsg.VIDEO_FOCUS_REQUEST -> {
                 // Some head units ask us to change focus; we comply and confirm.
                 val r = VideoFocusRequestNotification.parseFrom(msg.bodyBytes())
+                focusAnswered = true
                 val projected = isProjected(r.mode)
                 // Confirm the projected mode it asked for (with or without input focus).
                 send(MediaMsg.VIDEO_FOCUS_NOTIFICATION, VideoFocusNotification.newBuilder()
@@ -262,7 +299,12 @@ class VideoChannel(
         }
     }
 
-    private fun setFocus(mode: VideoFocusMode) {
+    /** The reader thread, and the timer for an assumed focus ([watchFocusAnswer]): one at a time. */
+    private val focusLock = Any()
+
+    private fun setFocus(mode: VideoFocusMode) { synchronized(focusLock) { setFocusLocked(mode) } }
+
+    private fun setFocusLocked(mode: VideoFocusMode) {
         val projected = isProjected(mode)
         val changed = projected != focused
         focused = projected
@@ -362,6 +404,11 @@ class VideoChannel(
     companion object {
         /** About a quarter second at 30 fps: more than that and we're just adding latency. */
         const val MAX_PENDING = 8
+
+        /** No focus answer after this long: ask again. */
+        const val FOCUS_REPEAT_MS = 3_000L
+        /** Still none after this long: assume the projection is on screen and send frames. */
+        const val FOCUS_ASSUME_MS = 7_000L
 
         /** Our projection is on screen, with or without input focus (native, transient native: not). */
         private fun isProjected(mode: VideoFocusMode) =

@@ -57,6 +57,9 @@ class VideoEncoder(
 
     private var codec: MediaCodec? = null
     private var thread: HandlerThread? = null
+    /** The hardware encoder in use, for the connection log (empty until [start] succeeds). */
+    var codecName: String = ""
+        private set
     lateinit var inputSurface: Surface
         private set
 
@@ -125,6 +128,7 @@ class VideoEncoder(
             c.start()
             inputSurface = surface
             codec = c
+            codecName = c.name
             Log.i(TAG, "encoder ${c.name} ${width}x$height@$fps ${bitrate / 1000} kb/s")
         } catch (e: Throwable) {
             surface?.let { runCatching { it.release() } }

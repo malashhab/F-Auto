@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -63,7 +64,8 @@ fun CarAppScreen(conn: CarAppConnection, runtime: CarRuntime, modifier: Modifier
         onDispose { runtime.releaseVisible(conn) }
     }
     val host = remember(conn) { ConnectionTemplateHost(conn, runtime) }
-    Box(modifier) {
+    // The full-screen slot's size is the app's screen (not the dashboard card's, a preview of it).
+    Box(if (compact) modifier else modifier.onSizeChanged { conn.setSlotSize(it.width, it.height) }) {
         val template = conn.template
         // The map surface outlives template changes: recreating it with each new template (as a
         // navigation app sends them every second or so) blanks the map until the app redraws.

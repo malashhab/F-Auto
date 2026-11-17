@@ -83,14 +83,14 @@ internal fun DuskUIShell(
     val railPalette = if (state.darkBar) barPaletteFor(state.shellStyle) else palette
     val onRight = state.railOnRight
     var railVisible by remember(state.railAutoHide) { mutableStateOf(!state.railAutoHide) }
-    MaterialTheme(colorScheme = colorSchemeFor(palette)) {
+    net.prototux.aare.ui.theme.CarColors(colorSchemeFor(palette)) {
         CompositionLocalProvider(LocalCarDimens provides LocalCarDimens.current.copy(cardRadius = 24.dp, gutter = 10.dp)) {
             Box(Modifier.fillMaxSize().background(palette.bg).padding(10.dp).then(modifier)) {
                 Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     val rail: @Composable () -> Unit = {
                         if (railVisible) {
                             if (railPalette === palette) DuskRail(state, actions, palette) { railVisible = false }
-                            else MaterialTheme(colorScheme = colorSchemeFor(railPalette)) { DuskRail(state, actions, railPalette) { railVisible = false } }
+                            else net.prototux.aare.ui.theme.CarColors(colorSchemeFor(railPalette)) { DuskRail(state, actions, railPalette) { railVisible = false } }
                         }
                     }
                     val content: @Composable RowScope.() -> Unit = {
@@ -163,11 +163,10 @@ private fun DuskRail(state: CarUiState, actions: CarActions, palette: HybridPale
         // The tabs share whatever height the screen has: as large as 72 dp each on a tall screen,
         // never below 48 dp on a short one (they would be cut off, not squeezed, otherwise).
         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-            val tab = (maxHeight / 6).coerceIn(44.dp, 72.dp)
             // Six tabs at the minimum size still taller than the screen (a short head unit, the
             // phone preview): the column scrolls, so Messages and Apps stay reachable instead of
             // being cut off below the fold.
-            val fits = maxHeight >= tab * 6
+            val (tab, fits) = railTabs(maxHeight, count = 6, min = 44.dp, max = 72.dp)
             val column = if (fits) Modifier.fillMaxSize()
                 else Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             Column(column, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = if (fits) Arrangement.SpaceEvenly else Arrangement.Top) {
@@ -204,7 +203,9 @@ private fun DuskTab(kind: String, label: String, selected: Boolean, palette: Hyb
     val bg = if (selected) Brush.linearGradient(listOf(palette.accent, palette.accent2)) else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
     val fg = if (selected) palette.onAccent else palette.muted
     Box(
-        Modifier.size(width = 72.dp, height = size).padding(vertical = 2.dp).clip(RoundedCornerShape(20.dp)).background(bg).clickable(onClickLabel = label, onClick = onClick),
+        Modifier.size(width = 72.dp, height = size).padding(vertical = 2.dp).clip(RoundedCornerShape(20.dp)).background(bg)
+            // A rotary knob's focus must be visible on the rail too, not only on the cards.
+            .carFocusHighlight(RoundedCornerShape(20.dp)).clickable(onClickLabel = label, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         HybridIcon(kind, fg, 28.dp)

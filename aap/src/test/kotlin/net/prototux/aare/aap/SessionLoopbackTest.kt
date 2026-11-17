@@ -153,6 +153,19 @@ open class SessionLoopbackTest {
     }
 
     @Test
+    fun headUnitThatNeverAnswersFocusStillGetsVideo() {
+        // Retrofit boxes and some aftermarket units never answer the focus request: without a
+        // fallback no frame is ever sent and the car screen stays black.
+        hu.answerFocus = false
+        assertTrue(videoStarted.await(10, TimeUnit.SECONDS))
+        assertFalse("nothing is assumed right away", focusGained.await(2, TimeUnit.SECONDS))
+        assertTrue("projection is assumed after the silence", focusGained.await(8, TimeUnit.SECONDS))
+        assertTrue("frames reach the head unit", hu.firstVideoFrame.await(3, TimeUnit.SECONDS))
+        assertTrue("the request was repeated once first, got ${hu.focusRequests.get()}", hu.focusRequests.get() >= 2)
+        encoding.set(false)
+    }
+
+    @Test
     fun fullSession() {
         assertTrue("session should reach RUNNING", running.await(10, TimeUnit.SECONDS))
         assertEquals("Test phone", hu.phoneRequest!!.deviceName)

@@ -262,7 +262,7 @@ class AapSession(
                 m.onSent?.invoke()
             }
         } catch (e: Throwable) {
-            fail("write failed", e)
+            fail("write failed" + ioDetail(e), e)
         }
     }
 
@@ -274,8 +274,18 @@ class AapSession(
                 dispatch(msg)
             }
         } catch (e: Throwable) {
-            fail(if (closed.get()) "closed" else "read failed", e)
+            fail(if (closed.get()) "closed" else "read failed" + ioDetail(e) + " in state $state", e)
         }
+    }
+
+    /**
+     * What the transport said, for the user's connection log: "read failed" alone can't tell an
+     * unplugged cable (ENODEV) from a head unit resetting its USB (EIO) or a dropped socket.
+     */
+    private fun ioDetail(e: Throwable): String {
+        val chain = generateSequence(e) { it.cause }.take(4).toList()
+        val text = chain.firstNotNullOfOrNull { it.message?.takeIf(String::isNotBlank) } ?: chain.last().javaClass.simpleName
+        return " ($text)"
     }
 
     private fun dispatch(msg: AapMessage) {

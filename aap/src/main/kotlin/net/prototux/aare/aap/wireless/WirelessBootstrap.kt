@@ -56,6 +56,12 @@ class WirelessBootstrapException(
      * or sent something unusable): a car that isn't ready yet, so trying again later can work.
      */
     val whileNegotiating: Boolean = false,
+    /**
+     * The head unit had sent at least one frame before this failure. A head unit that talked and
+     * then hung up (or stopped reading) during the negotiation is refusing what we answered, not
+     * "not ready yet": retrying the same handshake won't help, the other one might.
+     */
+    val heardFromHeadUnit: Boolean = false,
 ) : Exception(message, cause)
 
 /**
@@ -163,6 +169,10 @@ class WirelessBootstrap(
     private var linkPinging = false
     /** [Options.officialPhoneOrder]: the WifiStartResponse already went out when the request came. */
     private var startResponseSent = false
+    /** The head unit sent at least one frame (see [WirelessBootstrapException.heardFromHeadUnit]). */
+    @Volatile private var heard = false
+    /** WifiVersionRequests seen: a head unit asking again didn't like our answer. */
+    private var versionRequests = 0
 
     /**
      * Runs the bootstrap: returns once the link ended after a successful [Listener.onReady] (or
@@ -197,10 +207,17 @@ class WirelessBootstrap(
             if (options.holdLink) hold()
             state = State.DONE
         } catch (e: Throwable) {
+            // Read before close(): an I/O error after an outside close() is a cancellation, not the head unit.
+            val during = state
+            val cancelled = closed.get()
             state = State.FAILED
             close()
             if (e is WirelessBootstrapException) throw e
-            throw WirelessBootstrapException("wireless bootstrap failed: ${e.message}", cause = e)
+            // An I/O error while negotiating (typically "Broken pipe": the head unit hung up while we
+            // were answering it) is a handshake failure like a hang-up seen by the reader, so the
+            // caller can retry or switch handshakes the same way.
+            throw WirelessBootstrapException("wireless bootstrap failed: ${e.message}", cause = e,
+                whileNegotiating = during == State.NEGOTIATING && !cancelled, heardFromHeadUnit = heard)
         }
     }
 
@@ -300,6 +317,10 @@ class WirelessBootstrap(
                 (if (request.hasCarInfo()) " car=\"${car.make} ${car.model}\" hu=\"${car.headUnitMake} ${car.headUnitModel}\"" else "") +
                 (if (request.hasSupportedWifiChannelType()) " channelType=${request.supportedWifiChannelType}" else "") +
                 (if (request.hasWppInfo()) " (offers WPP over TCP at ${request.wppInfo.ipAddress}:${request.wppInfo.port}, unsupported)" else ""))
+        }
+        if (++versionRequests == 2) {
+            log.w("wireless: head unit asked for the version again: it may not accept this handshake's answer" +
+                if (options.officialPhoneOrder) " (official-phone order)" else "")
         }
         if (options.officialPhoneOrder) {
             // What the official phone sends (capture logcat-session1: "phone using version 6.1"):
@@ -452,6 +473,7 @@ class WirelessBootstrap(
         try {
             while (true) {
                 val frame = readWppFrame(input) ?: break
+                heard = true
                 log.d("wireless: <- $frame")
                 if (frame.id == WppMessageId.PING_REQUEST) {
                     // Answered here so pings are answered even while connectWifi() blocks.
@@ -513,7 +535,7 @@ class WirelessBootstrap(
     }
 
     private fun fail(message: String, status: Int = WppStatus.WIFI_NETWORK_UNAVAILABLE, cause: Throwable? = null) =
-        WirelessBootstrapException(message, status, cause, whileNegotiating = state == State.NEGOTIATING)
+        WirelessBootstrapException(message, status, cause, whileNegotiating = state == State.NEGOTIATING, heardFromHeadUnit = heard)
             .also { log.e("wireless: $message", cause) }
 
     private fun now() = System.nanoTime() / 1_000_000

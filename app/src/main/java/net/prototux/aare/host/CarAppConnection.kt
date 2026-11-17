@@ -345,12 +345,32 @@ class CarAppConnection(
         }
     }
 
+    /**
+     * The app's full-screen slot in px (the car screen minus the rail and bars), once it has been
+     * laid out; null before, when the whole content area stands in. Main thread.
+     */
+    private var slotPx: Pair<Int, Int>? = null
+
+    /**
+     * The app's slot on the car screen changed size: its configuration must say so. Apps size their
+     * own map UI from the configuration while drawing on a surface of the slot's size, so a
+     * configuration of the whole car screen made a navigation app lay out for a screen ~15% larger
+     * than its surface (controls cut off at the edges: "the map needs resizing").
+     */
+    fun setSlotSize(widthPx: Int, heightPx: Int) {
+        if (widthPx <= 0 || heightPx <= 0 || slotPx == (widthPx to heightPx)) return
+        slotPx = widthPx to heightPx
+        configurationChanged()
+    }
+
     private fun configuration(): Configuration = Configuration(context.resources.configuration).apply {
-        screenWidthDp = env.screenWidthDp
-        screenHeightDp = env.screenHeightDp
-        smallestScreenWidthDp = minOf(env.screenWidthDp, env.screenHeightDp)
+        val dpi = env.densityDpi.coerceAtLeast(1)
+        val (w, h) = slotPx?.let { (pw, ph) -> pw * 160 / dpi to ph * 160 / dpi } ?: (env.screenWidthDp to env.screenHeightDp)
+        screenWidthDp = w
+        screenHeightDp = h
+        smallestScreenWidthDp = minOf(w, h)
         densityDpi = env.densityDpi
-        orientation = if (env.screenWidthDp >= env.screenHeightDp) Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
+        orientation = if (w >= h) Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
         uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
             (if (env.night) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO)
     }

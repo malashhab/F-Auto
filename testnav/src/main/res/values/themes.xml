@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- An app-specific theme attribute, as many navigation apps use in their vector icons. -->
+    <attr name="testNavIconColor" format="color" />
+
+    <style name="TestNavTheme" parent="android:Theme.Material.NoActionBar">
+        <item name="testNavIconColor">#FF2E7D32</item>
+    </style>
+</resources>
