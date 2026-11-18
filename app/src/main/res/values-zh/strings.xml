@@ -74,10 +74,8 @@
     <string name="setup_choice_dark">深色</string>
     <string name="setup_choice_light">浅色</string>
     <string name="setup_choice_bar">导航条</string>
-    <string name="setup_choice_bar_auto">跟随驾驶位一侧</string>
     <string name="setup_choice_left">左</string>
     <string name="setup_choice_right">右</string>
-    <string name="setup_choice_bottom">底部</string>
     <string name="setup_toggle_dark_bar_title">深色导航条</string>
     <string name="setup_toggle_dark_bar_subtitle">即使使用日间配色，导航条仍保持深色</string>
     <string name="setup_section_dashboard">仪表盘</string>
@@ -112,8 +110,6 @@
     <string name="setup_section_connection_log">连接日志</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · 与 Google 无关联。Android Auto 是 Google LLC 的商标。</string>
     <string name="setup_choice_style">样式</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">深色导航条（即使使用日间配色）</string>
     <string name="setup_switch_passenger">乘客模式：不限制行驶中操作（驾驶员不得使用屏幕）</string>
     <string name="setup_switch_message_notifications">消息通知</string>

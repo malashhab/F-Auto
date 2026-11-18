@@ -76,10 +76,8 @@
     <string name="setup_choice_dark">Tumma</string>
     <string name="setup_choice_light">Vaalea</string>
     <string name="setup_choice_bar">Palkki</string>
-    <string name="setup_choice_bar_auto">Kuljettajan puoli</string>
     <string name="setup_choice_left">Vasen</string>
     <string name="setup_choice_right">Oikea</string>
-    <string name="setup_choice_bottom">Alaosa</string>
     <string name="setup_toggle_dark_bar_title">Tumma palkki</string>
     <string name="setup_toggle_dark_bar_subtitle">Pidä palkki tummana myös vaaleilla väreillä</string>
     <string name="setup_section_dashboard">Kojelauta</string>
@@ -114,8 +112,6 @@
     <string name="setup_section_connection_log">Yhteysloki</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Ei liity Googleen. Android Auto on Google LLC:n tavaramerkki.</string>
     <string name="setup_choice_style">Tyyli</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">Tumma palkki, myös vaaleilla väreillä</string>
     <string name="setup_switch_passenger">Matkustajatila: ei ajorajoituksia (kuljettaja ei saa käyttää näyttöä)</string>
     <string name="setup_switch_message_notifications">Viesti-ilmoitukset</string>

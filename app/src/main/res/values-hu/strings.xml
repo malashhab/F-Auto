@@ -76,10 +76,8 @@
     <string name="setup_choice_dark">Sötét</string>
     <string name="setup_choice_light">Világos</string>
     <string name="setup_choice_bar">Sáv</string>
-    <string name="setup_choice_bar_auto">Vezető oldala</string>
     <string name="setup_choice_left">Bal</string>
     <string name="setup_choice_right">Jobb</string>
-    <string name="setup_choice_bottom">Alul</string>
     <string name="setup_toggle_dark_bar_title">Sötét sáv</string>
     <string name="setup_toggle_dark_bar_subtitle">A sáv sötét marad nappali színeknél is</string>
     <string name="setup_section_dashboard">Műszerfal</string>
@@ -114,8 +112,6 @@
     <string name="setup_section_connection_log">Kapcsolati napló</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Nem áll kapcsolatban a Google-lel. Az Android Auto a Google LLC védjegye.</string>
     <string name="setup_choice_style">Stílus</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">Sötét sáv, nappali színeknél is</string>
     <string name="setup_switch_passenger">Utas mód: nincs vezetési korlátozás (a vezető nem használhatja a képernyőt)</string>
     <string name="setup_switch_message_notifications">Üzenetértesítések</string>

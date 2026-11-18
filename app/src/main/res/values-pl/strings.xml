@@ -76,10 +76,8 @@
     <string name="setup_choice_dark">Ciemny</string>
     <string name="setup_choice_light">Jasny</string>
     <string name="setup_choice_bar">Pasek</string>
-    <string name="setup_choice_bar_auto">Strona kierowcy</string>
     <string name="setup_choice_left">Lewo</string>
     <string name="setup_choice_right">Prawo</string>
-    <string name="setup_choice_bottom">Dół</string>
     <string name="setup_toggle_dark_bar_title">Ciemny pasek</string>
     <string name="setup_toggle_dark_bar_subtitle">Zachowaj ciemny pasek nawet z jasnymi kolorami</string>
     <string name="setup_section_dashboard">Panel</string>
@@ -114,8 +112,6 @@
     <string name="setup_section_connection_log">Dziennik połączeń</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Niezwiązane z Google. Android Auto jest znakiem towarowym Google LLC.</string>
     <string name="setup_choice_style">Styl</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">Ciemny pasek, nawet z jasnymi kolorami</string>
     <string name="setup_switch_passenger">Tryb pasażera: brak ograniczeń jazdy (kierowca nie może używać ekranu)</string>
     <string name="setup_switch_message_notifications">Powiadomienia o wiadomościach</string>

@@ -76,10 +76,8 @@
     <string name="setup_choice_dark">Темний</string>
     <string name="setup_choice_light">Світлий</string>
     <string name="setup_choice_bar">Панель</string>
-    <string name="setup_choice_bar_auto">Бік водія</string>
     <string name="setup_choice_left">Ліворуч</string>
     <string name="setup_choice_right">Праворуч</string>
-    <string name="setup_choice_bottom">Знизу</string>
     <string name="setup_toggle_dark_bar_title">Темна панель</string>
     <string name="setup_toggle_dark_bar_subtitle">Залишати панель темною навіть зі світлими кольорами</string>
     <string name="setup_section_dashboard">Панель приладів</string>
@@ -114,8 +112,6 @@
     <string name="setup_section_connection_log">Журнал з\'єднань</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Не пов\'язано з Google. Android Auto є торговою маркою Google LLC.</string>
     <string name="setup_choice_style">Стиль</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">Темна панель, навіть зі світлими кольорами</string>
     <string name="setup_switch_passenger">Режим пасажира: без обмежень керування (водій не повинен використовувати екран)</string>
     <string name="setup_switch_message_notifications">Сповіщення про повідомлення</string>

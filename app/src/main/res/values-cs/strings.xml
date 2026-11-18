@@ -76,10 +76,8 @@
     <string name="setup_choice_dark">Tmavý</string>
     <string name="setup_choice_light">Světlý</string>
     <string name="setup_choice_bar">Lišta</string>
-    <string name="setup_choice_bar_auto">Strana řidiče</string>
     <string name="setup_choice_left">Vlevo</string>
     <string name="setup_choice_right">Vpravo</string>
-    <string name="setup_choice_bottom">Dole</string>
     <string name="setup_toggle_dark_bar_title">Tmavá lišta</string>
     <string name="setup_toggle_dark_bar_subtitle">Zachovat tmavou lištu i se světlými barvami</string>
     <string name="setup_section_dashboard">Nástěnka</string>
@@ -114,8 +112,6 @@
     <string name="setup_section_connection_log">Protokol připojení</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Nesouvisí s Google. Android Auto je ochranná známka společnosti Google LLC.</string>
     <string name="setup_choice_style">Styl</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">Tmavá lišta, i se světlými barvami</string>
     <string name="setup_switch_passenger">Režim spolujezdce: žádná omezení za jízdy (řidič nesmí obrazovku používat)</string>
     <string name="setup_switch_message_notifications">Oznámení o zprávách</string>

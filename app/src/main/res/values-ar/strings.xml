@@ -74,10 +74,8 @@
     <string name="setup_choice_dark">داكن</string>
     <string name="setup_choice_light">فاتح</string>
     <string name="setup_choice_bar">الشريط</string>
-    <string name="setup_choice_bar_auto">جانب السائق</string>
     <string name="setup_choice_left">يسار</string>
     <string name="setup_choice_right">يمين</string>
-    <string name="setup_choice_bottom">أسفل</string>
     <string name="setup_toggle_dark_bar_title">شريط داكن</string>
     <string name="setup_toggle_dark_bar_subtitle">إبقاء الشريط داكنًا حتى مع ألوان النهار</string>
     <string name="setup_section_dashboard">لوحة المعلومات</string>
@@ -112,8 +110,6 @@
     <string name="setup_section_connection_log">سجل الاتصال</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · غير مرتبط بشركة Google. Android Auto علامة تجارية مملوكة لشركة Google LLC.</string>
     <string name="setup_choice_style">النمط</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">شريط داكن، حتى مع ألوان النهار</string>
     <string name="setup_switch_passenger">وضع الراكب: بلا قيود قيادة (يجب ألا يستخدم السائق الشاشة)</string>
     <string name="setup_switch_message_notifications">إشعارات الرسائل</string>

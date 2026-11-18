@@ -76,10 +76,8 @@
     <string name="setup_choice_dark">Mørk</string>
     <string name="setup_choice_light">Lys</string>
     <string name="setup_choice_bar">Stolpe</string>
-    <string name="setup_choice_bar_auto">Førerside</string>
     <string name="setup_choice_left">Venstre</string>
     <string name="setup_choice_right">Høyre</string>
-    <string name="setup_choice_bottom">Nederst</string>
     <string name="setup_toggle_dark_bar_title">Mørk stolpe</string>
     <string name="setup_toggle_dark_bar_subtitle">Hold stolpen mørk selv med dagfarger</string>
     <string name="setup_section_dashboard">Dashbord</string>
@@ -114,8 +112,6 @@
     <string name="setup_section_connection_log">Tilkoblingslogg</string>
     <string name="setup_about_text">F-Auto %1$s · GPL-3.0-or-later · Ikke tilknyttet Google. Android Auto er et varemerke som tilhører Google LLC.</string>
     <string name="setup_choice_style">Stil</string>
-    <string name="setup_style_android_auto">Android Auto</string>
-    <string name="setup_style_carplay">CarPlay</string>
     <string name="setup_switch_dark_bar">Mørk stolpe, selv med dagfarger</string>
     <string name="setup_switch_passenger">Passasjermodus: ingen kjørebegrensninger (føreren må ikke bruke skjermen)</string>
     <string name="setup_switch_message_notifications">Meldingsvarsler</string>
