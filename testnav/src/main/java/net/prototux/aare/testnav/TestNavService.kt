@@ -66,6 +66,20 @@ private class TestNavScreen(ctx: CarContext) : Screen(ctx), SurfaceCallback {
             override fun onStopNavigation() = Unit
         })
         runCatching { nav.navigationStarted() }.onFailure { Log.w(TAG, "navigationStarted", it) }
+        // The trip, as real navigation apps send it: hosts show it outside the app (cluster, status pills).
+        runCatching {
+            val step = Step.Builder("Turn right onto Test Street").setRoad("Test Street")
+                .setManeuver(Maneuver.Builder(Maneuver.TYPE_TURN_NORMAL_RIGHT).build()).build()
+            val stepEta = TravelEstimate.Builder(Distance.create(250.0, Distance.UNIT_METERS),
+                DateTimeWithZone.create(System.currentTimeMillis() + 60_000, TimeZone.getDefault())).setRemainingTimeSeconds(60).build()
+            val destEta = TravelEstimate.Builder(Distance.create(12.0, Distance.UNIT_KILOMETERS),
+                DateTimeWithZone.create(System.currentTimeMillis() + 15 * 60_000, TimeZone.getDefault())).setRemainingTimeSeconds(15 * 60).build()
+            nav.updateTrip(androidx.car.app.navigation.model.Trip.Builder()
+                .addStep(step, stepEta)
+                .addDestination(androidx.car.app.navigation.model.Destination.Builder().setName("Test Destination").build(), destEta)
+                .setCurrentRoad("Main Road")
+                .build())
+        }.onFailure { Log.w(TAG, "updateTrip", it) }
     }
 
     override fun onGetTemplate(): Template {

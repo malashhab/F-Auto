@@ -128,6 +128,11 @@ private fun LayoutChoice(layout: String, onChange: (String) -> Unit) {
     Choice(stringResource(R.string.setup_choice_layout), listOf(
         Settings.LAYOUT_CLASSIC to stringResource(R.string.setup_layout_classic),
         Settings.LAYOUT_DUSK to stringResource(R.string.setup_layout_dusk),
+        // All layouts, as on the phone: the car's own Settings offered only the first two.
+        Settings.LAYOUT_CARPLAY to stringResource(R.string.setup_layout_carplay),
+        Settings.LAYOUT_STRADA to stringResource(R.string.setup_layout_strada),
+        Settings.LAYOUT_MATERIAL to stringResource(R.string.setup_layout_material),
+        Settings.LAYOUT_COCKPIT to stringResource(R.string.setup_layout_cockpit),
     ), layout, onChange)
 }
 

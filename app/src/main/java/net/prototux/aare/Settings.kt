@@ -425,6 +425,10 @@ class Settings(context: Context) {
         const val LAYOUT_CARPLAY = "carplay"
         /** [carLayout]: the StradaOS-style layout — a My-vehicle / map / audio three-card dashboard over a round app row. */
         const val LAYOUT_STRADA = "strada"
+        /** [carLayout]: Material 3 "Obsidian" — a labelled icon rail, a status top bar, map + media cards on Home. */
+        const val LAYOUT_MATERIAL = "material"
+        /** [carLayout]: "Automotive Cockpit OS" — an icon rail, live turn/track pills in the top bar, a 60 % map with a media card. */
+        const val LAYOUT_COCKPIT = "cockpit"
         const val WALLPAPER_CUSTOM = "custom"
         /** The user's wallpaper photo, in the app's files. */
         const val WALLPAPER_FILE = "wallpaper.jpg"

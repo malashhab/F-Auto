@@ -30,6 +30,10 @@ class CarAppEntry(
      * while driving, since directions are what it is for.
      */
     val navigation: Boolean = false,
+    /** A hosted car app in the MESSAGING category (Google Messages…): Communication in the app hubs. */
+    val messaging: Boolean = false,
+    /** A hosted car app that is also a media app (YouTube Music…), listed once as the car app: Media in the app hubs. */
+    val playsMedia: Boolean = false,
 ) {
     /** A hosted navigation app, or a navigation phone app launched on the car screen. */
     val isNav: Boolean get() = kind == CarAppKind.NAVIGATION || navigation

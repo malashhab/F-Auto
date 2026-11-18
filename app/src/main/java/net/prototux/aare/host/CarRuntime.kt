@@ -404,11 +404,19 @@ class CarRuntime(
                 app.packageName == assistantPkg -> CarAppKind.ASSISTANT
                 else -> CarAppKind.TEMPLATED
             }
-            entries += CarAppEntry(id, app.packageName, app.label, app.icon, kind)
+            entries += CarAppEntry(id, app.packageName, app.label, app.icon, kind,
+                messaging = CarAppInfo.CATEGORY_MESSAGING in app.categories)
         }
         for (m in media.apps.value) {
-            // An app that has a car UI of its own is shown once, as that.
-            if (m.packageName in hidden || entries.any { it.packageName == m.packageName }) continue
+            // An app that has a car UI of its own is shown once, as that (marked as playing media,
+            // so the app hubs file it under Media).
+            if (m.packageName in hidden) continue
+            val own = entries.indexOfFirst { it.packageName == m.packageName }
+            if (own >= 0) {
+                val e = entries[own]
+                if (e.kind == CarAppKind.TEMPLATED && !e.messaging) entries[own] = CarAppEntry(e.id, e.packageName, e.label, e.icon, e.kind, e.navigation, playsMedia = true)
+                continue
+            }
             entries += CarAppEntry(mediaId(m.packageName), m.packageName, m.label, m.icon, CarAppKind.MEDIA)
         }
         // Built in, like Android Auto's: calls and the car-side settings.
@@ -428,7 +436,7 @@ class CarRuntime(
                 val label = context.packageManager.getApplicationLabel(info).toString()
                 val icon = runCatching { context.packageManager.getApplicationIcon(info).toBitmap(128, 128) }.getOrNull()
                 entries += CarAppEntry(standaloneId(pkg), pkg, label, icon, CarAppKind.STANDALONE,
-                    navigation = pkg in CarAppInfo.KNOWN_NAVIGATION_PACKAGES)
+                    navigation = CarAppInfo.isKnownNavigationPackage(pkg))
             }
         }
         // Projection apps: a patched Google Maps whose car UI renders through the private
@@ -793,7 +801,13 @@ class CarRuntime(
                             // it on the dashboard card; thumbnails get a button.
                             CarAppKind.OFFLINE_MAP -> if (showsLiveProjection) OfflineMapScreen(mod)
                                 else StandaloneNavCard(app, mod) { actions.openApp(app) }
-                            else -> shownConnection(app.id)?.let { CarAppScreen(it, this, mod, compact = true) }
+                            // A hosted navigation app (Horizon Maps, Sygic…) has a single session per
+                            // host app, and the phone's preview thumbnails run in the same process as
+                            // the car: a thumbnail binding it took the session over, map surface and
+                            // all, and the car's dashboard card was left with the buttons and no map
+                            // (only opening the app on the car took it back). Thumbnails get a button.
+                            else -> if (showsLiveProjection) shownConnection(app.id)?.let { CarAppScreen(it, this, mod, compact = true) }
+                                else StandaloneNavCard(app, mod) { actions.openApp(app) }
                         }
                     },
                     overlay = { mod ->
