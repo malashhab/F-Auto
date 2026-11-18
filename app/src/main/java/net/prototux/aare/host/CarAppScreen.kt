@@ -37,7 +37,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -189,23 +192,54 @@ private class ConnectionTemplateHost(val conn: CarAppConnection, val runtime: Ca
 
     @Composable
     override fun MapSurface(modifier: Modifier) {
-        val owner = remember { Any() }
         val dpi = runtime.densityDpi
-        AndroidView(
-            modifier = modifier,
-            factory = { ctx ->
-                SurfaceView(ctx).apply {
-                    holder.addCallback(object : SurfaceHolder.Callback {
-                        override fun surfaceCreated(holder: SurfaceHolder) = Unit
-                        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-                            conn.surfaceAvailable(owner, holder.surface, width, height, dpi)
-                        }
-                        override fun surfaceDestroyed(holder: SurfaceHolder) = conn.surfaceDestroyed(owner)
-                    })
-                }
-            },
-        )
-        DisposableEffect(owner) { onDispose { conn.surfaceDestroyed(owner) } }
+        // Each size gets a surface of its own. Handing the app the same surface resized broke its
+        // drawing: an app that drew on it (Surface.lockCanvas, as Google's navigation sample does)
+        // holds it connected, and the copy it receives again can't connect, so every frame after a
+        // resize failed and the map froze at its old size, with a black strip beside it (hiding a
+        // rail, Full / Map + Music). A new SurfaceView per size is a fresh surface: the app is told
+        // the old one is gone, then gets the new one, as when the map moves card <-> full screen.
+        // Bumped when a handed-out surface changes size: a new SurfaceView, so a new surface.
+        var generation by remember { mutableStateOf(0) }
+        // The surface registered last, so leaving the screen can release it.
+        val current = remember { arrayOfNulls<Any>(1) }
+        androidx.compose.runtime.key(generation) {
+            AndroidView(
+                modifier = modifier,
+                factory = { ctx ->
+                    // Per SurfaceView: the old one's late surfaceDestroyed can't drop the new surface.
+                    val token = Any()
+                    var delivered: Pair<Int, Int>? = null
+                    SurfaceView(ctx).apply {
+                        holder.addCallback(object : SurfaceHolder.Callback {
+                            override fun surfaceCreated(holder: SurfaceHolder) = Unit
+                            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+                                val now = width to height
+                                when (delivered) {
+                                    null -> {
+                                        delivered = now
+                                        current[0] = token
+                                        conn.surfaceAvailable(token, holder.surface, width, height, dpi)
+                                    }
+                                    now -> Unit // same size (a format change): the app keeps drawing
+                                    else -> {
+                                        // Resized after the app got it: take it back, and hand over a fresh one.
+                                        conn.surfaceDestroyed(token)
+                                        generation++
+                                    }
+                                }
+                            }
+                            override fun surfaceDestroyed(holder: SurfaceHolder) = conn.surfaceDestroyed(token)
+                        })
+                        // A SurfaceView only gets its surface in a drawing pass, and the car screen
+                        // draws only when something on it changes: ask for one once attached, or a
+                        // replacement made after a resize waits (map blank) until the next change.
+                        post { requestLayout(); rootView.invalidate() }
+                    }
+                },
+            )
+        }
+        DisposableEffect(Unit) { onDispose { current[0]?.let { conn.surfaceDestroyed(it) } } }
     }
 
     override fun setVisibleArea(left: Int, top: Int, right: Int, bottom: Int) = conn.setVisibleArea(Rect(left, top, right, bottom))

@@ -32,6 +32,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.ViewSidebar
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ChatBubble
@@ -163,11 +166,14 @@ internal fun MaterialShell(
     modifier: Modifier = Modifier,
 ) {
     val scheme = if (state.night) ObsidianDark else ObsidianLight
+    // The rail hides on its own button, giving the map and music the whole width; a handle on the
+    // screen edge brings it back. "Side bar: Auto-hide" starts it hidden, as in the Dusk layout.
+    var railVisible by remember(state.railAutoHide) { mutableStateOf(!state.railAutoHide) }
     net.prototux.aare.ui.theme.CarColors(scheme) {
         CompositionLocalProvider(LocalCarDimens provides LocalCarDimens.current.copy(cardRadius = 24.dp, gutter = 16.dp)) {
             Box(Modifier.fillMaxSize().background(scheme.surface).then(modifier)) {
                 Row(Modifier.fillMaxSize()) {
-                    if (!state.railOnRight) M3Rail(state, actions)
+                    if (railVisible && !state.railOnRight) M3Rail(state, actions) { railVisible = false }
                     Column(Modifier.weight(1f).fillMaxHeight()) {
                         M3TopBar(state, actions)
                         // The screen sits in one tonal panel (level 1), its cards a level above.
@@ -181,7 +187,13 @@ internal fun MaterialShell(
                             CallOverlay(state, actions, Modifier.align(Alignment.TopCenter))
                         }
                     }
-                    if (state.railOnRight) M3Rail(state, actions)
+                    if (railVisible && state.railOnRight) M3Rail(state, actions) { railVisible = false }
+                }
+                if (!railVisible) {
+                    RailRevealHandle(
+                        onRight = state.railOnRight, fill = scheme.surfaceContainerHigh, tint = scheme.onSurface,
+                        modifier = Modifier.align(if (state.railOnRight) Alignment.CenterEnd else Alignment.CenterStart),
+                    ) { railVisible = true }
                 }
             }
         }
@@ -217,8 +229,23 @@ private fun M3Content(
 
 // ---------------------------------------------------------------- rail
 
+/**
+ * The tab on the screen edge that brings a hidden rail back: shared by the Material and Cockpit
+ * layouts. Visibly slim, but a full touch target (44 x 132 dp) for a reach across the cabin.
+ */
 @Composable
-private fun M3Rail(state: CarUiState, actions: CarActions) {
+internal fun RailRevealHandle(onRight: Boolean, fill: Color, tint: Color, modifier: Modifier, border: Color = Keyline, onClick: () -> Unit) {
+    val shape = if (onRight) RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp) else RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp)
+    val icon = if (onRight) Icons.AutoMirrored.Rounded.KeyboardArrowLeft else Icons.AutoMirrored.Rounded.KeyboardArrowRight
+    Box(
+        modifier.size(width = 44.dp, height = 132.dp).clip(shape).background(fill).border(1.dp, border, shape)
+            .carFocusHighlight(shape).clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) { Icon(icon, stringResource(R.string.dash_show_rail), tint = tint, modifier = Modifier.size(30.dp)) }
+}
+
+@Composable
+private fun M3Rail(state: CarUiState, actions: CarActions, onHide: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
     val nav = state.navApp()
     val media = state.app(state.activeMediaAppId) ?: state.apps.firstOrNull { it.kind == CarAppKind.MEDIA }
@@ -257,6 +284,13 @@ private fun M3Rail(state: CarUiState, actions: CarActions) {
                 .carFocusHighlight(CircleShape).clickable { actions.assistant() },
             contentAlignment = Alignment.Center,
         ) { Icon(Icons.Rounded.Mic, null, tint = scheme.onPrimaryContainer, modifier = Modifier.size(32.dp)) }
+        Spacer(Modifier.height(10.dp))
+        // Hide the rail (the design's side-panel button under the mic): map and music take its width.
+        Box(
+            Modifier.size(width = 76.dp, height = 56.dp).clip(RoundedCornerShape(18.dp))
+                .carFocusHighlight(RoundedCornerShape(18.dp)).clickable(onClickLabel = stringResource(R.string.dash_hide_rail), onClick = onHide),
+            contentAlignment = Alignment.Center,
+        ) { Icon(Icons.Rounded.ViewSidebar, stringResource(R.string.dash_hide_rail), tint = scheme.onSurfaceVariant, modifier = Modifier.size(28.dp)) }
     }
 }
 

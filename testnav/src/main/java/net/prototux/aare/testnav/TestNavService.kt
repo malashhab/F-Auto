@@ -110,14 +110,26 @@ private class TestNavScreen(ctx: CarContext) : Screen(ctx), SurfaceCallback {
             .build()
     }
 
+    /** Redraws once a second, as a real map does (moving position, traffic): not only on host events. */
+    private val ticker = android.os.Handler(android.os.Looper.getMainLooper())
+    private val tick = object : Runnable {
+        override fun run() {
+            draw()
+            ticker.postDelayed(this, 1_000)
+        }
+    }
+
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
         container = surfaceContainer
+        ticker.removeCallbacks(tick)
+        ticker.postDelayed(tick, 1_000)
         Log.i(TAG, "surface ${surfaceContainer.width}x${surfaceContainer.height} ${surfaceContainer.dpi}dpi; " +
             "config ${describe(carContext.resources.configuration)}")
         draw()
     }
 
     override fun onSurfaceDestroyed(surfaceContainer: SurfaceContainer) {
+        ticker.removeCallbacks(tick)
         container = null
     }
 
@@ -141,7 +153,7 @@ private class TestNavScreen(ctx: CarContext) : Screen(ctx), SurfaceCallback {
     private fun draw() {
         val c = container ?: return
         val surface = c.surface ?: return
-        val canvas = runCatching { surface.lockCanvas(null) }.getOrNull() ?: return
+        val canvas = runCatching { surface.lockCanvas(null) }.onFailure { Log.w(TAG, "can't draw: $it") }.getOrNull() ?: return
         try {
             val w = c.width.toFloat()
             val h = c.height.toFloat()

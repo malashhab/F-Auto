@@ -32,6 +32,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ChatBubble
@@ -168,13 +170,17 @@ internal fun CockpitShell(
     modifier: Modifier = Modifier,
 ) {
     val scheme = if (state.night) CockpitDark else CockpitLight
+    // The rail hides on its chevron, giving the map and music the whole width; a handle on the
+    // screen edge brings it back. "Side bar: Auto-hide" starts it hidden, as in the Dusk layout.
+    var railVisible by remember(state.railAutoHide) { mutableStateOf(!state.railAutoHide) }
     net.prototux.aare.ui.theme.CarColors(scheme) {
         CompositionLocalProvider(LocalCarDimens provides LocalCarDimens.current.copy(cardRadius = 24.dp, gutter = 16.dp)) {
             Box(Modifier.fillMaxSize().background(scheme.surfaceContainerLowest).then(modifier)) {
                 Row(Modifier.fillMaxSize()) {
-                    if (!state.railOnRight) CkRail(state, actions)
+                    if (railVisible && !state.railOnRight) CkRail(state, actions) { railVisible = false }
                     Column(Modifier.weight(1f).fillMaxHeight()) {
-                        CkTopBar(state)
+                        // The clock lives on the rail: with the rail hidden, the top bar shows it.
+                        CkTopBar(state, showClock = !railVisible)
                         Box(Modifier.weight(1f).fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
                             CkContent(state, actions, appContent, navMap)
                             overlay(Modifier.align(Alignment.BottomCenter))
@@ -182,7 +188,13 @@ internal fun CockpitShell(
                             CallOverlay(state, actions, Modifier.align(Alignment.TopCenter))
                         }
                     }
-                    if (state.railOnRight) CkRail(state, actions)
+                    if (railVisible && state.railOnRight) CkRail(state, actions) { railVisible = false }
+                }
+                if (!railVisible) {
+                    RailRevealHandle(
+                        onRight = state.railOnRight, fill = scheme.surfaceContainerHigh, tint = scheme.onSurface, border = BorderActive,
+                        modifier = Modifier.align(if (state.railOnRight) Alignment.CenterEnd else Alignment.CenterStart),
+                    ) { railVisible = true }
                 }
             }
         }
@@ -223,7 +235,7 @@ private fun CkContent(
 // ---------------------------------------------------------------- rail
 
 @Composable
-private fun CkRail(state: CarUiState, actions: CarActions) {
+private fun CkRail(state: CarUiState, actions: CarActions, onHide: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
     val nav = state.navApp()
     val media = state.app(state.activeMediaAppId) ?: state.apps.firstOrNull { it.kind == CarAppKind.MEDIA }
@@ -260,6 +272,17 @@ private fun CkRail(state: CarUiState, actions: CarActions) {
                 .carFocusHighlight(shape).clickable { actions.assistant() },
             contentAlignment = Alignment.Center,
         ) { Icon(Icons.Rounded.Mic, null, tint = if (state.listening) Color(0xFF003825) else Emerald, modifier = Modifier.size(30.dp)) }
+        Spacer(Modifier.height(10.dp))
+        // Hide the rail (the design's chevron under the mic), pointing the way the rail goes.
+        val hideShape = RoundedCornerShape(28.dp)
+        Box(
+            Modifier.size(width = 80.dp, height = 56.dp).clip(hideShape).background(scheme.surfaceContainerLow).border(1.dp, Border, hideShape)
+                .carFocusHighlight(hideShape).clickable(onClickLabel = stringResource(R.string.dash_hide_rail), onClick = onHide),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(if (state.railOnRight) Icons.AutoMirrored.Rounded.KeyboardArrowRight else Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                stringResource(R.string.dash_hide_rail), tint = scheme.onSurfaceVariant, modifier = Modifier.size(30.dp))
+        }
     }
 }
 
@@ -302,7 +325,7 @@ private fun nextTurn(state: CarUiState): String? {
 }
 
 @Composable
-private fun CkTopBar(state: CarUiState) {
+private fun CkTopBar(state: CarUiState, showClock: Boolean = false) {
     val scheme = MaterialTheme.colorScheme
     val context = LocalContext.current
     val phoneName = remember {
@@ -330,6 +353,12 @@ private fun CkTopBar(state: CarUiState) {
         }
         Spacer(Modifier.width(16.dp))
         Text(phoneName, style = CkType.labelLg, color = scheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 200.dp))
+        if (showClock) {
+            Spacer(Modifier.width(16.dp))
+            PhoneStatusIcons()
+            Spacer(Modifier.width(16.dp))
+            CkClock(CkType.headlineMd.copy(fontWeight = FontWeight.Bold), scheme.onSurface)
+        }
     }
 }
 
