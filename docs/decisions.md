@@ -78,3 +78,109 @@ Design choices:
 
 Status: unverified on a device; the PR is a starting point. Open question for the owner: whether to
 ship it as a release artifact later, or keep it build-it-yourself.
+
+## Car screen themes and layouts
+
+The car screen's look is split in two settings: the **theme** (`ui/theme/CarThemeSpec`: day and
+night colours, the colours Material has no slot for, type, shapes, app icon shape, sizes) and the
+**layout** (`ui/car/CarLayout`: the taskbar with dashboard cards, or the dock with app pages). A
+**style** picks both at once; a mix shows as "Custom". Built in: AARE, Android Auto and CarPlay.
+
+- Themes are Kotlin values, not files: new themes come as pull requests, so each is reviewed. A
+  theme is plain data, so reading themes from files stays possible later.
+- `CarThemeContrastTest` holds every theme to WCAG AA in day and night: 4.5:1 for text, 3:1 for
+  icons, app status colours and white on the accent (it only fills icon buttons and big labels).
+  A faithful colour that fails gives way to a darker one, commented in the theme.
+- Android Auto and CarPlay are reproduced from Google's and Apple's published design rules and
+  system colours where they exist, else measured from their screenshots or estimated (each value
+  says which). Their fonts (Google Sans, San Francisco) can't be bundled: the system font stands in.
+  No code or assets were taken from other projects.
+- Android Auto stays black in the day, as the real one does; the car apps still get the car's
+  day/night signal, so a map turns light in the day.
+- The Material You theme takes all the phone's colours, surfaces included, light in the day and
+  dark at night (`CarThemeSpec.phoneColors`, applied by `forPhone` when the settings are read). It
+  has no call or status colours, so it uses AARE's by day and Android Auto's by night. Its
+  contrast is Material 3's to guarantee: the test checks its Material 3 baseline stand-in.
+- The accent colour is its own setting (`CarAccents`): the theme's, the phone's, or a fixed colour
+  with hand-picked tones for dark and light surfaces. It swaps only a theme's accent roles. On a
+  single-colour theme (`singleColor`: Night, Retro) it colours everything (`tinted`): black,
+  surfaces faintly lit, text and app icons in it. Calls and the colours apps use for warnings keep
+  their hues there, so a warning still reads as one. The contrast test covers every theme with
+  every accent.
+- Retro is its own theme rather than an option of Night: a colour alone doesn't make an old
+  screen. It adds the phone's monospace font, a glow around text, square corners and outlined
+  cards. Its clock is on a seven-segment display: DSEG7 Classic v0.46 (SIL OFL 1.1, approved by
+  the owner), bundled in res/font with its licence in assets/licenses, so it ships in the APK.
+  The font has digits and a few capitals only, so it is used for the clock and nothing else.
+- Android Auto (2019) has its own layout (`ClassicShell`): a bottom bar and the app grid as home.
+  It reuses the taskbar's content area, so rotary focus and screen changes behave the same.
+- The cluster display follows the main screen's theme and day/night colours.
+- Existing users keep their look: the old CarPlay style maps to the CarPlay theme on the dock,
+  everything else to AARE on the taskbar. The old `car_style` key is only read.
+
+## Car screen mockups (Paparazzi)
+
+The README's style pictures are mockups drawn on the JVM by Paparazzi (Cash App, Apache-2.0,
+2.0.0-alpha05.1, approved by the owner), from `app/src/mockups/.../CarScreenMockups.kt`:
+`CarShell` with made-up state (apps, music, an event), generated icons and album art, and a drawn
+stand-in for the navigation app's map. `tools/mockups.sh` renders them and copies them to
+`docs/screenshots/styles`. The README says they are mockups and that a real screen can differ.
+
+- Opt-in: the plugin and the mockup sources are only added with `-Pmockups`, so ordinary builds,
+  unit tests and CI don't carry Paparazzi. It also fails with the configuration cache in this
+  project (it reads the generated phone-identity assets before they exist), so the script turns
+  the cache off for that one build.
+- Not a regression test: the images aren't compared in CI. Re-run the script after a UI change
+  that the README pictures should show.
+- 1280×720 at 160 dpi (1 dp = 1 pixel), a common head-unit size; the phone status icons show
+  layoutlib's defaults (no signal, battery 0), since there is no phone.
+
+## Configurable dashboard
+
+The dashboard is an ordered list of cards (`DashCard`: map, music, next calendar event, latest
+notification, weather), each shown or hidden and moved up or down in the settings, in the car and
+on the phone. No free placement or sizes: car screens range from 800×480 to 2560×720 and
+portrait, so the screen shape still decides the arrangement (`dashboardSlots`), and the order only
+decides which card goes where: the first gets the big space, the others fill what is left (3 cards
+at most; 2 on small screens). A card with nothing to show gives its place to the next, the map
+stands in when nothing is left, and the last card can't be hidden.
+
+- It replaces the "music first" and "next calendar event" switches; their values give the first
+  list. The calendar is read only when its card is shown; the weather when it is next to the clock
+  or its card is shown.
+- With no event, the latest notification now fills that slot on ordinary landscape screens too.
+- *Map always big* (off by default) is the one exception to the first card getting the big space:
+  with it on, the map keeps the big space wherever it is in the order and the other cards fill the
+  rest in order, so the music can come first with a big map, as with the old "music first" switch.
+  Its side in the landscape layout follows the order too (first only when the map is first), so a
+  card that comes and goes before it doesn't move it.
+
+
+## Wireless bootstrap and USB: compatibility first
+
+Rule: nothing may break a head unit that works today, so every change to the WPP exchange either
+only adds a fallback or only applies after a failure.
+
+- Version response: always SUCCESS, echoing the head unit's version (1.0 when it sends none). A
+  stricter answer (refusing WPP 2, 3 and 7+, or below 4.5 head units whose Wi-Fi channels the phone
+  can't use) is only logged. The channel check takes every frequency of the Wi-Fi bands the phone
+  supports: apps can't read the channels it may use where it is.
+- Our own WifiStartRequest is never sent on a first attempt. Only after an attempt where the head
+  unit answered the version exchange and then sent no WifiStartRequest before the message timeout,
+  the connector's redials to that head unit ask it to start (5 s after the version exchange, again
+  every 2 s for up to 50 s while it answers "not yet" or "already started").
+- WifiInfoRequest is repeated every 3 s; the usual message timeout still decides when to give up.
+- SSID and passphrase lose one pair of surrounding quotes below WPP 4.5; if joining that way fails,
+  the join is tried once more with them as sent.
+- First message after the RFCOMM connect: 12 s, 3.7 s on the first attempt with a wireless adapter
+  (Bluetooth name containing "Intercooler" or "AndroidAuto-"), so it is redialled quickly: at once,
+  without the 10 s wait and without using up one of the two retries for a car that isn't ready.
+- RFCOMM frames over 1024 bytes are logged, not refused.
+- Bad endpoint: reported as WifiConnectionStatus(INVALID_HOST); port 0 is accepted below WPP 4.5 (it
+  fails at the TCP connect), a port outside 0-65535 is refused. WifiConnectionStatus carries an
+  error text only for PHONE_WIFI_DISABLED, written for the driver.
+- The wireless AAP socket keeps its big buffers and gets no read timeout: the ping watchdog allows
+  20 s of silence for head units that go off channel to scan. TCP keepalive is off: its first probe
+  would come after hours, the watchdog notices a dead link much sooner.
+- USB accessories are matched by model only ("Android Auto", "Android Open Automotive Protocol"):
+  some head units send another manufacturer. A failed openAccessory is retried once after 500 ms.
