@@ -56,6 +56,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import net.prototux.aare.R
+import net.prototux.aare.host.templates.LocalMapDock
+import net.prototux.aare.host.templates.mapDockHeight
+import net.prototux.aare.host.templates.mapDockReserve
 import net.prototux.aare.ui.theme.LocalCarDimens
 
 /**
@@ -144,19 +147,26 @@ internal fun CarPlayShell(
                             val np = state.nowPlaying
                             val mediaApp = state.app(np?.appId ?: state.activeMediaAppId)
                             val showMini = np != null && screen is CarScreen.App && screen.appId != mediaApp?.id
+                            // Over a hosted navigation app the player floats on the map as a dock (the map
+                            // keeps its full size and the app is told the dock covers its bottom edge);
+                            // elsewhere it keeps its own strip.
+                            val dockOnMap = showMini && (screen as CarScreen.App).let { state.app(it.appId)?.kind == CarAppKind.NAVIGATION }
                             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                                 Box(Modifier.weight(1f).fillMaxWidth()) {
-                                    when (screen) {
-                                        CarScreen.Dashboard -> CarPlayDashboard(state, actions, navMap, Modifier.fillMaxSize())
-                                        CarScreen.Launcher -> CarPlayLauncher(state, actions, Modifier.fillMaxSize())
-                                        is CarScreen.App -> {
-                                            val app = state.app(screen.appId)
-                                            if (app != null) appContent(app, Modifier.fillMaxSize())
-                                            else CarPlayDashboard(state, actions, navMap, Modifier.fillMaxSize())
+                                    CompositionLocalProvider(LocalMapDock provides if (dockOnMap) mapDockReserve(LocalCarDimens.current.touchTarget) else 0.dp) {
+                                        when (screen) {
+                                            CarScreen.Dashboard -> CarPlayDashboard(state, actions, navMap, Modifier.fillMaxSize())
+                                            CarScreen.Launcher -> CarPlayLauncher(state, actions, Modifier.fillMaxSize())
+                                            is CarScreen.App -> {
+                                                val app = state.app(screen.appId)
+                                                if (app != null) appContent(app, Modifier.fillMaxSize())
+                                                else CarPlayDashboard(state, actions, navMap, Modifier.fillMaxSize())
+                                            }
                                         }
                                     }
+                                    if (dockOnMap) CarPlayMiniPlayer(state, actions, Modifier.align(Alignment.BottomCenter).padding(start = 12.dp, end = 12.dp, bottom = 12.dp), docked = true)
                                 }
-                                if (showMini) CarPlayMiniPlayer(state, actions, Modifier.align(Alignment.CenterHorizontally))
+                                if (showMini && !dockOnMap) CarPlayMiniPlayer(state, actions, Modifier.align(Alignment.CenterHorizontally))
                             }
                             overlay(Modifier.align(Alignment.BottomCenter))
                             NoticeOverlay(state, actions, Modifier.align(Alignment.TopCenter))
@@ -430,12 +440,13 @@ private fun CpPill(label: String, icon: androidx.compose.ui.graphics.vector.Imag
 
 /** A floating glass "now playing" bar kept over full-screen apps so playback stays reachable. */
 @Composable
-private fun CarPlayMiniPlayer(state: CarUiState, actions: CarActions, modifier: Modifier) {
+private fun CarPlayMiniPlayer(state: CarUiState, actions: CarActions, modifier: Modifier, docked: Boolean = false) {
     val np = state.nowPlaying
     val media = state.app(np?.appId ?: state.activeMediaAppId)
     Row(
-        modifier.fillMaxWidth(0.86f).height(64.dp).clip(RoundedCornerShape(28.dp))
-            .background(Color.White.copy(alpha = 0.14f)).border(1.dp, Cp.glassLine, RoundedCornerShape(28.dp))
+        // Docked over a map the translucent glass would show the map through it: darker and full width.
+        modifier.then(if (docked) Modifier.fillMaxWidth().height(mapDockHeight(LocalCarDimens.current.touchTarget)) else Modifier.fillMaxWidth(0.86f).height(64.dp)).clip(RoundedCornerShape(28.dp))
+            .background(if (docked) Color(0xF2161A23) else Color.White.copy(alpha = 0.14f)).border(1.dp, Cp.glassLine, RoundedCornerShape(28.dp))
             .clickable { media?.let(actions::openApp) }.padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

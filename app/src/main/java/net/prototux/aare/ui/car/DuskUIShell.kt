@@ -53,6 +53,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import net.prototux.aare.R
+import net.prototux.aare.host.templates.LocalMapDock
+import net.prototux.aare.host.templates.mapDockHeight
+import net.prototux.aare.host.templates.mapDockReserve
 import net.prototux.aare.ui.theme.LocalCarDimens
 
 /**
@@ -99,22 +102,29 @@ internal fun DuskUIShell(
                             val np = state.nowPlaying
                             val mediaApp = state.app(np?.appId ?: state.activeMediaAppId)
                             val showMiniPlayer = np != null && screen is CarScreen.App && screen.appId != mediaApp?.id
-                            // The mini player gets its own strip under the app instead of floating over
-                            // it: floating, it hid the last list rows, the keypad's bottom keys and a
-                            // navigation app's own bottom controls.
+                            // On a hosted navigation app the player is a dock floating over the map, as
+                            // part of it: the map keeps its full size (a strip under it shrank the map
+                            // and made the app re-frame its camera every time music started), and the
+                            // app is told the dock covers its bottom edge. Everywhere else the player
+                            // gets its own strip: floating, it hid the last list rows and the keypad's
+                            // bottom keys.
+                            val dockOnMap = showMiniPlayer && (screen as CarScreen.App).let { state.app(it.appId)?.kind == CarAppKind.NAVIGATION }
                             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                 Box(Modifier.weight(1f).fillMaxWidth()) {
-                                    when (screen) {
-                                        CarScreen.Dashboard -> DuskHome(state, actions, navMap, palette, Modifier.fillMaxSize())
-                                        CarScreen.Launcher -> DuskLauncher(state, actions, palette, Modifier.fillMaxSize())
-                                        is CarScreen.App -> {
-                                            val app = state.app(screen.appId)
-                                            if (app != null) appContent(app, Modifier.fillMaxSize())
-                                            else DuskHome(state, actions, navMap, palette, Modifier.fillMaxSize())
+                                    CompositionLocalProvider(LocalMapDock provides if (dockOnMap) mapDockReserve(LocalCarDimens.current.touchTarget) else 0.dp) {
+                                        when (screen) {
+                                            CarScreen.Dashboard -> DuskHome(state, actions, navMap, palette, Modifier.fillMaxSize())
+                                            CarScreen.Launcher -> DuskLauncher(state, actions, palette, Modifier.fillMaxSize())
+                                            is CarScreen.App -> {
+                                                val app = state.app(screen.appId)
+                                                if (app != null) appContent(app, Modifier.fillMaxSize())
+                                                else DuskHome(state, actions, navMap, palette, Modifier.fillMaxSize())
+                                            }
                                         }
                                     }
+                                    if (dockOnMap) DuskMiniPlayerBar(state, actions, palette, Modifier.align(Alignment.BottomCenter).padding(start = 12.dp, end = 12.dp, bottom = 12.dp), docked = true)
                                 }
-                                if (showMiniPlayer) DuskMiniPlayerBar(state, actions, palette, Modifier.align(Alignment.CenterHorizontally))
+                                if (showMiniPlayer && !dockOnMap) DuskMiniPlayerBar(state, actions, palette, Modifier.align(Alignment.CenterHorizontally))
                             }
                             overlay(Modifier.align(Alignment.BottomCenter))
                             NoticeOverlay(state, actions, Modifier.align(Alignment.TopCenter))
@@ -231,17 +241,22 @@ private fun DuskMic(listening: Boolean, palette: HybridPalette, onClick: () -> U
  * a Dusk-style floating glass card rather than an edge-to-edge strip.
  */
 @Composable
-private fun DuskMiniPlayerBar(state: CarUiState, actions: CarActions, palette: HybridPalette, modifier: Modifier) {
+private fun DuskMiniPlayerBar(state: CarUiState, actions: CarActions, palette: HybridPalette, modifier: Modifier, docked: Boolean = false) {
     val np = state.nowPlaying
     val media = state.app(np?.appId ?: state.activeMediaAppId)
+    // Docked (over a navigation map): the full-width, slightly taller card of the cockpit design, opaque
+    // enough to read over any map tile.
+    val shape = RoundedCornerShape(24.dp)
     Row(
-        modifier.fillMaxWidth(0.86f).height(64.dp).clip(RoundedCornerShape(24.dp))
-            .background(palette.card.copy(alpha = 0.92f)).border(1.dp, palette.line, RoundedCornerShape(24.dp))
+        modifier.then(if (docked) Modifier.fillMaxWidth().height(mapDockHeight(LocalCarDimens.current.touchTarget)) else Modifier.fillMaxWidth(0.86f).height(64.dp))
+            .clip(shape)
+            .background(palette.card.copy(alpha = if (docked) 0.97f else 0.92f)).border(1.dp, palette.line, shape)
             .clickable { media?.let(actions::openApp) }.padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // The album art (or the music-note placeholder), not an anonymous gradient square.
-        Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) { Box(Modifier.requiredSize(56.dp).scale(40f / 56f)) { MiniArt(np, palette) } }
+        val art = if (docked) 48.dp else 40.dp
+        Box(Modifier.size(art), contentAlignment = Alignment.Center) { Box(Modifier.requiredSize(56.dp).scale(art.value / 56f)) { MiniArt(np, palette) } }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(np?.title ?: media?.label ?: stringResource(R.string.media_nothing_playing), style = MaterialTheme.typography.labelLarge, color = palette.text, maxLines = 1, overflow = TextOverflow.Ellipsis)

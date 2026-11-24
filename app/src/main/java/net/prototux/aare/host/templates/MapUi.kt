@@ -84,6 +84,20 @@ internal class ObstructionRegistry {
 internal val LocalObstructions = staticCompositionLocalOf<ObstructionRegistry?> { null }
 
 /**
+ * Height at the bottom of the map that a dock floating over it takes: the shell's now-playing card.
+ * The map surface stays full size under it (the navigation app keeps its zoom and camera when music
+ * starts); the template cards sit above the dock and the unobstructed area reported to the app
+ * excludes it, so the route, the puck and the turn arrows are never drawn behind it.
+ */
+internal val LocalMapDock = staticCompositionLocalOf { 0.dp }
+
+/** The floating now-playing dock's height: 72 dp, or the shell's touch target plus padding when that is larger (the controls must fit). */
+internal fun mapDockHeight(touchTarget: Dp): Dp = maxOf(72.dp, touchTarget + 16.dp)
+
+/** What a shell reserves for its dock: the card plus the 12 dp margin under it. */
+internal fun mapDockReserve(touchTarget: Dp): Dp = mapDockHeight(touchTarget) + 12.dp
+
+/**
  * Marks a card/strip as covering the map: its bounds shrink the visible area reported to the
  * app, and it swallows touches so they do not reach the map gesture layer underneath.
  */
@@ -119,6 +133,7 @@ internal fun MapScaffold(
 ) {
     val host = LocalTemplateHost.current
     val gutter = LocalCarDimens.current.gutter
+    val dock = LocalMapDock.current
     val registry = remember { ObstructionRegistry() }
     val panState = remember { mutableStateOf(false) }
     val panMode = panState.value
@@ -147,7 +162,7 @@ internal fun MapScaffold(
             LocalPanControl provides PanControl(panMode) { setPan(!panState.value) },
             LocalInCard provides true,
         ) {
-            BoxWithConstraints(Modifier.fillMaxSize().padding(gutter)) {
+            BoxWithConstraints(Modifier.fillMaxSize().padding(start = gutter, top = gutter, end = gutter, bottom = gutter + dock)) {
                 // obstructsMap() only for a strip that is drawn: its rect goes away with it (an empty strip draws
                 // nothing, so its old position would never be updated or removed).
                 if (!panMode) {
@@ -162,21 +177,24 @@ internal fun MapScaffold(
             }
         }
     }
-    ReportAreas(registry, panState)
+    ReportAreas(registry, panState, dock)
 }
 
 /** Sends visible/stable area changes (map-surface px) to the app, deduplicated. */
 @Composable
-private fun ReportAreas(registry: ObstructionRegistry, panState: androidx.compose.runtime.State<Boolean>) {
+private fun ReportAreas(registry: ObstructionRegistry, panState: androidx.compose.runtime.State<Boolean>, dock: Dp) {
     val host = LocalTemplateHost.current
-    LaunchedEffect(registry, host) {
+    val dockPx = with(androidx.compose.ui.platform.LocalDensity.current) { dock.toPx() }
+    LaunchedEffect(registry, host, dockPx) {
         var lastVisible: List<Int>? = null
         var lastStable: List<Int>? = null
         snapshotFlow { Triple(registry.map, registry.rects.values.toList(), panState.value) }
             .distinctUntilChanged()
             .collect { (map, rects, pan) ->
                 if (map.width <= 0f || map.height <= 0f) return@collect
-                val free = MapGeometry.unobstructed(map.toBox(), rects.map { it.toBox() })
+                // the shell's floating dock: a full-width strip at the map's bottom edge
+                val dockBox = if (dockPx > 0f) listOf(MapGeometry.Box(map.left, map.bottom - dockPx, map.right, map.bottom)) else emptyList()
+                val free = MapGeometry.unobstructed(map.toBox(), rects.map { it.toBox() } + dockBox)
                 val area = listOf(
                     (free.left - map.left).roundToInt(), (free.top - map.top).roundToInt(),
                     (free.right - map.left).roundToInt(), (free.bottom - map.top).roundToInt(),
