@@ -104,6 +104,7 @@ fun CarShell(
     net.prototux.aare.Settings.LAYOUT_DUSK -> DuskUIShell(state, actions, appContent, navMap, overlay, modifier)
     net.prototux.aare.Settings.LAYOUT_CARPLAY -> CarPlayShell(state, actions, appContent, navMap, overlay, modifier)
     net.prototux.aare.Settings.LAYOUT_STRADA -> StradaShell(state, actions, appContent, navMap, overlay, modifier)
+    net.prototux.aare.Settings.LAYOUT_COCKPIT -> CockpitShell(state, actions, appContent, navMap, overlay, modifier)
     else -> HybridShell(state, actions, appContent, navMap, overlay, modifier)
 }
 

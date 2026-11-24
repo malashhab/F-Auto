@@ -95,6 +95,13 @@ class WirelessBootstrap(
          * [Options.holdLink]), so hand the connect off to another thread or return promptly.
          */
         fun onReady(ip: String, port: Int)
+
+        /**
+         * The head unit sent another WifiStartRequest after [onReady] with a different endpoint: its
+         * AAP server moved. The Kowan KA05 does this — the first port is often dead (ECONNREFUSED) and
+         * the real one arrives a beat later. Retry the TCP connect at [ip]:[port]. Default: ignore.
+         */
+        fun onEndpointUpdate(ip: String, port: Int) {}
     }
 
     class Options(
@@ -164,6 +171,10 @@ class WirelessBootstrap(
     /** [Options.officialPhoneOrder]: the WifiStartResponse already went out when the request came. */
     private var startResponseSent = false
 
+    /** The AAP endpoint given to [Listener.onReady]; a later WifiStartRequest can move it. */
+    @Volatile private var readyIp: String? = null
+    @Volatile private var readyPort = 0
+
     /**
      * Runs the bootstrap: returns once the link ended after a successful [Listener.onReady] (or
      * right after it, without [Options.holdLink]). Throws [WirelessBootstrapException] when the
@@ -192,6 +203,8 @@ class WirelessBootstrap(
             sendQuietly(WppMessageId.CONNECTION_STATUS, connectionStatus(WppStatus.SUCCESS, null))
             ensureOpen()
             state = State.READY
+            readyIp = ip
+            readyPort = start.port
             log.i("wireless: on the head unit's network, AAP server at $ip:${start.port}")
             listener.onReady(ip, start.port)
             if (options.holdLink) hold()
@@ -439,7 +452,23 @@ class WirelessBootstrap(
                 if (state == State.READY) log.w("wireless: head unit sent a connection rejection (reason $reason)")
                 else throw fail("head unit rejected the connection (reason $reason)", WppStatus.INSTRUCT_USER_TO_CHECK_THE_PHONE)
             }
-            WppMessageId.START_REQUEST, WppMessageId.VERSION_REQUEST ->
+            WppMessageId.START_REQUEST -> {
+                // The head unit re-sent its endpoint after we were ready: its AAP server moved (the
+                // Kowan KA05 does this — the first port is dead). Follow it to the new address.
+                val req = runCatching { WifiStartRequest.parseFrom(frame.payload) }.getOrNull()
+                val newPort = req?.port
+                val newIp = req?.ipAddress?.trim()?.takeUnless { it.isEmpty() || it == "0.0.0.0" } ?: readyIp
+                if (state == State.READY && req != null && newPort != null && newPort in 1..65535 &&
+                    newIp != null && (newPort != readyPort || newIp != readyIp)) {
+                    log.i("wireless: head unit moved its AAP server to $newIp:$newPort")
+                    readyIp = newIp
+                    readyPort = newPort
+                    listener.onEndpointUpdate(newIp, newPort)
+                } else {
+                    log.w("wireless: ignoring WifiStartRequest during the session")
+                }
+            }
+            WppMessageId.VERSION_REQUEST ->
                 log.w("wireless: ignoring ${WppMessageId.name(frame.id)} during the session")
             else -> log.i("wireless: ignoring $frame")
         }

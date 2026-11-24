@@ -119,6 +119,20 @@ class CarRuntime(
      * spin up a Maps projection session.
      */
     var showsLiveProjection = false
+
+    /**
+     * One long-lived [ProjectedHost] per projected app, keyed by its service component. Shared between
+     * the dashboard map card and the full-screen view so switching between them re-points the same live
+     * projection instead of rebinding Maps (which showed as a restart loop and a reload flash). Stopped
+     * in [stop].
+     */
+    private val projectedHosts = HashMap<String, ProjectedHost>()
+
+    private fun projectedHost(component: android.content.ComponentName): ProjectedHost =
+        projectedHosts.getOrPut(component.flattenToString()) {
+            ProjectedHost(context, component, object : ProjectedHost.Listener {})
+        }
+
     @Volatile override var carLocation: Location? = null
     @Volatile override var carHeading: Float? = null
 
@@ -173,6 +187,19 @@ class CarRuntime(
             return
         }
         val isNavigate = action == CarContext.ACTION_NAVIGATE || intent.data?.scheme == "geo" || intent.data?.scheme == "google.navigation"
+        // A projected app (patched Maps) is the car's nav app: deliver the destination into its
+        // projection as a navigation intent, since it has no Car App Library connection to route to.
+        if (isNavigate) {
+            val navApp = ui.navApp()
+            val comp = navApp?.takeIf { it.kind == CarAppKind.PROJECTED }?.let { ProjectedAppCatalog.component(it.packageName) }
+            val data = intent.data
+            if (navApp != null && comp != null && data != null) {
+                ui.activeNavAppId = navApp.id
+                ui.screen = CarScreen.App(navApp.id)
+                projectedHost(comp).navigate(data.toString())
+                return
+            }
+        }
         // As in CarContext.startCarApp's contract, an explicit component may only start the calling app itself:
         // otherwise any app could hand another a crafted intent and take over the screen. A navigation intent
         // naming another app goes to the driver's navigation app instead.
@@ -377,6 +404,8 @@ class CarRuntime(
         finished.clear()
         clusterConnections.values.forEach { it.release() }
         clusterConnections.clear()
+        projectedHosts.values.forEach { it.stop() }
+        projectedHosts.clear()
         if (ownsMedia) media.release()
     }
 
@@ -497,6 +526,15 @@ class CarRuntime(
     /** Navigates to [place] in the car's navigation app (geo: query), or false without one. */
     fun navigateTo(place: String): Boolean {
         val nav = ui.navApp() ?: return false
+        // A projected app (patched Maps) has no Car App Library connection: deliver the destination
+        // straight into its projection as a google.navigation: intent so it starts turn-by-turn.
+        if (nav.kind == CarAppKind.PROJECTED) {
+            val comp = ProjectedAppCatalog.component(nav.packageName) ?: return false
+            ui.activeNavAppId = nav.id
+            ui.screen = CarScreen.App(nav.id)
+            projectedHost(comp).navigate("google.navigation:q=" + android.net.Uri.encode(place))
+            return true
+        }
         val uri = "geo:0,0?q=" + android.net.Uri.encode(place)
         if (nav.kind == CarAppKind.STANDALONE) {
             // A phone navigation app on the car screen: its screen opens the link once the app is up.
@@ -757,7 +795,7 @@ class CarRuntime(
                                 ProjectedAppScreen(
                                     app = ProjectedAppInfo(comp, app.label, app.icon),
                                     densityDpi = densityDpi,
-                                    hostFactory = { ProjectedHost(context, it.service, object : ProjectedHost.Listener {}) },
+                                    host = projectedHost(comp),
                                     modifier = mod,
                                 )
                             }
@@ -783,7 +821,7 @@ class CarRuntime(
                                     ProjectedAppScreen(
                                         app = ProjectedAppInfo(comp, app.label, app.icon),
                                         densityDpi = densityDpi,
-                                        hostFactory = { ProjectedHost(context, it.service, object : ProjectedHost.Listener {}) },
+                                        host = projectedHost(comp),
                                         modifier = mod,
                                     )
                                 }

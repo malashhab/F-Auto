@@ -159,6 +159,8 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
         @Volatile private var network: HeadUnitNetwork? = null
         @Volatile private var tcp: Socket? = null
         @Volatile private var transport: Transport? = null
+        /** The AAP endpoint to connect to, updated if the head unit moves its server (Kowan KA05). */
+        @Volatile private var endpoint: Pair<String, Int>? = null
 
         fun run(): Transport {
             requirePermissions(requiredPermissions())
@@ -175,7 +177,8 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
                 val (ip, port) = bootstrap(socket, net)
                 val headUnitNetwork = net.network ?: throw WirelessException("lost the head unit's network")
                 val tcpSocket = connectTcp(headUnitNetwork, ip, port)
-                val name = "wifi \"${net.ssid}\" $ip:$port (${runCatching { device.name }.getOrNull() ?: device.address})"
+                val (finalIp, finalPort) = endpoint ?: (ip to port)
+                val name = "wifi \"${net.ssid}\" $finalIp:$finalPort (${runCatching { device.name }.getOrNull() ?: device.address})"
                 val t = WirelessTransport(SocketTransport(tcpSocket, name), ::abort)
                 transport = t
                 // A dead Wi-Fi link otherwise only shows up as a TCP timeout much later.
@@ -246,7 +249,12 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
             val b = WirelessBootstrap(socket.inputStream, socket.outputStream, object : WirelessBootstrap.Listener {
                 override fun connectWifi(credentials: WifiCredentials): JoinResult = net.join(credentials)
                 override fun onReady(ip: String, port: Int) {
+                    endpoint = ip to port
                     ready.complete(ip to port)
+                }
+                override fun onEndpointUpdate(ip: String, port: Int) {
+                    // connectTcp re-reads this each attempt, so a retry follows the head unit's new port.
+                    endpoint = ip to port
                 }
             }, log, options.bootstrap)
             bootstrap = b
@@ -271,17 +279,18 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
             }
         }
 
-        private fun connectTcp(network: Network, ip: String, port: Int): Socket {
-            // Literal addresses need no DNS; resolve anything else on the head unit's network.
-            val address = runCatching {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) InetAddresses.parseNumericAddress(ip)
-                // Older: only literal addresses here, which InetAddress parses without DNS.
-                else if (ip.all { it.isDigit() || it == '.' || it == ':' || it in 'a'..'f' || it in 'A'..'F' }) InetAddress.getByName(ip)
-                else throw IllegalArgumentException(ip)
-            }.getOrElse { network.getByName(ip) }
+        private fun connectTcp(network: Network, initialIp: String, initialPort: Int): Socket {
             var last: IOException? = null
+            var resolvedFor: String? = null
+            var address: InetAddress? = null
+            var ip = initialIp
+            var port = initialPort
             for (attempt in 1..options.tcpAttempts) {
                 checkNotAborted()
+                // Use the latest endpoint the head unit advertised: the Kowan KA05 re-sends its
+                // WifiStartRequest with a new port, and the first one is often dead (ECONNREFUSED).
+                endpoint?.let { ip = it.first; port = it.second }
+                if (ip != resolvedFor) { address = resolve(network, ip); resolvedFor = ip }
                 // Bound to the head unit's network: it is not the default network (no internet).
                 val socket = network.socketFactory.createSocket()
                 tcp = socket
@@ -297,6 +306,13 @@ class WirelessConnector(context: Context, private val log: AapLog, private val o
             }
             throw WirelessException("cannot connect to the head unit's Android Auto server at $ip:$port", last)
         }
+
+        /** Literal addresses need no DNS; resolve anything else on the head unit's network. */
+        private fun resolve(network: Network, ip: String): InetAddress = runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) InetAddresses.parseNumericAddress(ip)
+            else if (ip.all { it.isDigit() || it == '.' || it == ':' || it in 'a'..'f' || it in 'A'..'F' }) InetAddress.getByName(ip)
+            else throw IllegalArgumentException(ip)
+        }.getOrElse { network.getByName(ip) }
 
         private fun checkNotAborted() {
             if (aborted.get()) throw WirelessException("cancelled")

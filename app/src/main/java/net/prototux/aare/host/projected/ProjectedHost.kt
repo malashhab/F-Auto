@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.net.Uri
 import android.os.Binder
 import android.os.Handler
 import android.os.HandlerThread
@@ -48,6 +49,9 @@ class ProjectedHost(
     private var densityDpi = 0
     private var motionDownTime = 0L
 
+    /** A pending navigation destination (`google.navigation:`/`geo:` URI) delivered via onProjectionStart. */
+    @Volatile private var navUri: String? = null
+
     /** The projected display's render size (pixels). Touches must be scaled into this space. */
     val displayWidth get() = width
     val displayHeight get() = height
@@ -57,6 +61,7 @@ class ProjectedHost(
     /** ICarProjectionCallback: the app signals readiness and connection state here; we just ack. */
     private val callback = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+            Log.i(TAG, "rx callback code=$code flags=$flags")
             reply?.writeNoException()
             return true
         }
@@ -65,6 +70,7 @@ class ProjectedHost(
     /** ICarDisplay: returns the car UI capabilities the legacy UI reads. */
     private val carDisplay = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+            Log.i(TAG, "rx carDisplay code=$code flags=$flags")
             if (code == ProjectedProtocol.TX_DISPLAY_GET_CAR_UI_INFO) {
                 reply?.writeNoException()
                 reply?.writeInt(1)
@@ -79,6 +85,7 @@ class ProjectedHost(
     /** ICarDisplayManager: hands back the single [carDisplay]. */
     private val carDisplayManager = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+            Log.i(TAG, "rx carDisplayManager code=$code flags=$flags")
             reply?.writeNoException()
             if (code == ProjectedProtocol.TX_DISPLAY_MANAGER_GET_DISPLAY) reply?.writeStrongBinder(carDisplay)
             return true
@@ -88,6 +95,7 @@ class ProjectedHost(
     /** ICar: the app reads CarInfo/CarUiInfo and the display manager before it draws. */
     private val car = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+            Log.i(TAG, "rx car code=$code flags=$flags")
             when (code) {
                 ProjectedProtocol.TX_CAR_GET_CAR_INFO -> {
                     reply?.writeNoException(); reply?.writeInt(1); reply?.let { ProjectedProtocol.writeCarInfo(it) }
@@ -130,6 +138,35 @@ class ProjectedHost(
         }
     }
 
+    /**
+     * Points the projection at [surface]. The first call binds the app (like [start]); later calls on
+     * the same live host re-target the running session to the new surface/size without rebinding — so
+     * a SurfaceView remount (the dashboard map card ⇄ the full-screen app, a resize, a brief recompose)
+     * does NOT tear down and reload Maps. An unchanged surface+size is a no-op resume.
+     */
+    fun attach(surface: Surface, width: Int, height: Int, densityDpi: Int) {
+        val sameGeometry = surface === this.surface && width == this.width && height == this.height
+        this.surface = surface
+        this.width = width
+        this.height = height
+        this.densityDpi = densityDpi
+        val binder = service
+        when {
+            binder == null -> if (connection == null) start(surface, width, height, densityDpi) // else: a bind is in flight; onConnected uses the fields just set
+            sameGeometry -> resume()
+            else -> handler.post { if (transactProjectionStart(binder, surface)) resume() }
+        }
+    }
+
+    /**
+     * Pauses rendering but keeps the binding alive, so a quick [attach] resumes instantly instead of
+     * rebinding. Only acts when [surface] is the one currently shown, so a late detach from an old
+     * SurfaceView cannot pause a newer one that already attached.
+     */
+    fun detach(surface: Surface) {
+        if (surface === this.surface) pause()
+    }
+
     private fun onConnected(binder: IBinder) {
         status("bound ${component.flattenToShortString()}")
         if (!onSetup(binder)) return
@@ -147,10 +184,26 @@ class ProjectedHost(
 
     private fun transactProjectionStart(binder: IBinder, surface: Surface): Boolean =
         transact("onProjectionStart", binder, ProjectedProtocol.TX_ON_PROJECTION_START) { data ->
-            val intent = Intent().setComponent(component)
+            // With a pending destination, the start intent is the navigation intent, so the car
+            // activity begins turn-by-turn; otherwise it is a bare launch of the projected component.
+            val intent = navUri?.let { Intent(Intent.ACTION_VIEW, Uri.parse(it)).setComponent(component) }
+                ?: Intent().setComponent(component)
             val config = ProjectedProtocol.projectionConfiguration(width, height, densityDpi)
             ProjectedProtocol.writeProjectionStart(data, surface, width, height, densityDpi, intent, config)
         }
+
+    /**
+     * Starts turn-by-turn to [uri] (a `google.navigation:` or `geo:` URI) in the projected app by
+     * re-sending onProjectionStart carrying that intent, so the running car activity gets the
+     * destination in context (no task-to-front, unlike a plain `startActivity`). If not yet bound, the
+     * destination is applied on the next start.
+     */
+    fun navigate(uri: String) {
+        navUri = uri
+        val binder = service
+        val s = surface
+        if (binder != null && s != null) handler.post { if (transactProjectionStart(binder, s)) resume() }
+    }
 
     /** onProjectionResume (tx 4): the app stays stopped after onProjectionStart until this. */
     fun resume() {

@@ -231,6 +231,7 @@
     <string name="setup_layout_dusk">Dusk</string>
     <string name="setup_layout_carplay">CarPlay</string>
     <string name="setup_layout_strada">Strada</string>
+    <string name="setup_layout_cockpit">Cockpit</string>
     <!-- Strada layout -->
     <string name="strada_my_vehicle">My vehicle</string>
     <string name="strada_add_photo_hint">Add a photo of your vehicle in Customize</string>
@@ -422,6 +423,9 @@
     <!-- dash: car shell / dashboard chrome -->
     <string name="dash_menu_apps">Apps</string>
     <string name="dash_menu_home">Home</string>
+    <string name="dash_now_playing">Now playing</string>
+    <string name="dash_nav">Navigation</string>
+    <string name="dash_media">Media</string>
     <string name="dash_menu_exit_to_car">Exit to car</string>
 
     <!-- Offline OpenStreetMap navigation option (mapsforge .map country files, like StradaOS) -->

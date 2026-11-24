@@ -18,40 +18,36 @@ import androidx.compose.ui.viewinterop.AndroidView
  * one size; if the view is later a different size the surface buffer is scaled to fit, so taps are
  * scaled the same way to stay aligned).
  *
- * The host lives for as long as this composable is on screen: it starts when the surface is created
- * and stops when the surface is destroyed or the composable leaves.
+ * The [host] is shared and outlives this composable: the surface is attached when created and
+ * detached (paused, not torn down) when destroyed, so moving the map between the dashboard card and
+ * the full screen re-points the one live projection instead of rebinding Maps each time. The host is
+ * fully stopped by its owner ([net.prototux.aare.host.CarRuntime]), not here.
  */
 @Composable
 fun ProjectedAppScreen(
     app: ProjectedAppInfo,
     densityDpi: Int,
-    hostFactory: (ProjectedAppInfo) -> ProjectedHost,
+    host: ProjectedHost,
     modifier: Modifier = Modifier,
 ) {
     AndroidView(
         modifier = modifier.fillMaxSize(),
         factory = { context ->
             SurfaceView(context).apply {
-                var host: ProjectedHost? = null
                 holder.addCallback(object : SurfaceHolder.Callback {
-                    // Start only once a valid, non-zero size is known: starting at 0×0 (a possible
+                    // Attach only once a valid, non-zero size is known: attaching at 0×0 (a possible
                     // surfaceCreated size, depending on layout timing) gives a blank projected map.
-                    // surfaceChanged never restarts a running host — re-initialising Maps' projection
-                    // renderer mid-session is what the touch scaling exists to avoid.
-                    private fun startIfNeeded(w: Int, h: Int) {
-                        if (host == null && w > 0 && h > 0) {
-                            host = hostFactory(app).also { it.start(holder.surface, w, h, densityDpi) }
-                        }
+                    // attach() re-points a running session to the new surface/size (cheap, no rebind).
+                    private fun attachIfReady(w: Int, h: Int) {
+                        if (w > 0 && h > 0) host.attach(holder.surface, w, h, densityDpi)
                     }
 
-                    override fun surfaceCreated(holder: SurfaceHolder) = startIfNeeded(width, height)
+                    override fun surfaceCreated(holder: SurfaceHolder) = attachIfReady(width, height)
 
-                    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = startIfNeeded(width, height)
+                    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = attachIfReady(width, height)
 
-                    override fun surfaceDestroyed(holder: SurfaceHolder) {
-                        host?.stop()
-                        host = null
-                    }
+                    // Pause this surface (not a full stop): a remount re-attaches the same session.
+                    override fun surfaceDestroyed(holder: SurfaceHolder) = host.detach(holder.surface)
                 })
                 // Forward touches to the projected app, scaled from the view's live size into the
                 // projected display's pixel space. They match 1:1 only while the view is exactly the
@@ -59,18 +55,15 @@ fun ProjectedAppScreen(
                 // the SurfaceView scales the app's buffer to fit, so a raw tap lands offset unless we
                 // scale it the same way. A 1:1 case skips the copy.
                 setOnTouchListener { v: View, event ->
-                    val h = host
-                    if (h != null) {
-                        val dw = h.displayWidth; val dh = h.displayHeight
-                        val vw = v.width; val vh = v.height
-                        if (dw > 0 && dh > 0 && vw > 0 && vh > 0 && (dw != vw || dh != vh)) {
-                            val scaled = MotionEvent.obtain(event)
-                            scaled.transform(Matrix().apply { setScale(dw.toFloat() / vw, dh.toFloat() / vh) })
-                            h.sendMotion(scaled)
-                            scaled.recycle()
-                        } else {
-                            h.sendMotion(event)
-                        }
+                    val dw = host.displayWidth; val dh = host.displayHeight
+                    val vw = v.width; val vh = v.height
+                    if (dw > 0 && dh > 0 && vw > 0 && vh > 0 && (dw != vw || dh != vh)) {
+                        val scaled = MotionEvent.obtain(event)
+                        scaled.transform(Matrix().apply { setScale(dw.toFloat() / vw, dh.toFloat() / vh) })
+                        host.sendMotion(scaled)
+                        scaled.recycle()
+                    } else {
+                        host.sendMotion(event)
                     }
                     true
                 }

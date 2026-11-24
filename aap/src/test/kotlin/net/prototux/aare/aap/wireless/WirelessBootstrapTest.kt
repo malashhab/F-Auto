@@ -61,11 +61,13 @@ class WirelessBootstrapTest {
     private class Phone(val join: (WifiCredentials) -> JoinResult) : WirelessBootstrap.Listener {
         val credentials = LinkedBlockingQueue<WifiCredentials>()
         val ready = LinkedBlockingQueue<Pair<String, Int>>()
+        val endpointUpdates = LinkedBlockingQueue<Pair<String, Int>>()
         override fun connectWifi(credentials: WifiCredentials): JoinResult {
             this.credentials.put(credentials)
             return join(credentials)
         }
         override fun onReady(ip: String, port: Int) = ready.put(ip to port)
+        override fun onEndpointUpdate(ip: String, port: Int) = endpointUpdates.put(ip to port)
     }
 
     private val quiet = object : AapLog {
@@ -180,6 +182,32 @@ class WirelessBootstrapTest {
         val credentials = phone.credentials.single()
         assertNull(credentials.bssid)
         assertEquals(WifiSecurity.WPA2_WPA3_PERSONAL, credentials.security)
+    }
+
+    @Test(timeout = 10_000)
+    fun aMovedServerPortIsFollowedAfterReady() {
+        // The Kowan KA05 re-sends its WifiStartRequest after we're ready, with a new port; the first
+        // one is often dead (ECONNREFUSED). The bootstrap must report the new endpoint, not ignore it.
+        val phone = Phone { JoinResult.Joined(localAddress = "10.0.0.23", gateway = "10.0.0.1") }
+        start(phone)
+
+        hu.send(WppMessageId.START_REQUEST, startRequest(port = 5000))
+        hu.expect(WppMessageId.INFO_REQUEST)
+        hu.send(WppMessageId.INFO_RESPONSE, infoResponse())
+        hu.expect(WppMessageId.START_RESPONSE)
+        hu.expect(WppMessageId.CONNECTION_STATUS)
+        assertEquals("10.0.0.1" to 5000, phone.ready.poll(2, TimeUnit.SECONDS))
+
+        // A later request with a new port is followed...
+        hu.send(WppMessageId.START_REQUEST, startRequest(port = 6001))
+        assertEquals("10.0.0.1" to 6001, phone.endpointUpdates.poll(2, TimeUnit.SECONDS))
+        // ...but the same port again is not a spurious update.
+        hu.send(WppMessageId.START_REQUEST, startRequest(port = 6001))
+        assertNull(phone.endpointUpdates.poll(400, TimeUnit.MILLISECONDS))
+
+        hu.hangUp()
+        awaitEnd()
+        assertNull(failure)
     }
 
     @Test(timeout = 10_000)

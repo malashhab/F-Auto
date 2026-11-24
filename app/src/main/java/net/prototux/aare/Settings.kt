@@ -425,6 +425,8 @@ class Settings(context: Context) {
         const val LAYOUT_CARPLAY = "carplay"
         /** [carLayout]: the StradaOS-style layout — a My-vehicle / map / audio three-card dashboard over a round app row. */
         const val LAYOUT_STRADA = "strada"
+        /** [carLayout]: the Cockpit layout from `CarUI` Frames A/B — a collapsible left dock beside a split map/now-playing dashboard, with a CarPlay-style app grid. */
+        const val LAYOUT_COCKPIT = "cockpit"
         const val WALLPAPER_CUSTOM = "custom"
         /** The user's wallpaper photo, in the app's files. */
         const val WALLPAPER_FILE = "wallpaper.jpg"

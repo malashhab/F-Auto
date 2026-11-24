@@ -567,6 +567,7 @@ private fun CustomizeTab(settings: Settings, previewRuntime: CarRuntime, carStyl
                 Settings.LAYOUT_DUSK to stringResource(R.string.setup_layout_dusk),
                 Settings.LAYOUT_CARPLAY to stringResource(R.string.setup_layout_carplay),
                 Settings.LAYOUT_STRADA to stringResource(R.string.setup_layout_strada),
+                Settings.LAYOUT_COCKPIT to stringResource(R.string.setup_layout_cockpit),
             ), layout) { layout = it; settings.carLayout = it }
         }
         item {
@@ -1316,6 +1317,7 @@ private fun CarScreenSettings(settings: Settings, refresh: Int, onStyleChange: (
                 Settings.LAYOUT_DUSK to stringResource(R.string.setup_layout_dusk),
                 Settings.LAYOUT_CARPLAY to stringResource(R.string.setup_layout_carplay),
                 Settings.LAYOUT_STRADA to stringResource(R.string.setup_layout_strada),
+                Settings.LAYOUT_COCKPIT to stringResource(R.string.setup_layout_cockpit),
             ), layout) {
                 layout = it; settings.carLayout = it
             }
