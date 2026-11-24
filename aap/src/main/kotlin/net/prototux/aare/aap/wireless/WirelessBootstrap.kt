@@ -238,7 +238,7 @@ class WirelessBootstrap(
             // head unit already knows everything it needs and the TCP connect is the real test.
             // A head unit that answered our own WifiStartRequest has nothing to get a response to.
             if (!endpoint.phoneStarted && !startResponseSent) sendQuietly(WppMessageId.START_RESPONSE, startResponse(joined.localAddress, WppStatus.SUCCESS))
-            sendQuietly(WppMessageId.CONNECTION_STATUS, connectionStatus(WppStatus.SUCCESS, null))
+            sendConnectionStatus(WppStatus.SUCCESS)
             ensureOpen()
             state = State.READY
             readyIp = ip

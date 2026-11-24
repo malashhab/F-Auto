@@ -52,6 +52,7 @@ import net.prototux.aare.media.MediaHub
 import net.prototux.aare.transport.LocalSocketTransport
 import net.prototux.aare.transport.TcpServer
 import net.prototux.aare.transport.UsbAccessoryTransport
+import net.prototux.aare.transport.UsbReattach
 import net.prototux.aare.transport.wireless.WirelessConnector
 import net.prototux.aare.transport.wireless.WirelessException
 import net.prototux.aare.ui.MainActivity
@@ -384,7 +385,7 @@ class ProjectionService : Service() {
 
     /** True while an Android Auto USB accessory is physically attached: the cable is the chosen path. */
     private fun usbAttached(): Boolean =
-        runCatching { getSystemService(UsbManager::class.java)?.accessoryList?.any { isAndroidAuto(it) } == true }.getOrDefault(false)
+        runCatching { getSystemService(UsbManager::class.java)?.accessoryList?.any { UsbAccessoryTransport.isAndroidAuto(it) } == true }.getOrDefault(false)
 
     private fun openUsb(accessory: UsbAccessory, retryOpen: Boolean = true) {
         // A head unit back after a drop is announced twice (its re-attach, and our wait for it).
