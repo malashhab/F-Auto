@@ -180,6 +180,8 @@
     <string name="setup_choice_bar">Side bar</string>
     <string name="setup_choice_left">Left</string>
     <string name="setup_choice_right">Right</string>
+    <string name="setup_choice_bar_auto">Driver side</string>
+    <string name="setup_choice_bottom">Bottom</string>
     <string name="setup_choice_auto_hide">Auto-hide</string>
     <string name="setup_toggle_dark_bar_title">Dark bar</string>
     <string name="setup_toggle_dark_bar_subtitle">Keep the bar dark even with day colors</string>
