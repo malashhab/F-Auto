@@ -190,10 +190,10 @@ class MainActivity : ComponentActivity() {
     /** Debug builds only: lets ./headunit.sh switch the head unit server on over adb. Returns true if applied. */
     private fun applyDebugExtras(intent: Intent?): Boolean {
         if (!net.prototux.aare.BuildConfig.DEBUG) return false
-        // adb shell am start -n net.prototux.aare/.ui.MainActivity --ez car_preview true: opens the
+        // adb shell am start -n app.fauto.car/net.prototux.aare.ui.MainActivity --ez car_preview true: opens the
         // car screen preview, to check a layout change from a computer.
         if (intent?.getBooleanExtra("car_preview", false) == true) startActivity(Intent(this, CarPreviewActivity::class.java))
-        // adb shell am start -n net.prototux.aare/.ui.MainActivity --ez project_maps true [--es project_pkg <pkg>]
+        // adb shell am start -n app.fauto.car/net.prototux.aare.ui.MainActivity --ez project_maps true [--es project_pkg <pkg>]
         // Smoke-tests the no-root Maps projection patch: binds the patched Maps and runs the real
         // ProjectedHost handshake. Watch: adb logcat -s ProjectedHost:*  (look for "onSetup ok").
         if (intent?.getBooleanExtra("project_maps", false) == true) {

@@ -15,7 +15,7 @@ import android.view.Surface
  * being rejected with a SecurityException.
  *
  * Triggered from [net.prototux.aare.ui.MainActivity.applyDebugExtras] via:
- *   adb shell am start -n net.prototux.aare/.ui.MainActivity --ez project_maps true
+ *   adb shell am start -n app.fauto.car/net.prototux.aare.ui.MainActivity --ez project_maps true
  * optionally with  --es project_pkg <package>  to target a different Maps package.
  *
  * Watch the result with:

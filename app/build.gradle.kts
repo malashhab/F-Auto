@@ -10,7 +10,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "net.prototux.aare"
+        // The installed app's ID. The source package (namespace above) stays AARE's so upstream merges stay easy.
+        applicationId = "app.fauto.car"
         // Android 8. Newer features need newer Android: car audio by screen capture and the
         // modern Wi-Fi join (10), Shizuku capture (12); older phones fall back or go without.
         minSdk = 26

@@ -131,7 +131,7 @@
         <!-- Car tools for the voice assistant (CarControlProvider checks the caller). -->
         <provider
             android:name=".host.CarControlProvider"
-            android:authorities="net.prototux.aare.car"
+            android:authorities="${applicationId}.car"
             android:exported="true" />
 
         <!-- Shizuku (adb rights without root): car audio including navigation voice. -->
