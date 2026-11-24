@@ -169,7 +169,7 @@ internal fun paletteFor(style: String): HybridPalette = when (style) {
     Settings.STYLE_LIGHT -> LightPalette
     Settings.STYLE_SPORT -> SportPalette
     Settings.STYLE_DUSK -> DuskPalette
-    else -> MidnightPalette
+    else -> portedPaletteFor(style) ?: MidnightPalette
 }
 
 // Built on the light base scheme for a light palette: the roles not set here (inverse surfaces,

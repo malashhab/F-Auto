@@ -160,6 +160,7 @@ import net.prototux.aare.launch.AppLauncher
 import net.prototux.aare.car.CarData
 import net.prototux.aare.media.MediaHub
 import net.prototux.aare.service.ProjectionService
+import net.prototux.aare.ui.car.CarStyleOptions
 import net.prototux.aare.ui.car.WALLPAPER_NAMES
 import net.prototux.aare.ui.theme.PhoneTheme
 import net.prototux.aare.ui.theme.brandAccentScheme
@@ -618,30 +619,22 @@ private fun CustomizeTab(settings: Settings, previewRuntime: CarRuntime, carStyl
 
 @Composable
 private fun ThemeSwatchRow(selected: String, onSelect: (String) -> Unit) {
-    data class Swatch(val style: String, val labelRes: Int, val colors: List<Color>)
-    val swatches = listOf(
-        Swatch(Settings.STYLE_DUSK, R.string.setup_style_dusk, listOf(Color(0xFF8A1D38), Color(0xFF1B3BB0))),
-        Swatch(Settings.STYLE_MIDNIGHT, R.string.setup_style_midnight, listOf(Color(0xFF141925), Color(0xFF46E0C8))),
-        Swatch(Settings.STYLE_AURORA, R.string.setup_style_aurora, listOf(Color(0xFFFF9AD0), Color(0xFF4FB4FF))),
-        Swatch(Settings.STYLE_FOREST, R.string.setup_style_forest, listOf(Color(0xFF14241C), Color(0xFF5FD66C))),
-        Swatch(Settings.STYLE_SPORT, R.string.setup_style_sport, listOf(Color(0xFF111111), Color(0xFFFF3B3B))),
-        Swatch(Settings.STYLE_LIGHT, R.string.setup_style_light, listOf(Color.White, Color(0xFFC9D8F5))),
-    )
     Column {
         SectionLabel(stringResource(R.string.setup_choice_style))
         Spacer(Modifier.height(10.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            swatches.forEach { s ->
+        Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            CarStyleOptions.forEach { s ->
                 val on = s.style == selected
-                Column(Modifier.weight(1f).clickable { onSelect(s.style) }, horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(Modifier.width(64.dp).clickable { onSelect(s.style) }, horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(
                         Modifier.fillMaxWidth().height(48.dp).clip(RoundedCornerShape(14.dp))
-                            .background(Brush.linearGradient(s.colors))
+                            .background(Brush.linearGradient(s.swatch))
                             .then(if (on) Modifier.border(2.5.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(14.dp)) else Modifier),
                     )
                     Spacer(Modifier.height(6.dp))
                     Text(
                         stringResource(s.labelRes), style = MaterialTheme.typography.labelSmall,
+                        maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                         color = if (on) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = if (on) FontWeight.Bold else FontWeight.Normal,
                     )
@@ -1301,14 +1294,7 @@ private fun CarScreenSettings(settings: Settings, refresh: Int, onStyleChange: (
             }
             Text(stringResource(R.string.setup_choice_colors_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(12.dp))
-            Choices(stringResource(R.string.setup_choice_style), listOf(
-                Settings.STYLE_MIDNIGHT to stringResource(R.string.setup_style_midnight),
-                Settings.STYLE_AURORA to stringResource(R.string.setup_style_aurora),
-                Settings.STYLE_FOREST to stringResource(R.string.setup_style_forest),
-                Settings.STYLE_LIGHT to stringResource(R.string.setup_style_light),
-                Settings.STYLE_SPORT to stringResource(R.string.setup_style_sport),
-                Settings.STYLE_DUSK to stringResource(R.string.setup_style_dusk),
-            ), style) {
+            Choices(stringResource(R.string.setup_choice_style), CarStyleOptions.map { it.style to stringResource(it.labelRes) }, style) {
                 style = it; settings.carStyle = it; onStyleChange(it)
             }
             Spacer(Modifier.height(12.dp))

@@ -95,14 +95,7 @@ private fun ClassicSettingsScreen(settings: Settings, modifier: Modifier, onLayo
 
 @Composable
 private fun StyleChoice(style: String, onChange: (String) -> Unit) {
-    Choice(stringResource(R.string.setup_choice_style), listOf(
-        Settings.STYLE_MIDNIGHT to stringResource(R.string.setup_style_midnight),
-        Settings.STYLE_AURORA to stringResource(R.string.setup_style_aurora),
-        Settings.STYLE_FOREST to stringResource(R.string.setup_style_forest),
-        Settings.STYLE_LIGHT to stringResource(R.string.setup_style_light),
-        Settings.STYLE_SPORT to stringResource(R.string.setup_style_sport),
-        Settings.STYLE_DUSK to stringResource(R.string.setup_style_dusk),
-    ), style, onChange)
+    Choice(stringResource(R.string.setup_choice_style), CarStyleOptions.map { it.style to stringResource(it.labelRes) }, style, onChange)
 }
 
 private const val RAIL_CHOICE_AUTO_HIDE = "auto_hide"

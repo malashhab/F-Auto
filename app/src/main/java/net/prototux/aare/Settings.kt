@@ -417,6 +417,14 @@ class Settings(context: Context) {
         const val STYLE_LIGHT = "light"
         const val STYLE_SPORT = "sport"
         const val STYLE_DUSK = "dusk"
+        // Color themes ported from AARE 1.6.0's built-in styles.
+        const val STYLE_ANDROID_AUTO = "android_auto"
+        const val STYLE_ANDROID_AUTO_2019 = "android_auto_2019"
+        const val STYLE_CARPLAY = "carplay_theme"
+        const val STYLE_MATERIAL_YOU = "material_you"
+        const val STYLE_HIGH_CONTRAST = "high_contrast"
+        const val STYLE_NIGHT = "night"
+        const val STYLE_RETRO = "retro"
         /** [carLayout]: AARE's original rail/dashboard/bottom-bar arrangement (the default). */
         const val LAYOUT_CLASSIC = "classic"
         /** [carLayout]: the restructured layout from `CarUI/dusk.html`. */

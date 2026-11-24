@@ -226,6 +226,13 @@
     <string name="setup_style_light">Light</string>
     <string name="setup_style_sport">Sport</string>
     <string name="setup_style_dusk">Dusk</string>
+    <string name="setup_style_android_auto">Android Auto</string>
+    <string name="setup_style_android_auto_2019">Android Auto 2019</string>
+    <string name="setup_style_carplay">CarPlay</string>
+    <string name="setup_style_material_you">Material You</string>
+    <string name="setup_style_high_contrast">High contrast</string>
+    <string name="setup_style_night">Night</string>
+    <string name="setup_style_retro">Retro</string>
     <string name="setup_choice_layout">Layout</string>
     <string name="setup_layout_classic">Classic</string>
     <string name="setup_layout_dusk">Dusk</string>

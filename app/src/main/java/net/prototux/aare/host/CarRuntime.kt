@@ -321,6 +321,7 @@ class CarRuntime(
         val position = settings.railPosition
         // Passenger mode lifts the driving restrictions (keyboard, list lengths, phone screen).
         ui.drivingRestricted = carDriving && !settings.ignoreDriving
+        if (settings.carStyle == Settings.STYLE_MATERIAL_YOU) net.prototux.aare.ui.car.loadMaterialYouPalette(context)
         ui.shellStyle = settings.carStyle
         ui.shellLayout = settings.carLayout
         ui.darkBar = settings.darkBar
